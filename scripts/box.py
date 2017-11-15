@@ -1,40 +1,78 @@
 #!/usr/bin/env python3
 
 empty = "empty"
-light, heavy, double, rounded = "light", "heavy", "double", "rounded"
+light, heavy, double, soft = "light", "heavy", "double", "soft"
 dash2, dash3, dash4 = "double dash", "triple dash", "quadruple dash"
 
 lines = {
-    light : "─│",
-    heavy : "━┃",
-    double: "═║",
-    empty : "  ",
-    dash2 : "╌╎",
-    dash2 : "╍╏",
-    dash3 : "┄┆",
-    dash3 : "┅┇",
-    dash4 : "┈┊",
-    dash4 : "┉┋",
-}
-
-corners = {
-#    vertical horizontal
-    (light,   light  ): "┌┐└┘",
-    (heavy,   heavy  ): "┏┓┗┛",
-    (double,  double ): "╔╗╚╝",
-    (rounded, rounded): "╭╮╰╯",
-    (light,   heavy  ): "┍┑┕┙",
-    (heavy,   light  ): "┎┒┖┚",
-    (light,   double ): "╒╕╘╛",
-    (double,  light  ): "╓╖╙╜",
-    (empty,   light  ): "╶╴╶╴",
-    (light,   empty  ): "╷╷╵╵",
-    (empty,   heavy  ): "╺╸╺╸",
-    (heavy,   empty  ): "╻╻╹╹",
-}
-
-intersections_cross = {
 #    left    top     right   bottom
+    (light,  empty,  light,  empty ): "─",
+    (heavy,  empty,  heavy,  empty ): "━",
+    (double, empty,  double, empty ): "═",
+    (empty,  empty,  empty,  empty ): " ",
+    (dash2,  empty,  dash2,  empty ): "╌",
+    (dash2,  empty,  dash2,  empty ): "╍",
+    (dash3,  empty,  dash3,  empty ): "┄",
+    (dash3,  empty,  dash3,  empty ): "┅",
+    (dash4,  empty,  dash4,  empty ): "┈",
+    (dash4,  empty,  dash4,  empty ): "┉",
+
+    (empty,  light,  empty,  light ): "│",
+    (empty,  heavy,  empty,  heavy ): "┃",
+    (empty,  double, empty,  double): "║",
+    (empty,  empty,  empty,  empty ): " ",
+    (empty,  dash2,  empty,  dash2 ): "╎",
+    (empty,  dash2,  empty,  dash2 ): "╏",
+    (empty,  dash3,  empty,  dash3 ): "┆",
+    (empty,  dash3,  empty,  dash3 ): "┇",
+    (empty,  dash4,  empty,  dash4 ): "┊",
+    (empty,  dash4,  empty,  dash4 ): "┋",
+
+    (empty,  empty,  light,  light ): "┌",
+    (empty,  empty,  heavy,  heavy ): "┏",
+    (empty,  empty,  double, double): "╔",
+    (empty,  empty,  soft,   soft  ): "╭",
+    (empty,  empty,  heavy,  light ): "┍",
+    (empty,  empty,  light,  heavy ): "┎",
+    (empty,  empty,  double, light ): "╒",
+    (empty,  empty,  light,  double): "╓",
+
+    (light,  empty,  empty,  light ): "┐",
+    (heavy,  empty,  empty,  heavy ): "┓",
+    (double, empty,  empty,  double): "╗",
+    (soft,   empty,  empty,  soft  ): "╮",
+    (heavy,  empty,  empty,  light ): "┑",
+    (light,  empty,  empty,  heavy ): "┒",
+    (double, empty,  empty,  light ): "╕",
+    (light,  empty,  empty,  double): "╖",
+
+    (empty,  light,  light,  empty ): "└",
+    (empty,  heavy,  heavy,  empty ): "┗",
+    (empty,  double, double, empty ): "╚",
+    (empty,  soft,   soft,   empty ): "╰",
+    (empty,  light,  heavy,  empty ): "┕",
+    (empty,  heavy,  light,  empty ): "┖",
+    (empty,  light,  double, empty ): "╘",
+    (empty,  double, light,  empty ): "╙",
+
+    (light,  light,  empty,  empty ): "┘",
+    (heavy,  heavy,  empty,  empty ): "┛",
+    (double, double, empty,  empty ): "╝",
+    (soft,   soft,   empty,  empty ): "╯",
+    (heavy,  light,  empty,  empty ): "┙",
+    (light,  heavy,  empty,  empty ): "┚",
+    (double, light,  empty,  empty ): "╛",
+    (light,  double, empty,  empty ): "╜",
+
+    (light,  empty,  empty,  empty ): "╴",
+    (empty,  light,  empty,  empty ): "╵",
+    (empty,  empty,  light,  empty ): "╶",
+    (empty,  empty,  empty,  light ): "╷",
+    (heavy,  empty,  empty,  empty ): "╸",
+    (empty,  heavy,  empty,  empty ): "╹",
+    (empty,  empty,  heavy,  empty ): "╺",
+    (empty,  empty,  empty,  heavy ): "╻",
+
     (light,  light,  light,  light ): "┼",
     (heavy,  heavy,  heavy,  heavy ): "╋",
     (double, double, double, double): "╬",
@@ -54,111 +92,62 @@ intersections_cross = {
     (heavy,  light,  heavy,  heavy ): "╈",
     (heavy,  heavy,  light,  heavy ): "╉",
     (light,  heavy,  heavy,  heavy ): "╊",
-}
 
-intersections_right = {
-#    top     right   bottom
-    (light,  light,  light ): "├",
-    (heavy,  heavy,  heavy ): "┣",
-    (double, double, double): "╠",
-    (light,  double, light ): "╞",
-    (double, light,  double): "╟",
-    (light,  heavy,  light ): "┝",
-    (heavy,  light,  light ): "┞",
-    (light,  light,  heavy ): "┟",
-    (heavy,  light,  heavy ): "┠",
-    (heavy,  heavy,  light ): "┡",
-    (light,  heavy,  heavy ): "┢",
-    (empty,  light,  light ): "┌",
-    (light,  light,  empty ): "└",
-    (empty,  heavy,  heavy ): "┏",
-    (heavy,  heavy,  empty ): "┗",
-    (empty,  double, double): "╔",
-    (double, double, empty ): "╚",
-    (empty,  heavy,  light ): "┍",
-    (light,  heavy,  empty ): "┕",
-    (empty,  light,  heavy ): "┎",
-    (heavy,  light,  empty ): "┖",
-    (empty,  double, light ): "╒",
-    (light,  double, empty ): "╘",
-    (empty,  light,  double): "╓",
-    (double, light,  empty ): "╙",
-    (empty,  light,  empty ): "╶",
-    (empty,  empty,  light ): "╷",
-    (light,  empty,  empty ): "╵",
-    (empty,  heavy,  empty ): "╺",
-    (empty,  empty,  heavy ): "╻",
-    (heavy,  empty,  empty ): "╹",
-}
+    (empty,  light,  light,  light ): "├",
+    (empty,  heavy,  heavy,  heavy ): "┣",
+    (empty,  double, double, double): "╠",
+    (empty,  light,  double, light ): "╞",
+    (empty,  double, light,  double): "╟",
+    (empty,  light,  heavy,  light ): "┝",
+    (empty,  heavy,  light,  light ): "┞",
+    (empty,  light,  light,  heavy ): "┟",
+    (empty,  heavy,  light,  heavy ): "┠",
+    (empty,  heavy,  heavy,  light ): "┡",
+    (empty,  light,  heavy,  heavy ): "┢",
 
-intersections_left = {
-#    left    top     bottom
-    (light,  light,  light ): "┤",
-    (heavy,  heavy,  heavy ): "┫",
-    (double, double, double): "╣",
-    (double, light,  light ): "╡",
-    (light,  double, double): "╢",
-    (heavy,  light,  light ): "┥",
-    (light,  heavy,  light ): "┦",
-    (light,  light,  heavy ): "┧",
-    (light,  heavy,  heavy ): "┨",
-    (heavy,  heavy,  light ): "┩",
-    (heavy,  light,  heavy ): "┪",
+    (light,  light,  empty,  light ): "┤",
+    (heavy,  heavy,  empty,  heavy ): "┫",
+    (double, double, empty,  double): "╣",
+    (double, light,  empty,  light ): "╡",
+    (light,  double, empty,  double): "╢",
+    (heavy,  light,  empty,  light ): "┥",
+    (light,  heavy,  empty,  light ): "┦",
+    (light,  light,  empty,  heavy ): "┧",
+    (light,  heavy,  empty,  heavy ): "┨",
+    (heavy,  heavy,  empty,  light ): "┩",
+    (heavy,  light,  empty,  heavy ): "┪",
 
-    (light,  empty,  light ): "┐",
-    (light,  light,  empty ): "┘",
-    (heavy,  empty,  heavy ): "┓",
-    (heavy,  heavy,  empty ): "┛",
-    (double, empty,  double): "╗",
-    (double, double, empty ): "╝",
-    (heavy,  empty,  light ): "┑",
-    (heavy,  light,  empty ): "┙",
-    (light,  empty,  heavy ): "┒",
-    (light,  heavy,  empty ): "┚",
-    (double, empty,  light ): "╕",
-    (double, light,  empty ): "╛",
-    (light,  empty,  double): "╖",
-    (light,  double, empty ): "╜",
-    (light,  empty,  empty ): "╴",
-    (empty,  empty,  light ): "╷",
-    (empty,  light,  empty ): "╵",
-    (heavy,  empty,  empty ): "╸",
-    (empty,  empty,  heavy ): "╻",
-    (empty,  heavy,  empty ): "╹",
-}
+    (light,  empty,  light,  light ): "┬",
+    (heavy,  empty,  heavy,  heavy ): "┳",
+    (double, empty,  double, double): "╦",
+    (double, empty,  double, light ): "╤",
+    (light,  empty,  light,  double): "╥",
+    (heavy,  empty,  light,  light ): "┭",
+    (light,  empty,  heavy,  light ): "┮",
+    (heavy,  empty,  heavy,  light ): "┯",
+    (light,  empty,  light,  heavy ): "┰",
+    (heavy,  empty,  light,  heavy ): "┱",
+    (light,  empty,  heavy,  heavy ): "┲",
 
-intersections_down = {
-#    left    right   bottom
-    (light,  light,  light ): "┬",
-    (heavy,  heavy,  heavy ): "┳",
-    (double, double, double): "╦",
-    (double, double, light ): "╤",
-    (light,  light,  double): "╥",
-    (heavy,  light,  light ): "┭",
-    (light,  heavy,  light ): "┮",
-    (heavy,  heavy,  light ): "┯",
-    (light,  light,  heavy ): "┰",
-    (heavy,  light,  heavy ): "┱",
-    (light,  heavy,  heavy ): "┲",
-}
+    (light,  light,  light,  empty ): "┴",
+    (heavy,  heavy,  heavy,  empty ): "┻",
+    (double, double, double, empty ): "╩",
+    (double, light,  double, empty ): "╧",
+    (light,  double, light,  empty ): "╨",
+    (heavy,  light,  light,  empty ): "┵",
+    (light,  light,  heavy,  empty ): "┶",
+    (heavy,  light,  heavy,  empty ): "┷",
+    (light,  heavy,  light,  empty ): "┸",
+    (heavy,  heavy,  light,  empty ): "┹",
+    (light,  heavy,  heavy,  empty ): "┺",
 
-intersections_up = {
-#    left    top     right
-    (light,  light,  light ): "┴",
-    (heavy,  heavy,  heavy ): "┻",
-    (double, double, double): "╩",
-    (double, light,  double): "╧",
-    (light,  double, light ): "╨",
-    (heavy,  light,  light ): "┵",
-    (light,  light,  heavy ): "┶",
-    (heavy,  light,  heavy ): "┷",
-    (light,  heavy,  light ): "┸",
-    (heavy,  heavy,  light ): "┹",
-    (light,  heavy,  heavy ): "┺",
+    (light,  empty,  heavy,  empty ): "╼",
+    (empty,  light,  empty,  heavy ): "╽",
+    (heavy,  empty,  light,  empty ): "╾",
+    (empty,  heavy,  empty,  light ): "╿",
 }
 
 diagonals = "╱╲╳"
-misc = "╴╵╶╷╸╹╺╻╼╽╾╿"
 
 
 class Cell(object):
@@ -282,48 +271,32 @@ def draw_box(formats, contents):
             r = cell.neighbours.right.styles
             b = cell.neighbours.bottom.styles
 
+            # Strategy: draw left and top sides of current cell,
+            # unless last column or last row
 
-            if y == 0:
-                if x == 0:
-                    top += corners[(s.left, s.top)][0]
-                else:
-                    top += intersections_down[(l.top, s.top, s.left)]
-            else:
-                if x == 0:
-                    top += intersections_right[(t.left, s.top, s.left)]
-                else:
-                    top += intersections_cross[(l.top, t.left, s.top, s.left)]
+            top    += lines[(l.top, t.left, s.top, s.left)]
+            middle += lines[(empty, s.left, empty, s.left)]
 
-            middle += lines[s.left][1]
-
-            if x == 0:
-                bottom += corners[(s.left, s.bottom)][2]
-            else:
-                bottom += intersections_up[(l.bottom, s.left, s.bottom)]
-
-            # multiply by content width
-            top += 3*lines[s.top][0]
-            middle += 3*" "
-            bottom += 3*lines[s.bottom][0]
+            top    += 3 * lines[(s.top, empty, s.top, empty)]  # Multiply by content width
+            middle += 3 * " "  # Replace with content
 
             if x == width - 1:
-                if y == 0:
-                    top += corners[(s.right, s.top)][1]
-                else:
-                    top += intersections_left[(s.top, t.right, s.right)]
+                top    += lines[(s.top, t.right, empty, s.right)]
+                middle += lines[(empty, s.right, empty, s.right)]
 
-                middle += lines[s.right][1]
-                bottom += corners[(s.right, s.bottom)][3]
-
-
+            if y == height - 1:
+                bottom += lines[(l.bottom, s.left, s.bottom, empty)]
+                bottom += 3 * lines[(s.bottom, empty,  s.bottom, empty)]  # Multiply by content width
+                if x == width - 1:
+                    bottom += lines[(s.bottom, s.right, empty, empty)]
 
         print(top)
         print(middle)
-        if y == height - 1:
+        if bottom:
             print(bottom)
 
 
-
+# Simplify to avoid thinking too much
 formats = [
     ["elll", "lhlh", "llel"],
     ["L", "lhlh", "L"],
