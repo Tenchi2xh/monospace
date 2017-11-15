@@ -1,0 +1,29 @@
+- appify
+- paragraph rendering
+    - full justification
+- complex box drawing
+    - mix and match dsl
+    - boxes have text
+- page rendering
+    - page breaks
+    - title page
+    - chapter page
+    - colorized code blocks (via pygments)
+    - margins
+    - source from custom markdown
+    - (sub) chapter numbering
+    - text figures
+        - legends
+        - auto numbering
+    - references
+    - headers, footers
+    - footnotes
+    - tables
+    - hint/remark boxes
+    - floats
+    - columns
+- live renderer
+    - choose page size
+    - keyboard navigation
+    - could be shipped with book
+    - interactivity? jump to...
