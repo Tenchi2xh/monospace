@@ -233,8 +233,18 @@ def draw_box(formats, contents):
 # Simplify to avoid thinking too much
 formats = [
     ["elll", "lhlh", "llel"],
-    ["L", "lhlh", "L"],
-    ["hlhl", "H", "hlhl"]
+    ["llll", "lhlh", "lldl"],
+    ["hlhl", "ehhh", "hedl"]
+]
+
+alternate_format = [
+    " l h l ",
+    "e l l e",
+    " l h l ",
+    "l l l d",
+    " l h e ",
+    "h e h d",
+    " l h l "
 ]
 
 contents = [
