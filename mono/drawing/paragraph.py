@@ -1,3 +1,4 @@
+from enum import Enum
 import pyphen
 import random
 random.seed(1337)
@@ -5,12 +6,18 @@ random.seed(1337)
 pyphen_dictionary = pyphen.Pyphen(lang="en_US")
 wrap = pyphen_dictionary.wrap
 
-# TODO: Language in context object?
-# TODO: Inline ANSI escape sequence styles
+# FIXME: Language in context object?
+# TODO: In a pre-processing step (AST -> intermediate format),
+#       maybe produce a list of tuples: (word, style)
+#       and return the aligned text string along with indices where styles apply
+#       -> will make it easier to have different output formats
 
-def justify(text, width=80, offset=0):
+Alignment = Enum("Alignment", ["left", "center", "right", "justify"])
+
+def align(text, alignment=Alignment.justify, width=80, offset=0):
     words = text.split()[::-1]
     words[-1] = " " * offset + words[-1]
+
     lines = [[]]
 
     def room_left(line):
@@ -35,17 +42,28 @@ def justify(text, width=80, offset=0):
 
     result = ""
     for i, line in enumerate(lines):
-        if i < len(lines) - 1:
-            spaces_to_add = room_left(line) + 1
-            candidates = range(len(line) - 1)  # - 1 because we don't want to
-                                               # add a space after the last word
+        if alignment == Alignment.justify:
+            if i < len(lines) - 1:
+                spaces_to_add = room_left(line) + 1
+                candidates = list(range(len(line) - 1))  # - 1 because we don't want to
+                                                         # add a space after the last word
 
-            offsets = random.sample(candidates, spaces_to_add)
-            for offset in offsets:
-                line[offset] = line[offset] + " "
+                # Maybe we need to add more spaces than we have candidates
+                population = candidates
+                while spaces_to_add > len(population):
+                    population.extend(candidates)
+
+                offsets = random.sample(candidates, spaces_to_add)
+                for offset in offsets:
+                    line[offset] = line[offset] + " "
 
         spaced = " ".join(line)
 
+        space_left = width - len(spaced)
+        if alignment == Alignment.right:
+            result += space_left * " "
+        elif alignment == Alignment.center:
+            result += int(space_left / 2) * " "
         result += spaced
         result += "\n"
 
@@ -59,11 +77,11 @@ if __name__ == "__main__":
         "On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish."
     ]
 
-    width = 56
+    width = 36
     empty = "     │ " + " " * width + " │"
     for p in paragraphs:
         print(empty)
-        justified = justify(p, width=56, offset=3).splitlines()
-        for line in justified:
+        aligned = align(p, alignment=Alignment.justify, width=width, offset=3).splitlines()
+        for line in aligned:
             print("     │ " + line + (width - len(line)) * " " + " │")
     print(empty)
