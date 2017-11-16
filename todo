@@ -1,6 +1,7 @@
 - appify
 - paragraph rendering
     - full justification
+    - hyphenation
 - complex box drawing
     - mix and match dsl
     - boxes have text
