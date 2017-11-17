@@ -32,6 +32,7 @@ def align(text, alignment=Alignment.justify, width=80, offset=0):
         if len(word) <= available:
             lines[-1].append(word)
         else:
+            # FIXME: Add a marker for unbreakable words
             hyphenized = wrap(word, available)
 
             if hyphenized:

@@ -149,6 +149,13 @@ if __name__ == "__main__":
         " l h l "
     ]
 
+    format_3 = [
+        "ellhlle",
+        "lllhlld",
+        "hlehhed",
+        "lhl"
+    ]
+
     contents = [
         ["Hello", "world", "!"],
         ["Foo", "bar", "baz"]
