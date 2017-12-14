@@ -1,5 +1,5 @@
 # Codex
 
-## First chapter
+## First *chapter*
 
-*`Hello`*, **world**!
+*`Hello`*, **world**! Lorem ipsum *dolor **sit** amet*.

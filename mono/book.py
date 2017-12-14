@@ -1,6 +1,7 @@
 import os
 
 from .layout import *
+from .parser import parse_markdown
 from .util.lang import auto_repr
 
 
@@ -22,3 +23,4 @@ class Book(object):
 
         self.book_settings = book_settings
         self.default_page_settings = default_page_settings
+        self.ast = parse_markdown(self.document)

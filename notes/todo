@@ -28,3 +28,12 @@
     - keyboard navigation
     - could be shipped with book
     - interactivity? jump to...
+
+
+------
+
+- Context management: need to update a map of element -> current chapter name
+- renderer -> compiler
+    - Each top level node type has a class
+    - each class knows how to render itself
+    - each class has its own context deepcopy for knowing in which chapter they are
