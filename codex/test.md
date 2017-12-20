@@ -16,10 +16,10 @@ est parvo*; quae motisque ut Iunone.
 
 ## Vertit facta
 
-Iam mecum quae et natus columque, sors copia? Quae has, en est [quae
+Iam mecum quae et natus *columque*, sors copia? Quae has, en est [quae
 lymphae](http://www.et.net/), vero quod exstantem Phoebique spolium simulacra
 equos. Pectusque color Mopsum quosque, sub facitote, a inhibere diversa hinc
-fortibus. Figurae fugientem lustrant Minervae ulterius sistrorum stagnum, est
+fortibus. Figurae fugientem *lustrant Minervae* ulterius sistrorum stagnum, est
 Phoebus coniunx.
 
 Arma parens, est et convicia clarus, *nexilibusque artus* socios, humo. Ut

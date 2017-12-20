@@ -1,17 +1,30 @@
 
-def convert(tag):
+def ansi(*args):
     csi = "\033["
+    return "%s%sm" % (csi, ";".join(map(str, args)))
+
+def convert(tag, color=True):
     code = ""
     if tag.type == "Strong":
-        code = "1m" if tag.start else "22m"
+        code = ansi(1) if tag.start else ansi(22)
     elif tag.type == "Emphasis":
-        code = "3m" if tag.start else "23m"
+        code = ansi(3) if tag.start else ansi(23)
     elif tag.type == "Link":
-        code = "4m" if tag.start else "24m"
+        code = ansi(4) if tag.start else ansi(24)
     elif tag.type == "InlineCode":
-        code = "7m" if tag.start else "27m"
+        code = ansi(7) if tag.start else ansi(27)
     else:
         print("MISSING: " + tag.type)
         return ""
 
-    return csi + code
+    if not color:
+        return code
+
+    if tag.type == "Strong":
+        code += ansi(38, 5, 215) if tag.start else ansi(39)
+    elif tag.type == "Emphasis":
+        code += ansi(38, 5, 117) if tag.start else ansi(39)
+    elif tag.type == "Link":
+        code += ansi(38, 5, 152) if tag.start else ansi(39)
+
+    return code
