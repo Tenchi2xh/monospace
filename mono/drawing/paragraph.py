@@ -25,7 +25,7 @@ def align(text, alignment=Alignment.justify,
             return width - (len(line) + sum(len(word) for word in line))
         return width - (len(line) + sum(length for _, length, _ in line))
 
-    def format_word(word, cursor, crop=0):
+    def format_word(word, cursor, crop=0, new_line=False):
         # Crop is for when we have a hyphen, it is an additional character
         # that shouldn't count for the cursor update
         length = len(word)
@@ -33,33 +33,44 @@ def align(text, alignment=Alignment.justify,
             return (word, length, cursor + length - crop)
 
         formatted = ""
-        # We assume formatting is sorted!
-        for i, char in enumerate(word):
-            if formatting and i <= length - crop - 1 and formatting[0].cursor <= cursor + i:
-                tag = formatting[0]
 
-                if not tag.start:
+        if new_line:
+            start_tags = ""
+            for tag in unclosed_tags:
+                start_tags += formatter.convert(tag)
+            formatted += start_tags
+
+        # NOTE: We assume formatting is sorted!
+        # Also, we add a space that we will not write, because some formatting might be lost
+        for i, char in enumerate(word + " "):
+
+            in_crop = i > length - crop - 1
+            at_format_cursor = formatting and formatting[0].cursor == cursor + i
+            #if formatting:
+            #    print("(%d %s) %d <= %d" % (i, char, formatting[0].cursor, cursor + i))
+            if at_format_cursor:
+                tag = formatting.pop(0)
+
+                if tag.start:
+                    unclosed_tags.append(tag)
+                else:
                     index = next((i for i, t in enumerate(unclosed_tags) if t.start and t.type == tag.type), None)
                     if index is not None:
                         unclosed_tags.pop(index)
-                else:
-                    unclosed_tags.append(tag)
 
                 formatted += formatter.convert(tag)
-                formatting.pop(0)
-            formatted += char
+
+            if i != len(word):
+                formatted += char
 
         return (formatted, length, cursor + length - crop)
 
     def end_line():
         last_block = lines[-1][-1]
         end_tags = ""
-        tags = ""
         for tag in unclosed_tags:
             end_tags += formatter.convert(tag.flip())
-            tags += tag.type
         lines[-1][-1] = (last_block[0] + end_tags, *last_block[1:])
-        return tags
 
     cursor = -offset
     while words:
@@ -78,14 +89,14 @@ def align(text, alignment=Alignment.justify,
 
             if hyphenized:
                 word_block_1 = _, _, new_cursor = format_word(hyphenized[0], cursor, crop=1)
-                word_block_2 = _, _, new_cursor = format_word(hyphenized[1], new_cursor)
+                word_block_2 = _, _, new_cursor = format_word(hyphenized[1], new_cursor, new_line=True)
                 cursor = new_cursor
                 line.append(word_block_1)
                 end_line()
                 lines.append([word_block_2])
             else:
                 end_line()
-                word_block = _, _, new_cursor = format_word(word, cursor)
+                word_block = _, _, new_cursor = format_word(word, cursor, new_line=True)
                 cursor = new_cursor
                 lines.append([word_block])
         cursor += 1
