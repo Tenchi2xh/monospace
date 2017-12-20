@@ -46,8 +46,6 @@ def align(text, alignment=Alignment.justify,
 
             in_crop = i > length - crop - 1
             at_format_cursor = formatting and formatting[0].cursor == cursor + i
-            #if formatting:
-            #    print("(%d %s) %d <= %d" % (i, char, formatting[0].cursor, cursor + i))
             if at_format_cursor:
                 tag = formatting.pop(0)
 
@@ -89,10 +87,10 @@ def align(text, alignment=Alignment.justify,
 
             if hyphenized:
                 word_block_1 = _, _, new_cursor = format_word(hyphenized[0], cursor, crop=1)
-                word_block_2 = _, _, new_cursor = format_word(hyphenized[1], new_cursor, new_line=True)
-                cursor = new_cursor
                 line.append(word_block_1)
                 end_line()
+                word_block_2 = _, _, new_cursor = format_word(hyphenized[1], new_cursor, new_line=True)
+                cursor = new_cursor
                 lines.append([word_block_2])
             else:
                 end_line()

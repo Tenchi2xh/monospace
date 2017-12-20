@@ -4,7 +4,7 @@ from ..drawing.paragraph import align, Alignment
 
 def debug_print_paragraphs(elements):
     from ..formatting import terminal
-    width = 36
+    width = 50
     empty = "     │ " + " " * width + " │"
 
     for text, formatting, _ in elements:
