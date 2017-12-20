@@ -3,26 +3,65 @@ import pyphen
 import random
 random.seed(1337)
 
+from ..compiler import FormatTag
+
 pyphen_dictionary = pyphen.Pyphen(lang="en_US")
 wrap = pyphen_dictionary.wrap
 
-# FIXME: Language in context object?
-# TODO: In a pre-processing step (AST -> intermediate format),
-#       maybe produce a list of tuples: (word, style)
-#       and return the aligned text string along with indices where styles apply
-#       -> will make it easier to have different output formats
+# FIXME: Language in context object? (for hyphen dic)
 
 Alignment = Enum("Alignment", ["left", "center", "right", "justify"])
 
-def align(text, alignment=Alignment.justify, width=80, offset=0):
+def align(text, alignment=Alignment.justify,
+          formatting=None, formatter=None, width=80, offset=0):
     words = text.split()[::-1]
     words[-1] = " " * offset + words[-1]
 
     lines = [[]]
+    unclosed_tags = []
 
     def room_left(line):
-        return width - (len(line) + sum(len(word) for word in line))
+        if line and isinstance(line[0], str):
+            return width - (len(line) + sum(len(word) for word in line))
+        return width - (len(line) + sum(length for _, length, _ in line))
 
+    def format_word(word, cursor, crop=0):
+        # Crop is for when we have a hyphen, it is an additional character
+        # that shouldn't count for the cursor update
+        length = len(word)
+        if not formatting:
+            return (word, length, cursor + length - crop)
+
+        formatted = ""
+        # We assume formatting is sorted!
+        for i, char in enumerate(word):
+            if formatting and i <= length - crop - 1 and formatting[0].cursor <= cursor + i:
+                tag = formatting[0]
+
+                if not tag.start:
+                    index = next((i for i, t in enumerate(unclosed_tags) if t.start and t.type == tag.type), None)
+                    if index is not None:
+                        unclosed_tags.pop(index)
+                else:
+                    unclosed_tags.append(tag)
+
+                formatted += formatter.convert(tag)
+                formatting.pop(0)
+            formatted += char
+
+        return (formatted, length, cursor + length - crop)
+
+    def end_line():
+        last_block = lines[-1][-1]
+        end_tags = ""
+        tags = ""
+        for tag in unclosed_tags:
+            end_tags += formatter.convert(tag.flip())
+            tags += tag.type
+        lines[-1][-1] = (last_block[0] + end_tags, *last_block[1:])
+        return tags
+
+    cursor = -offset
     while words:
         word = words.pop()
 
@@ -30,19 +69,30 @@ def align(text, alignment=Alignment.justify, width=80, offset=0):
         available = room_left(line)
 
         if len(word) <= available:
-            lines[-1].append(word)
+            word_block = _, _, new_cursor = format_word(word, cursor)
+            cursor = new_cursor
+            line.append(word_block)
         else:
             # FIXME: Add a marker for unbreakable words
             hyphenized = wrap(word, available)
 
             if hyphenized:
-                lines[-1].append(hyphenized[0])
-                lines.append([hyphenized[1]])
+                word_block_1 = _, _, new_cursor = format_word(hyphenized[0], cursor, crop=1)
+                word_block_2 = _, _, new_cursor = format_word(hyphenized[1], new_cursor)
+                cursor = new_cursor
+                line.append(word_block_1)
+                end_line()
+                lines.append([word_block_2])
             else:
-                lines.append([word])
+                end_line()
+                word_block = _, _, new_cursor = format_word(word, cursor)
+                cursor = new_cursor
+                lines.append([word_block])
+        cursor += 1
 
     result = ""
     for i, line in enumerate(lines):
+        # In-between padding
         if alignment == Alignment.justify:
             if i < len(lines) - 1:
                 spaces_to_add = room_left(line) + 1
@@ -56,33 +106,24 @@ def align(text, alignment=Alignment.justify, width=80, offset=0):
 
                 offsets = random.sample(candidates, spaces_to_add)
                 for offset in offsets:
-                    line[offset] = line[offset] + " "
+                    word_block = line[offset]
+                    line[offset] = (word_block[0] + " ", word_block[1] + 1, word_block[2] + 1)
 
-        spaced = " ".join(line)
+        spaced = " ".join(word for word, _, _ in line)
+        space_left = width - sum(length for _, length, _ in line) - (len(line) - 1)
 
-        space_left = width - len(spaced)
+        # Left padding
         if alignment == Alignment.right:
             result += space_left * " "
         elif alignment == Alignment.center:
             result += int(space_left / 2) * " "
         result += spaced
+
+        # Right padding
+        if alignment == Alignment.left or alignment == Alignment.justify:
+            result += space_left * " "
+        elif alignment == Alignment.center:
+            result += (space_left - int(space_left / 2)) * " "
         result += "\n"
 
     return result
-
-
-if __name__ == "__main__":
-    paragraphs = [
-        "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.",
-        "Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant pleasure?",
-        "On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish."
-    ]
-
-    width = 36
-    empty = "     │ " + " " * width + " │"
-    for p in paragraphs:
-        print(empty)
-        aligned = align(p, alignment=Alignment.justify, width=width, offset=3).splitlines()
-        for line in aligned:
-            print("     │ " + line + (width - len(line)) * " " + " │")
-    print(empty)

@@ -1,4 +1,25 @@
-from .tables import Cell
+from ..drawing.tables import Cell
+from ..drawing.paragraph import align, Alignment
+
+
+def debug_print_paragraphs(elements):
+    from ..formatting import terminal
+    width = 36
+    empty = "     │ " + " " * width + " │"
+
+    for text, formatting, _ in elements:
+        print(empty)
+        aligned = align(
+            text,
+            alignment=Alignment.justify,
+            width=width,
+            offset=0,
+            formatting=formatting,
+            formatter=terminal
+        ).splitlines()
+        for line in aligned:
+            print("     │ " + line + (width - len(line)) * "^" + " │")
+    print(empty)
 
 
 def debug_print_cell_grid(cells):

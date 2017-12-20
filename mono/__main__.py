@@ -4,6 +4,7 @@ from .book import Book
 from .layout import PageSettings, TableSettings, NumberMappers, BookSettings
 from .viewer import view
 from .util.lang import indent_json_like
+from .util.debug import debug_print_paragraphs
 from .compiler import compile
 
 
@@ -43,8 +44,13 @@ def main(book_path):
 
     elements = compile(book)
 
-    #print(indent_json_like(repr(book)))
-    #print(elements)
+    print(indent_json_like(repr(book)))
+
+    for element in elements:
+        print(element)
+        print()
+
+    debug_print_paragraphs(elements)
 
     #view(book)
 

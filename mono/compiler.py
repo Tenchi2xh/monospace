@@ -11,6 +11,9 @@ class FormatTag(object):
         self.type = type
         self.start = start
 
+    def flip(self):
+        return FormatTag(self.cursor, self.type, not self.start)
+
 
 def compile(context):
     if isinstance(context, Book):
@@ -21,20 +24,25 @@ def compile(context):
     for child in context.book.ast["children"]:
         t = child["type"]
         if t == "Heading":
-            pass
+            level = child["level"] - 1
+            for i in range(level + 1, len(context.chapter)):
+                context.chapter[i] = 0
+            context.chapter[level] += 1
+
+            display = context.chapter[0:context.chapter.index(0)]
+            chapter = "%d." % display[0] if len(display) == 1 else ".".join(str(n) for n in display)
+
+            chapter_node = {
+                "type": "RawText",
+                "content": chapter + " "
+            }
+            elements.append(format_text([chapter_node] + child["children"]))
+
         elif t == "Paragraph":
-            pass
+            elements.append(format_text(child["children"]))
 
-    text, formatting, _ = format_text(context.book.ast["children"][2]["children"])
-    result = ""
-    j = 0
-    for i, char in enumerate(text):
-        while j < len(formatting) and formatting[j].cursor == i:
-            result += convert(formatting[j])
-            j += 1
-        result += char
-
-    print(result)
+        else:
+            print("MISSING: " + t)
 
     return elements
 
@@ -47,6 +55,8 @@ def format_text(nodes, cursor=0):
         content = node["content"] if "content" in node else ""
         node_type = node["type"]
         not_raw = node_type != "RawText"
+
+        # TODO: Intercept Link type to do something with it...
 
         if not_raw:
             formatting.append(FormatTag(cursor=cursor, type=node_type, start=True))
