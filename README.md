@@ -28,7 +28,18 @@
                          │ For now, developping <b>Mono</b> is a  fun  challenge  in │
                          │ itself – the writing will come later, if at all.   │
                          │                                                    │
-                         │ 1.2 Planned features                               │
+                         │ 1.2 Running                                        │
+                         │                                                    │
+                         │ For now, running main with a Markdown file renders │
+                         │ it in a paragraph:                                 │
+                         │                                                    │
+                         │ <b>python -m mono codex/test.md</b>                       │
+                         │                                                    │
+                         │ And, to generate the readme:                       │
+                         │                                                    │
+                         │ <b>python -m mono.util.readme</b>                         │
+                         │                                                    │
+                         │ 1.3 Planned features                               │
                          │                                                    │
                          │ (<i>List rendering not yet implemented</i>)               │
                          │                                                    │

@@ -8,6 +8,16 @@ After writing a fair amount of *esoteric graphical terminal experiments*, such a
 
 For now, developping **Mono** is a fun challenge in itself – the writing will come later, if at all.
 
+## Running
+
+For now, running `main` with a Markdown file renders it in a paragraph:
+
+**python -m mono codex/test.md**
+
+And, to generate the readme:
+
+**python -m mono.util.readme**
+
 ## Planned features
 
 (*List rendering not yet implemented*)
