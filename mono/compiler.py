@@ -6,13 +6,14 @@ from .formatting.terminal import convert
 
 @auto_repr
 class FormatTag(object):
-    def __init__(self, cursor, type, start):
+    def __init__(self, cursor, type, start, target=None):
         self.cursor = cursor
         self.type = type
         self.start = start
+        self.target = target
 
     def flip(self):
-        return FormatTag(self.cursor, self.type, not self.start)
+        return FormatTag(self.cursor, self.type, not self.start, self.target)
 
 
 def compile(context):
@@ -55,11 +56,10 @@ def format_text(nodes, cursor=0):
         content = node["content"] if "content" in node else ""
         node_type = node["type"]
         not_raw = node_type != "RawText"
-
-        # TODO: Intercept Link type to do something with it...
+        target = node["target"] if "target" in node else None
 
         if not_raw:
-            formatting.append(FormatTag(cursor=cursor, type=node_type, start=True))
+            formatting.append(FormatTag(cursor=cursor, type=node_type, start=True, target=target))
 
         if content:
             text += content
@@ -69,7 +69,7 @@ def format_text(nodes, cursor=0):
             formatting.extend(nested_formatting)
 
         if not_raw:
-            formatting.append(FormatTag(cursor=cursor, type=node_type, start=False))
+            formatting.append(FormatTag(cursor=cursor, type=node_type, start=False, target=target))
 
         cursor += len(content)
 
