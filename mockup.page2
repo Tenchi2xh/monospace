@@ -1,0 +1,54 @@
+
+
+
+
+
+        ④   ʟɪɴᴇ ʟᴇɴɢᴛʜ is the horizontal width of the text block. Line length
+            should be an average of [1m45–90 characters[22m per line (use your word-
+            count function) or [1m2–3 lowercase alphabets[22m, like so:
+
+            abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcddefghijklm
+
+            In a printed document, this usually means  ᴘᴀɢᴇ ᴍᴀʀɢɪɴꜱ larger than
+            one inch (a ᴛʏᴘᴇᴡʀɪᴛᴇʀ ʜᴀʙɪᴛ). On a web page, it usually means pre-
+            venting the text from flowing to the edges of the browser window.
+
+        ⑤   And finally⁴, font choice. The fastest, easiest, and most visible         [2m⁴: Another side-[22m
+            improvement you can make to your typography is to ignore the fonts          [2mnote. Exciting![22m
+            already loaded on your computer (known as ꜱʏꜱᴛᴇᴍ ꜰᴏɴᴛꜱ) and the
+            ꜰʀᴇᴇ ꜰᴏɴᴛꜱ that inundate the internet. Instead, buy a professional
+            font (like those found in ꜰᴏɴᴛ ʀᴇᴄᴏᴍᴍᴇɴᴅᴀᴛɪᴏɴꜱ). A professional
+            font gives you the benefit of a professional designer’s skills
+            without having to hire one.
+
+            If that’s impossible, you can still make good typography with sys-
+            tem fonts. But choose wisely. And never choose ᴛɪᴍᴇꜱ ɴᴇᴡ ʀᴏᴍᴀɴ or
+            ᴀʀɪᴀʟ, as those fonts are favored only by the apathetic and sloppy.
+            Not by typographers. Not by you.
+
+
+                                                                                      ━━━━━━━━━━━━━━━━━━
+        That’s it. As you put these five rules to work, you’ll notice your                 [1mIn conclusion[22m
+        documents starting to look more like professionally published material.
+                                                                                     [3mAnother sub-chapter[23m
+                ┏━━━━━━━━━━━━━━━━━━━━━━┓     ┏━━━━━━━━━━━━━━━┓ ╔═════════╗
+                ┃ Spark Cluster        ┣━┓   ┃               ┃ ║         ║
+                ┃ ┌──────────────────┐ ┃ ┣━┓ ┃               ┃ ║         ║
+                ┃ │pronto-spark-job-1│ ┃ ┃ ┃ ┃               ┃ ║         ║
+                ┃ └──────────────────┘ ┃ ┃ ┃ ┃               ┃ ║         ║
+                ┃ ┌──────────────────┐ ┃ ┃ ┃ ┃               ┃ ║         ║
+                ┃ │pronto-spark-job-2│ ┃ ┃ ┃ ┃               ┃ ║         ║
+                ┃ └──────────────────┘ ┃ ┃ ┃ ┃   Notebooks ◀─╋─╬─▶ API   ║
+                ┃ ┌──────────────────┐ ┃ ┃ ┃ ┃               ┃ ║         ║
+                ┃ │pronto-spark-job-3│ ┃◀╋─╋─╋───────────────╋─╬─▶       ║
+                ┃ └──────────────────┘ ┃ ┃ ┃ ┃               ┃ ║         ║
+                ┗━┳━━━━━━━━━━━━━━━━━━━━┛ ┃ ┃ ┃               ┃ ║         ║
+                  ┗━┳━━━━━━━━━━━━━━━━━━━━┛ ┃ ┃               ┃ ║         ║
+                    ┗━━━━━━━━━━━━━━━━━━━━━━┛ ┗━━━━━━━━━━━━━━━┛ ╚═════════╝
+
+                            [3mFigure 4: Architecture of the foobar[23m
+
+                                                                           152
+
+
+

@@ -1,0 +1,658 @@
+%!PS-Adobe-2.0
+%%BoundingBox: 0 0 595 842
+%%Orientation: Landscape
+%%Pages: (atend)
+%%Creator: u2ps
+%%CreationDate: Wed Aug 29 22:10:05 2018
+%%EndComments
+%%BeginProlog
+%%BeginResource: procset unidata
+2 dict dup begin
+/ReverseGlyphList <<
+	16#69 /i
+	16#52 /R
+	16#3B /semicolon
+	16#76 /v
+	16#31 /one
+	16#6C /l
+	16#79 /y
+	16#62 /b
+	16#34 /four
+	16#201D /quotedblright
+	16#6F /o
+	16#41 /A
+	16#2013 /endash
+	16#65 /e
+	16#4E /N
+	16#20 [ /space/spacehackarabic ]
+	16#72 /r
+	16#2D /hyphen
+	16#68 /h
+	16#3A /colon
+	16#75 /u
+	16#47 /G
+	16#30 /zero
+	16#2019 /quoteright
+	16#6B /k
+	16#54 /T
+	16#BD /onehalf
+	16#78 /x
+	16#61 /a
+	16#33 /three
+	16#B3 /threesuperior
+	16#201C /quotedblleft
+	16#6E /n
+	16#57 /W
+	16#29 /parenright
+	16#64 /d
+	16#71 /q
+	16#43 /C
+	16#2C /comma
+	16#67 /g
+	16#50 /P
+	16#39 /nine
+	16#74 /t
+	16#46 /F
+	16#2F /slash
+	16#6A /j
+	16#53 /S
+	16#25 /percent
+	16#77 /w
+	16#49 /I
+	16#32 /two
+	16#6D /m
+	16#3F /question
+	16#28 /parenleft
+	16#7A /z
+	16#63 /c
+	16#4C /L
+	16#35 /five
+	16#70 /p
+	16#42 /B
+	16#2014 /emdash
+	16#66 /f
+	16#4F /O
+	16#21 /exclam
+	16#73 /s
+	16#45 /E
+	16#2E /period
+>> def
+end /unidata exch /ProcSet defineresource pop
+%%EndResource
+%%BeingResource: procset gscompat
+
+2 dict begin
+
+% Prevent error on interpreters lacking .glyphwidth
+% Of course, this will produce awfully incorrect results,
+% but *good* replacement would be too complicated.
+/.glyphwidth dup where {
+	pop pop
+} {
+	{ pop (M) stringwidth } bind def
+} ifelse
+
+% Ghostscript-specific but pretty handy routine
+%	dict key -> value true
+%	dict key -> false
+/.knownget dup where {
+	pop pop
+} {
+	{ 1 index 1 index known not { pop pop false } { get true } ifelse } def
+} ifelse
+
+currentdict end /gscompat exch /ProcSet defineresource pop
+%%EndResource
+%%BeingResource: procset unifont
+
+20 dict begin
+
+% (utf-8-string) ushow -
+/ushow {
+	deutf { 						% c
+		ushow.findglyph {				% c /glyph
+			ushow.printglyph			%
+		} {						% c
+			ushow.substitute
+		} ifelse
+	} forall						%
+} def
+
+% (utf-8-string) ustringwidth w 0
+/ustringwidth {
+	0 exch deutf {
+		ushow.findglyph {
+			.glyphwidth pop exch pop
+		} {
+			ushow.substwidth
+		} ifelse add
+	} forall 0.0
+} def
+
+% Decode utf-8
+%
+% (utf8-string) -> [ codepoint codepoint ... codepoint ]
+%
+% in case of malformed string, codepoint -1 is inserted where
+% the parser failed to interpret data.
+
+/deutf {
+	mark exch 0 exch { {		% expect c
+		% continuation byte
+		dup 2#11000000 and 2#10000000 eq {
+			% check whether we're in the middle
+			% of sequence
+			1 index 0 gt {
+				% ok, add this to the last codepoint
+				2#00111111 and
+				3 2 roll 6 bitshift or
+				exch 1 sub
+			} {
+				% nope, malformed string
+				pop -1 0
+			} ifelse
+			exit
+		} if
+
+		% non-continuation byte while we're in the middle
+		% of sequence
+		1 index 0 ne { pop -1 0 exit } if
+
+		% 0-, 1-, ..., 5-seq. starting bytes
+		dup 2#10000000 and 2#00000000 eq { exch exit } if
+		dup 2#11100000 and 2#11000000 eq { 2#00011111 and exch pop 1 exit } if
+		dup 2#11110000 and 2#11100000 eq { 2#00001111 and exch pop 2 exit } if
+		dup 2#11111000 and 2#11110000 eq { 2#00000111 and exch pop 3 exit } if
+		dup 2#11111100 and 2#11111000 eq { 2#00000011 and exch pop 4 exit } if
+		dup 2#11111110 and 2#11111100 eq { 2#00000001 and exch pop 5 exit } if
+		% ignored code -- should not happen, but anyway
+		pop exit
+	} loop } forall
+	% check for incomplete string
+	0 ne { -1 } if
+	counttomark array astore exch pop
+} def
+
+% Find glyph name for codepoint $uni in current font.
+%
+% uni -> uni /glyphname true
+% uni -> uni false
+%
+% What this actually does is making a list of possible names,
+% say, [ /uni0020 /space /spacehackarabic ], and then trying
+% each of them against currentfont's CharStrings.
+
+/ushow.findglyph {
+	currentfont /CharStrings get false			% uni CS F
+
+	[ 3 index ushow.uniname					% uni CS F [ un
+	  ReverseGlyphList 5 index .knownget {			% uni CS F [ un nns
+		dup type /arraytype eq { aload pop } if		% uni CS F [ un n n ...
+	  } if
+	] {							% uni CS F name
+		2 index 1 index known {				% uni CS F name
+			exch pop true exit
+		} {
+			pop
+		} ifelse
+	} forall						% uni CS name? TF
+
+	{ exch pop true } { pop false } ifelse
+} def
+
+% Fallback glyph name, for characters not in AGL: /uni(code),
+% with (code) = %04X the actual unicode value.
+% Sadly this is only a fallback option, since fonts are not required
+% to define these names for all characters, and more often than not
+% have /a but not /uni0061.
+%
+% 16#431 -> /uni0431
+
+/ushow.uniname {
+	16 10 string cvrs					% (431)
+	dup length 4 le {					% (431)
+		dup length 4 exch sub 7 string			% (431) 1 (-------)
+		dup 0 (uni) putinterval				% (431) 1 (uni----)
+		1 index 0 gt {					% (431) 1 (uni----) 1
+			1 index
+			3 exch 1 exch 2 add {
+				1 index exch (0) putinterval
+			} for
+		} if						% (431) 1 (uni0---)
+		dup 4 1 roll 3 1 roll				% (uni0---) (uni0---) (431) 1
+		dup 0 gt { 3 add } { pop 3 } ifelse
+		exch putinterval
+	} {
+		dup length 1 add string				% (12345) (- -----)
+		dup 0 (u) putinterval				% (12345) (u -----)
+		dup 2 index 1 exch putinterval
+		exch pop
+	} ifelse
+	cvn
+} def
+
+
+% Show the glyph *and* do stats if necessary.
+%
+% code /glyph ->
+
+/ushow.printglyph {
+	systemdict /noteunicode .knownget { 2 index exch exec } if
+	exch ushow.substcode 0 gt {
+		glyphshow
+	} {
+		gsave glyphshow grestore
+	} ifelse
+} def
+
+% Well $code is not in currentfont, so got to print notdef instead.
+% The idea is to have resulting text width close to what it would be
+% with the glyph available, at least for monospace fonts.
+%
+% code ->
+
+/ushow.substitute {
+	ushow.substcode { /.notdef glyphshow } repeat
+} def
+
+% Like substitute but only returns the width.
+
+/ushow.substwidth {
+	ushow.substcode /.notdef .glyphwidth pop mul
+} def
+
+/ushow.substcode { {
+	16#0000 16#02FF 1 ushow.rangew	% ASCII stuff and generic Latin
+	16#0300 16#036F 0 ushow.rangew	% generic combining stuff
+	16#20D0 16#20EF 0 ushow.rangew
+	16#0483 16#0489 0 ushow.rangew
+	16#0591 16#05A1 0 ushow.rangew
+	16#1100 16#115F 2 ushow.rangew	% Hangul double-width
+	16#1160 16#11F9 0 ushow.rangew	% Hangul combining
+	16#FFE0 16#FFE6 2 ushow.rangew
+	16#2E80 16#3098 2 ushow.rangew
+	16#309D 16#4DB5 2 ushow.rangew
+	16#4E00 16#9FC3 2 ushow.rangew
+	16#A000 16#A4C6 2 ushow.rangew
+	16#0E31 16#0E31 0 ushow.rangew	% Thai combining
+	16#0E34 16#0E3A 0 ushow.rangew	% Thai combining
+	16#0E47 16#0E4E 0 ushow.rangew	% Thai combining
+	16#1D300 16#1D371 2 ushow.rangew
+	16#1F100 16#1F1FF 2 ushow.rangew % Double-width letters
+	16#1F030 16#1F061 2 ushow.rangew % Domino horizontal
+	16#E0000 16#E01FF 2 ushow.rangew
+	pop 1 exit
+} loop } def
+
+% code from to width -> width exit
+% code from to width -> code
+
+/ushow.rangew {
+	3 index 3 index ge
+	4 index 3 index le and {
+		exch pop exch pop exch pop exit
+	} {
+		pop pop pop
+	} ifelse
+} def
+
+currentdict end /unifont exch /ProcSet defineresource pop
+%%EndResource
+%%BeingResource: procset uniterm
+
+% "Unicode terminal emulator"
+% Routines to position fixed-width characters on a page,
+% color and attributes control.
+%
+% Operates with global state variables ux, ex, em and term-*
+% U8.* must be loaded before calling term-ushow*
+%
+% This file is part of u2ps, distributed under the terms of
+% GNU Public License version 3
+
+10 dict begin
+
+% landscape
+/la { paper-h 0 translate 90 rotate } def
+
+% terminal reset
+/tr { fR term-ox term-oy moveto } def
+
+% Move-shift-show, for headings
+% (s) x y shift -> -
+% no point in doing save/restore here, setfontset will break things
+% which tr will be fixing later anyway
+/mss {
+	auxfont setfont color-fg sethexcolor
+	dup 0 gt {
+		3 index ustringwidth pop mul
+		exch 3 1 roll sub exch
+	} {
+		pop
+	} ifelse
+	moveto ushow
+} def
+
+% Header left/center/right
+/Hl { term-xl term-yh 0. mss } def
+/Hc { term-xm term-yh .5 mss } def
+/Hr { term-xr term-yh 1. mss } def
+% Footer left/center/right
+/Fl { term-xl term-yf 0. mss } def
+/Fc { term-xm term-yf .5 mss } def
+/Fr { term-xr term-yf 1. mss } def
+
+% low color table (taken from rxvt-unicode init.C def_colorName[])
+/colortable [
+    16#000000             % 0: black             (Black)
+    16#cd0000             % 1: red               (Red3)
+    16#00cd00             % 2: green             (Green3)
+    16#cdcd00             % 3: yellow            (Yellow3)
+    16#0000cd             % 4: blue              (Blue3)
+    16#cd00cd             % 5: magenta           (Magenta3)
+    16#00cdcd             % 6: cyan              (Cyan3)
+    16#cdcdcd             % 7: white             (AntiqueWhite)
+    16#404040             % 8: bright black      (Grey25)
+    16#ff0000             % 1/9: bright red      (Reed)
+    16#00ff00             % 2/10: bright green   (Green)
+    16#ffff00             % 3/11: bright yellow  (Yellow)
+    16#0000ff             % 4/12: bright blue    (Blue)
+    16#ff00ff             % 5/13: bright magenta (Magenta)
+    16#00ffff             % 6/14: bright cyan    (Cyan)
+    16#ffffff             % 7/15: bright white   (White)
+] def
+% color cube steps (same source)
+/colorramp [ 16#00 16#5F 16#87 16#AF 16#D7 16#FF ] def
+% gray ramp
+/grayramp [ 16#08 16#12 16#1c 16#26 16#30 16#3a 16#44 16#4e
+            16#58 16#62 16#6c 16#76 16#80 16#8a 16#94 16#9e
+            16#a8 16#b2 16#bc 16#c6 16#d0 16#da 16#e4 16#ee ] def
+
+% 16#RRGGBB -> -
+/sethexcolor {				% c
+	dup 256 mod 255 div exch	% B c
+	256 idiv			% B c'
+	dup 256 mod 255 div exch	% B G c'
+	256 idiv			% B G c''
+	    256 mod 255 div		% B G R
+	3 1 roll exch setrgbcolor
+} def
+
+% i -> 16#RRGGBB
+/termcolor {
+	256 mod dup 16 lt {
+		% basic color
+		colortable exch get
+	} { dup 232 ge {
+		% gray ramp
+		232 sub grayramp exch get
+		dup dup 8 bitshift or 8 bitshift or
+	} {
+		% color cube
+		16 sub
+		dup 6 mod colorramp exch get			% i B
+		exch 6 idiv					% B i'
+		dup 6 mod colorramp exch get			% B i' G
+		exch 6 idiv					% B G i''
+		6 mod colorramp exch get	 		% B G R
+		8 bitshift or 8 bitshift or			% 16#RRGGBB
+	} ifelse } ifelse
+} def
+
+% put line number on the left margin
+% line-num l -
+/l {
+gsave
+	color-ln sethexcolor
+	auxfont setfont
+	em neg 0 rmoveto
+	10 string cvs dup stringwidth pop neg 0 rmoveto
+	show
+grestore
+} def
+
+% background color (hex), or null to skip background filling
+/gc null def
+% current postscript color is used to store fg color
+
+% Draw string using term-fg and term-bg
+% (string) u -
+/u {
+	gc null ne {
+		gsave
+		currentpoint pop		% (s) x0
+		1 index ushow			% (s) x0
+		currentpoint newpath moveto	% (s) x0
+		gc sethexcolor			% (s) x0
+		0 -0.2 ex mul rmoveto		% (s) x0
+		0 ex rlineto			% (s) x0
+		currentpoint exch pop lineto	% (s)
+		0 ex neg rlineto
+		closepath fill
+		grestore
+	} if
+	ushow
+} def
+
+% Incomplete or incorrect bytes
+/x { length { /.notdef glyphshow } repeat } def
+
+% end-of-line, finish ul/sl, move onto the next line
+/n {
+	ux null ne dup { ue } if
+	sx null ne dup { se } if
+	currentpoint exch pop ex sub term-ox exch moveto
+	{ sl } if
+	{ ul } if
+} def
+
+% end-of-line, with a wrap mark
+/w {
+	currentpoint n
+	gsave
+		exch pop term-xr exch moveto
+		em 0 rmoveto
+		.5 setlinewidth
+		color-ln sethexcolor
+		em .25 mul 0 rlineto
+		0 em .5 mul rlineto stroke
+	grestore
+} def
+
+% underlining
+/ux null def
+/ul { currentpoint pop /ux exch def } def
+/ue { ux null ne {
+	gsave
+	ex 50 div setlinewidth
+	currentpoint ex 8 div sub
+		dup ux exch moveto lineto stroke
+	grestore
+	/ux null def
+} if } def
+
+% strike-out
+/sx null def
+/sl { currentpoint pop /sx exch def } def
+/se { sx null ne {
+	gsave
+	ex 50 div setlinewidth
+	currentpoint ex .25 mul add
+		dup sx exch moveto lineto stroke
+	grestore
+	/sx null def
+} if } def
+
+/rf { color-bg sethexcolor } def
+/vf { color-bg sethexcolor } def
+/hf { color-hb sethexcolor } def
+/nf { color-fg sethexcolor } def
+
+/vg { /gc color-bg def } def
+/rg { /gc color-fg def } def
+/fg { termcolor sethexcolor } def
+/bg { termcolor /gc exch def } def
+/ng { /gc null def } def
+
+/cr { currentpoint exch pop term-ox exch moveto } def
+/bs { em neg 0 rmoveto } def
+/cc { currentpoint pop term-ox sub em div round cvi } def
+/t { tabstop dup cc exch mod sub em mul 0 rmoveto } def
+
+/odd {
+	/Hi /Hl load def  /Ho /Hr load def
+	/Fi /Fl load def  /Fo /Fr load def
+	/term-xl margin-l def
+	/term-xr paper-w margin-r sub def
+	/term-xm term-xl term-xr add 2 div def
+	/term-ox term-xl def
+} def
+
+/even {
+	/Hi /Hr load def  /Ho /Hl load def
+	/Fi /Fr load def  /Fo /Fl load def
+	/term-xl margin-r def
+	/term-xr paper-w margin-l sub def
+	/term-ox term-xl def
+} def
+
+% black background
+/bk {
+	color-bg sethexcolor
+	-1 -1 moveto
+	-1 paper-h lineto
+	paper-w paper-h lineto
+	paper-w -1 lineto
+	closepath fill
+} def
+
+/fontcmd {
+	1 index type /nametype eq { dup } { 1 index mul exch } ifelse
+	matrix scale
+	exch findfont exch makefont
+	/setfont load
+	2 array astore cvx
+} def
+
+/cpt { 100 div } def  % centipoints
+/mil { 1000 div } def % promille
+
+currentdict end /uniterm exch /ProcSet defineresource pop
+%%EndResource
+%%EndProlog
+%%BeginSetup
+/gscompat/ProcSet findresource { def } forall
+/unidata/ProcSet findresource { def } forall
+/unifont/ProcSet findresource { def } forall
+/uniterm/ProcSet findresource { def } forall
+
+/em 500 cpt def  	% terminal grid x-step
+/ex 1000 cpt def  	% terminal grid y-step
+/tabstop 8 def
+
+/auxfont /Times-Roman findfont 800 cpt scalefont def
+/fR /Iosevka 820 cpt fontcmd def
+/fI /Iosevka-Italic 820 cpt fontcmd def
+/fB /Iosevka-Bold 820 cpt fontcmd def
+/fO /Iosevka-Bold-Italic 820 cpt fontcmd def
+
+% page size
+/paper-w 842 def
+/paper-h 595 def
+/margin-t 0 def
+/margin-r 0 def
+/margin-b 0 def
+/margin-l 0 def
+
+% terminal output area corners: x left/middle/right, y top/bottom
+/term-xl margin-l def
+/term-yb margin-b def
+/term-xr paper-w margin-r sub def
+/term-yt paper-h margin-t sub def
+/term-xm term-xl term-xr add 2 div def		% midpoint
+
+% starting position on the page (line 1 col 1 baseline)
+/term-ox term-xl def
+/term-oy term-yt ex .8 mul sub def
+% header/footer baselines
+% font depth is assumed to be .2ex
+/headsep ex def
+/term-yh term-yt headsep add 800 cpt .2 mul add def
+/term-yf term-yb headsep sub 800 cpt .8 mul sub def
+
+% base terminal colors
+/color-fg 16#000000 def
+/color-bg 16#FFFFFF def
+/color-hb 16#AAAAAA def
+/color-ln 16#AAAAAA def
+
+<< /PageSize [ 595 842 ] >> setpagedevice
+%%EndSetup
+%%Page: 1 1
+la tr
+()u n
+()u n
+()u n
+()u n
+(                          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━                                                                                                            )u n
+(                          )u fO (Typography in ten minutes \(A chapter\))u fR (                                                                                                                                             )u n
+(                                                                                                                                                                                                            )u n
+(                          This a bold claim, but I stand behind it: if you learn and follow             ④  ʟɪɴᴇ ʟᴇɴɢᴛʜ is the horizontal width of the text block. Line length                              )u n
+(                          these five typography rules, you will be a better typographer than                should be an average of )u fB (45–90 characters)u fR ( per line \(use your word-                               )u n
+(                          nearly every writer—and even most graphic designers.                              count function\) or )u fB (2–3 lowercase alphabets)u fR (, like so:                                            )u n
+(                                                                                                                                                                                                            )u n
+(                          )u fB (ᴀ ꜱᴜʙ-ꜱᴇᴄᴛɪᴏɴ)u fR (                                                                     abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcddefghijklm                              )u n
+(                                                                                                                                                                                                            )u n
+(                          All it takes is ten minutes: five minutes to read these rules once.               In a printed document, this usually means  ᴘᴀɢᴇ ᴍᴀʀɢɪɴꜱ larger than                             )u n
+(                          Then five minutes to read them again.                                             one inch \(a ᴛʏᴘᴇᴡʀɪᴛᴇʀ ʜᴀʙɪᴛ\). On a web page, it usually means pre-                             )u n
+(                                                                                                            venting the text from flowing to the edges of the browser window.                               )u n
+(                              )u 7 fg (───────────────────────────────────────────────────────────)u 0 fg (                                                                                                                   )u n
+(                               )u fB (Small but necessary interruption)u fR (: This online book isn’t                 ⑤  And finally⁴, font choice. The fastest, easiest, and most visible         )u 7 fg (⁴: Another side-      )u 0 fg n
+(                               supported by banner ads. It’s supported by readers like                      improvement you can make to your typography is to ignore the fonts          )u 7 fg (note. Exciting!     )u 0 fg n
+(                               you. If you find these tips valuable, see ʜᴏᴡ ᴛᴏ ᴘᴀʏ for                     already loaded on your computer \(known as ꜱʏꜱᴛᴇᴍ ꜰᴏɴᴛꜱ\) and the                                 )u n
+(                               this book. There’s plenty of other material too — see the                    ꜰʀᴇᴇ ꜰᴏɴᴛꜱ that inundate the internet. Instead, buy a professional                              )u n
+(                               ᴛᴀʙʟᴇ ᴏꜰ ᴄᴏɴᴛᴇɴᴛꜱ.                                                           font \(like those found in ꜰᴏɴᴛ ʀᴇᴄᴏᴍᴍᴇɴᴅᴀᴛɪᴏɴꜱ\). A professional                                 )u n
+(                              )u 7 fg (───────────────────────────────────────────────────────────)u 0 fg (                   font gives you the benefit of a professional designer’s skills                                  )u n
+(                                                                                                            without having to hire one.                                                                     )u n
+(                                                                                                                                                                                                            )u n
+(                                                                                                            If that’s impossible, you can still make good typography with sys-                              )u n
+(    ━━━━━━━━━━━━━━━━━━                                                                                      tem fonts. But choose wisely. And never choose ᴛɪᴍᴇꜱ ɴᴇᴡ ʀᴏᴍᴀɴ or                               )u n
+(             )u fB (This is a) u fR (    Ready? Go.                                                                        ᴀʀɪᴀʟ, as those fonts are favored only by the apathetic and sloppy.                             )u n
+(           ) u fB (sub-chapter) u fR (                                                                                      Not by typographers. Not by you.                                                                )u n
+(                          ①  The typographic quality of your document is determined largely by                                                                                                             )u n
+(         )u fI (It looks cool)u fR (        how the  ʙᴏᴅʏ  text looks. Why? Because there’s more body text                                                                                                                )u n
+(                              than anything else. So start every project by making the body                                                                                           ━━━━━━━━━━━━━━━━━━    )u n
+(                              text look good. Then worry about the rest.                                That’s it. As you put these five rules to work, you’ll notice your                 )u fB (In conclusion) u fR (    )u n
+(                                                                                                        documents starting to look more like professionally published material.                             )u n
+(                              In turn, the appearance of the body text is determined primarily                                                                                       )u
+fI (Another sub-chapter)u fR (    )u n
+(                              by these four typographic choices:                                                ┏━━━━━━━━━━━━━━━━━━━━━━┓     ┏━━━━━━━━━━━━━━━┓ ╔═════════╗                                  )u n
+(                                                                                                                ┃ Spark Cluster        ┣━┓   ┃               ┃ ║         ║                                  )u n
+(                          ②  ᴘᴏɪɴᴛ ꜱɪᴢᴇ is the how big the font is. In print, the most comfor-                 ┃ ┌──────────────────┐ ┃ ┣━┓ ┃               ┃ ║         ║                                  )u n
+(    )u 7 fg (³: This is a foot-)u 0 fg (        table range for body text is )u fB (10–12 point)u fR (, or )u fB (15–25 pixels)u fR (³.                       ┃ │pronto-spark-job-1│ ┃ ┃ ┃ ┃               ┃ ║         ║                                  )u n
+(      )u 7 fg (note. Well, more)u 0 fg (                                                                                          ┃ └──────────────────┘ ┃ ┃ ┃ ┃               ┃ ║         ║                                  )u n
+(      )u 7 fg (like a )u fI (side-note)u 0 fg fR (        Not every font appears equally large at a given point size, so be                 ┃ ┌──────────────────┐ ┃ ┃ ┃ ┃               ┃ ║         ║                                  )u n
+(                              prepared to adjust as needed.                                                     ┃ │pronto-spark-job-2│ ┃ ┃ ┃ ┃               ┃ ║         ║                                  )u n
+(                                                                                                                ┃ └──────────────────┘ ┃ ┃ ┃ ┃   Notebooks ◀─╋─╬─▶ API   ║                                  )u n
+(                          ③  ʟɪɴᴇ ꜱᴘᴀᴄɪɴɢ is the vertical distance between lines. It should be                 ┃ ┌──────────────────┐ ┃ ┃ ┃ ┃               ┃ ║         ║                                  )u n
+(                              )u fB (120–145%)u fR ( of the point size. In word processors, use the “Exact”                   ┃ │pronto-spark-job-3│ ┃◀╋─╋─╋───────────────╋─╬─▶       ║                                  )u n
+(                              line-spacing option to achieve this. The default single-line op-                  ┃ └──────────────────┘ ┃ ┃ ┃ ┃               ┃ ║         ║                                  )u n
+(                              tion is too tight; the 1½-line option is too loose. In CSS, use                   ┗━┳━━━━━━━━━━━━━━━━━━━━┛ ┃ ┃ ┃               ┃ ║         ║                                  )u n
+(                              the 𝚕𝚒𝚗𝚎-𝚑𝚎𝚒𝚐𝚑𝚝 property \(preferably with a unitless value,                         ┗━┳━━━━━━━━━━━━━━━━━━━━┛ ┃ ┃               ┃ ║         ║                                  )u n
+(                              so 130% would become 1.3\).                                                            ┗━━━━━━━━━━━━━━━━━━━━━━┛ ┗━━━━━━━━━━━━━━━┛ ╚═════════╝                                  )u n
+(                                                                                                                                                                                                            )u n
+(                                                                                                                            )u
+fI (Figure 4: Architecture of the foobar)u fR (                                            )u n
+(                                                                                                                                                                                                            )u n
+(                                                                                                                                                                                                            )u n
+(                                                                                                                                                                                                            )u n
+(                          151                                                                                                                                              152                              )u n
+(                                                                                                                                                                                                            )u n
+(                                                                                                                                                                                                            )u n
+(                                                                                                                                                                                                            )u n
+
+showpage
+
+%%Trailer
+%%Pages: 2
+%%EOF
