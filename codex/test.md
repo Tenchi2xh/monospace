@@ -2,6 +2,12 @@
 
 ## Enim una artes clivum Troia experientis suorum
 
+| Tables        | Are           | Cool  |
+|:--------------|:-------------:| -----:|
+| col 3 is      | right-aligned | $1600 |
+| col 2 is      | centered      |   $12 |
+| zebra stripes | are neat      |    $1 |
+
 Lorem markdownum sanguine rettulit et superbus decerptas potest, cultos,
 **terreno**? Ubi *tunc* odit cruoris, nec viriles instant aetate, limina
 tantummodo. Cepere loqui olivi si mihi **dedignata surgit**, falsum nube:

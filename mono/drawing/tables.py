@@ -91,47 +91,72 @@ def draw_table(formats, contents):
 
     result = []
 
+    contents = [[e.splitlines() for e in l] for l in contents]
+    lengths = [[max(len(s) for s in e) for e in l] for l in contents]
+    widths = [max(l) for l in zip(*lengths)]
+    heights = [max(len(s) for s in l) for l in contents]
+
     for y, line in enumerate(cells):
-        top = ""
-        middle = ""
-        bottom = ""
+        for content_y in range(heights[y]):
+            top = ""
+            middle = ""
+            bottom = ""
+            for x, cell in enumerate(line):
+                s = cell.styles
+                l = cell.neighbours.left.styles
+                t = cell.neighbours.top.styles
+                r = cell.neighbours.right.styles
+                b = cell.neighbours.bottom.styles
 
-        for x, cell in enumerate(line):
-            s = cell.styles
-            l = cell.neighbours.left.styles
-            t = cell.neighbours.top.styles
-            r = cell.neighbours.right.styles
-            b = cell.neighbours.bottom.styles
+                content_width = widths[x]
+                # TODO: Different options
+                if content_y < len(contents[y][x]):
+                    content_string = contents[y][x][content_y].ljust(content_width)
+                else:
+                    content_string = " " * content_width
 
-            # Strategy: draw left and top sides of current cell,
-            # unless last column or last row
+                # Strategy: draw left and top sides of current cell,
+                # unless last column or last row
 
-            top    += lines[(l.top, t.left, s.top, s.left)]
-            middle += lines[(empty, s.left, empty, s.left)]
+                if content_y == 0:
+                    top    += lines[(l.top, t.left, s.top, s.left)]
+                middle += lines[(empty, s.left, empty, s.left)]
 
-            top    += 3 * lines[(s.top, empty, s.top, empty)]  # Multiply by content width
-            middle += 3 * " "  # Replace with content
+                if content_y == 0:
+                    top    += (2 + content_width) * lines[(s.top, empty, s.top, empty)]
+                middle += " %s " % content_string
 
-            if x == width - 1:
-                top    += lines[(s.top, t.right, empty, s.right)]
-                middle += lines[(empty, s.right, empty, s.right)]
-
-            if y == height - 1:
-                bottom += lines[(l.bottom, s.left, s.bottom, empty)]
-                bottom += 3 * lines[(s.bottom, empty,  s.bottom, empty)]  # Multiply by content width
                 if x == width - 1:
-                    bottom += lines[(s.bottom, s.right, empty, empty)]
+                    if content_y == 0:
+                        top    += lines[(s.top, t.right, empty, s.right)]
+                    middle += lines[(empty, s.right, empty, s.right)]
 
-        result.append(top)
-        result.append(middle)
-        if bottom:
-            result.append(bottom)
+                if y == height - 1 and content_y == heights[y] - 1:
+                    bottom += lines[(l.bottom, s.left, s.bottom, empty)]
+                    bottom += (2 + content_width) * lines[(s.bottom, empty,  s.bottom, empty)]
+                    if x == width - 1:
+                        bottom += lines[(s.bottom, s.right, empty, empty)]
+
+            if top:
+                result.append(top)
+            result.append(middle)
+            if bottom:
+                result.append(bottom)
 
     return result
 
 
+def linear_formats(horizontal, vertical):
+    formats = []
+    for x in range(len(horizontal) - 1):
+        line = []
+        for y in range(len(vertical) - 1):
+            line.append("%s%s%s%s" % (vertical[y], horizontal[x], vertical[y+1], horizontal[x+1]))
+        formats.append(line)
+    return formats
+
 if __name__ == "__main__":
-    from .util import debug_print_cell_grid
+    from ..util.debug import debug_print_cell_grid
 
     formats = [
         ["elll", "lhlh", "llel"],
@@ -157,12 +182,16 @@ if __name__ == "__main__":
     ]
 
     contents = [
-        ["Hello", "world", "!"],
-        ["Foo", "bar", "baz"]
+        ["Hello,\nworld!", "world", "!"],
+        ["Foo", "bar", "These tables now\nsupport multiline\nstring goodness"],
+        ["Bar", "This is nice,\nI love tables!", "b4z\nbiz"]
     ]
 
-    cells = make_cell_grid(formats)
-    debug_print_cell_grid(cells)
+    #cells = make_cell_grid(formats)
+    #debug_print_cell_grid(cells)
 
     table = draw_table(formats, contents)
+    print("\n".join(table))
+
+    table = draw_table(linear_formats("hllh", "eele"), contents)
     print("\n".join(table))
