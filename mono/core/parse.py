@@ -1,5 +1,5 @@
 import json
-import pypandoc
+import pypandoc  # type: ignore
 
 try:
     pypandoc._ensure_pandoc_path()
@@ -8,6 +8,6 @@ except OSError:
     pypandoc._ensure_pandoc_path()
 
 
-def parse(source_filename):
-    raw_ast = pypandoc.convert_file(source_filename, "json")
+def parse(source_filename) -> dict:
+    raw_ast: str = pypandoc.convert_file(source_filename, "json")
     return json.loads(raw_ast)

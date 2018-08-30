@@ -1,4 +1,4 @@
-from typing import List, Union, TypeVar
+from typing import List, Union
 from dataclasses import dataclass, field
 
 
@@ -10,15 +10,15 @@ class StructureElement:
     pass
 
 
+Element = Union[StructureElement, TextElement, str]
+
+
 # --- Structure Elements ------------------------------------------------------
-
-TextType = TypeVar('Text')
-
 
 @dataclass
 class Text(StructureElement):
     elements: List[Union[TextElement, str]]
-    notes: List[TextType] = field(default_factory=list)
+    notes: List["Text"] = field(default_factory=list)
 
 
 @dataclass
@@ -49,24 +49,28 @@ class Quote(StructureElement):
 
 @dataclass
 class OrderedList(StructureElement):
-    elements: List[StructureElement]
+    # Pandoc SHOULD only provide StructureElements here
+    list_elements: List[List[Element]]
 
 
 @dataclass
 class UnorderedList(StructureElement):
-    elements: List[StructureElement]
+    # Pandoc SHOULD only provide StructureElements here
+    list_elements: List[List[Element]]
+
+
+@dataclass
+class Unprocessed(StructureElement):
+    kind: str
 
 
 # --- Text Elements -----------------------------------------------------------
 
-Words = List[str]
-
-TextElementChild = Union[TextElement, Words]
-
 
 @dataclass
 class StyleElement(TextElement):
-    child: TextElementChild
+    # Pandoc SHOULD only provide TextElements/str here
+    child: List[Element]
 
 
 @dataclass

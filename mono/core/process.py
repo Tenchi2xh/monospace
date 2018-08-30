@@ -1,8 +1,8 @@
-from .domain import document
-from dataclasses import dataclass
+from typing import Optional, Any, Dict, List, Tuple
+from .domain import document as d
 
 
-def process(ast):
+def process(ast: dict) -> Tuple[Dict[str, str], List[d.Element]]:
     # TODO: Add support for settings for the typesetting and metadata
     # meta = ast["meta"]
     processor = Processor(ast)
@@ -13,7 +13,7 @@ def process(ast):
 
 
 class Processor(object):
-    def __init__(self, ast):
+    def __init__(self, ast: dict) -> None:
         self.cross_references = self.find_references(ast["blocks"])
         # FIXME: This is just for the mockup
         self.cross_references.update({
@@ -33,27 +33,28 @@ class Processor(object):
             "summary-of-key-rules": "Summary of key rules",
             "foreword": "Foreword",
         })
+        print(self.cross_references)
         self.processed = self.process_elements(ast["blocks"])
 
-    def find_references(self, elements):
-        references = {}
+    def find_references(self, elements: list) -> Dict[str, str]:
+        references: Dict[str, str] = {}
         for element in elements:
             if element["t"] == "Header":
                 identifier = Metadata(element["c"][1]).identifier
-                title = self.process_elements(element["c"][2])
+                title = join(self.process_elements(element["c"][2]))
                 assert identifier not in references,\
                     "A header with this title already exists: %s" % title
                 references[identifier] = title
         return references
 
-    def process_elements(self, elements):
+    def process_elements(self, elements) -> List[d.Element]:
         processed = [
             self.process_element(e["t"], e["c"] if "c" in e else None)
             for e in elements
         ]
         return [pe for pe in processed if pe is not None]
 
-    def process_element(self, kind, value):
+    def process_element(self, kind: str, value: Any) -> Optional[d.Element]:
         # --- Structural ------------------------------------------------------
         if kind == "Header":
             return self.process_header(value)
@@ -62,75 +63,91 @@ class Processor(object):
         elif kind == "BlockQuote":
             return self.process_quote(value)
         elif kind == "OrderedList":
-            return document.OrderedList(
+            return d.OrderedList(
                 [self.process_elements(elements) for elements in value[1]])
         elif kind == "BulletList":
-            return document.UnorderedList(
+            return d.UnorderedList(
                 [self.process_elements(elements) for elements in value])
         # --- Textual ---------------------------------------------------------
         elif kind == "Str":
             return value
         elif kind == "Strong":
-            return document.Bold(self.process_elements(value))
+            return d.Bold(self.process_elements(value))
         elif kind == "Emph":
-            return document.Italic(self.process_elements(value))
+            return d.Italic(self.process_elements(value))
         elif kind == "Link":
             return self.process_link(value)
         elif kind == "Space":
             return None
 
-        return Unprocessed(kind)
+        return d.Unprocessed(kind)
 
     def make_text(self, elements):
-        return document.Text(
+        return d.Text(
             elements=self.process_elements(elements),
             notes=[]  # TODO: populate this
         )
 
     def process_paragraph(self, value):
-        return document.Paragraph(self.make_text(value))
+        return d.Paragraph(self.make_text(value))
 
     def process_quote(self, value):
-        return document.Quote(self.make_text(value))
+        return d.Quote(self.make_text(value))
 
     def process_header(self, value):
         level = value[0]
         metadata = Metadata(value[1])
 
         if "subtitle" in metadata.attributes:
-            subtitle = document.Text(metadata.attributes["subtitle"].split())
+            subtitle = d.Text(metadata.attributes["subtitle"].split())
 
         text = self.make_text(value[2])
 
         assert level in (1, 2, 3), "Hedings must be of level 1, 2 or 3"
         if level == 1:
-            return document.Chapter(title=text)
+            return d.Chapter(title=text)
         elif level == 2:
             # TODO:
-            return document.SubChapter(title=text, subtitle=subtitle)
+            return d.SubChapter(title=text, subtitle=subtitle)
         else:
-            return document.Section(title=text)
+            return d.Section(title=text)
 
     def process_link(self, value):
         if value[2] and value[2][0].startswith("#"):
             identifier = value[2][0][1:]
             assert identifier in self.cross_references,\
                 "Link points to unknown reference '%s'" % identifier
-            return document.CrossRef(
+            return d.CrossRef(
                 identifier=identifier,
                 title=self.cross_references[identifier]
             )
         else:
-            return Unprocessed("TrueLink")
-
-
-@dataclass
-class Unprocessed:
-    kind: str
+            return d.Unprocessed("TrueLink")
 
 
 class Metadata(object):
     def __init__(self, metadata):
-        self.identifier = metadata[0]
-        self.classes = metadata[1]
-        self.attributes = dict(metadata[2])
+        self.identifier: str = metadata[0]
+        self.classes: List[str] = metadata[1]
+        self.attributes: Dict[str, str] = dict(metadata[2])
+
+
+def join(elements: List[d.Element]) -> str:
+    def do_join(elements):
+        result = []
+        for element in elements:
+            if isinstance(element, str):
+                result.append(element)
+            elif hasattr(element, "elements"):
+                result.extend(do_join(element.elements))
+            elif hasattr(element, "list_elements"):
+                for _elements in element.list_elements:
+                    result.extend(do_join(_elements))
+            elif hasattr(element, "child"):
+                if isinstance(element.child, list):
+                    result.extend(element.child)
+                else:
+                    result.extend(do_join([element.child]))
+        return result
+
+    return " ".join(do_join(elements))

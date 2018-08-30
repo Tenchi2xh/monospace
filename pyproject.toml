@@ -11,6 +11,7 @@ click = "^6.7"
 pypandoc = "^1.4"
 pyphen = "^0.9.5"
 ptpython = "=0.41.0"
+mypy = "^0.620.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"
