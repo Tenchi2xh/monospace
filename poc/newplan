@@ -44,6 +44,9 @@ Example:
 - After getting the tree, render all elements in granular blocks. Blocks denote where the pages can be broken
 - Blocks all contain a main and side elements
 
+- Note: while generating blocks, if encountering a subchapter, wait for the next element before finishing the block,
+    to add a main part alongside the side part, like below
+
 ```python
 [
     Block(
@@ -134,3 +137,10 @@ Renderers:
 - block quotes are real quotes (format using the bold double quotes)
 - for "note:" blocks, do a pandoc fenced div
 - Syntax highlighting
+- Images: multiple modes:
+    - raw: just read a text file
+    - ansify: read a real image, and render using ansi. multiple options:
+        - ▀ / █
+        - ░▒▓█ / ansi / xterm-256 / rgb
+        - dithering on / off
+    - renderer: run command to render file (add renderers to meta)

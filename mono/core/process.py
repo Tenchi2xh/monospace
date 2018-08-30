@@ -107,7 +107,6 @@ class Processor(object):
         if level == 1:
             return d.Chapter(title=text)
         elif level == 2:
-            # TODO:
             return d.SubChapter(title=text, subtitle=subtitle)
         else:
             return d.Section(title=text)
