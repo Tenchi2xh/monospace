@@ -1,18 +1,15 @@
 from .domain import document
-from pandocfilters import walk
 from dataclasses import dataclass
 
 
-@dataclass
-class Unprocessed:
-    kind: str
+def process(ast):
+    # TODO: Add support for settings for the typesetting and metadata
+    # meta = ast["meta"]
+    processor = Processor(ast)
+    cross_references = processor.cross_references
+    document_elements = processor.processed
 
-
-class Metadata(object):
-    def __init__(self, metadata):
-        self.identifier = metadata[0]
-        self.classes = metadata[1]
-        self.attributes = dict(metadata[2])
+    return cross_references, document_elements
 
 
 class Processor(object):
@@ -51,12 +48,12 @@ class Processor(object):
 
     def process_elements(self, elements):
         processed = [
-            self.process_node(e["t"], e["c"] if "c" in e else None)
+            self.process_element(e["t"], e["c"] if "c" in e else None)
             for e in elements
         ]
         return [pe for pe in processed if pe is not None]
 
-    def process_node(self, kind, value):
+    def process_element(self, kind, value):
         # --- Structural ------------------------------------------------------
         if kind == "Header":
             return self.process_header(value)
@@ -127,10 +124,13 @@ class Processor(object):
             return Unprocessed("TrueLink")
 
 
-def process(ast):
-    meta = ast["meta"]
-    processor = Processor(ast)
-    cross_references = processor.cross_references
-    document_elements = processor.processed
+@dataclass
+class Unprocessed:
+    kind: str
 
-    return cross_references, document_elements
+
+class Metadata(object):
+    def __init__(self, metadata):
+        self.identifier = metadata[0]
+        self.classes = metadata[1]
+        self.attributes = dict(metadata[2])

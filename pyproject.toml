@@ -10,7 +10,6 @@ python = "*"
 click = "^6.7"
 pypandoc = "^1.4"
 pyphen = "^0.9.5"
-pandocfilters = "^1.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"
