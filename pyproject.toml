@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "mono"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+authors = ["Hamza Haiken <tenchi@team2xh.net>"]
+
+[tool.poetry.dependencies]
+python = "*"
+click = "^6.7"
+pypandoc = "^1.4"
+pyphen = "^0.9.5"
+pandocfilters = "^1.4"
+
+[tool.poetry.dev-dependencies]
+pytest = "^3.0"
+ptpython = "^0.41.0"
