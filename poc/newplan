@@ -131,4 +131,6 @@ Renderers:
 
 # Later improvements
 
+- block quotes are real quotes (format using the bold double quotes)
+- for "note:" blocks, do a pandoc fenced div
 - Syntax highlighting
