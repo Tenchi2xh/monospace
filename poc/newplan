@@ -136,6 +136,7 @@ Renderers:
 
 - block quotes are real quotes (format using the bold double quotes)
 - for "note:" blocks, do a pandoc fenced div
+- most elements can include caption attribute in their pandoc attribute block to add captions on the side
 - Syntax highlighting
 - Images: multiple modes:
     - raw: just read a text file
@@ -144,3 +145,5 @@ Renderers:
         - ░▒▓█ / ansi / xterm-256 / rgb
         - dithering on / off
     - renderer: run command to render file (add renderers to meta)
+- Images: selectors for full-width or fixed height
+- When rendering non-ANSI, don't double the space after wide characters (e.g. circled number)
