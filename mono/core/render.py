@@ -1,7 +1,10 @@
-from typing import Dict, List
+from typing import Dict, List, Optional, Type
+
 from .domain import document as d
 from .domain import blocks as b
 from .domain import Settings
+from .rendering import paragraph as p
+from .formatting import Formatter
 
 """Split a document into granular rendered blocks
 
@@ -48,16 +51,18 @@ need to be aligned left or right depending on which page they are on.
 def render(
     elements: List[d.Element],
     settings: Settings,
-    cross_references: Dict[str, str]
+    cross_references: Dict[str, str],
+    formatter: Optional[Type[Formatter]] = None
 ) -> List[b.Block]:
-    renderer = Renderer(elements, settings, cross_references)
+    renderer = Renderer(elements, settings, cross_references, formatter)
     return renderer.blocks
 
 
 class Renderer(object):
-    def __init__(self, elements, settings, cross_references):
+    def __init__(self, elements, settings, cross_references, formatter=None):
         self.settings: Settings = settings
         self.cross_references: Dict[str, str] = cross_references
+        self.formatter = formatter
         self.blocks = self.render_elements(elements)
 
     def render_elements(self, elements) -> List[b.Block]:
@@ -70,7 +75,7 @@ class Renderer(object):
             if isinstance(element, d.Section):
                 pass
             if isinstance(element, d.Paragraph):
-                pass
+                blocks.append(self.render_paragraph(element))
             if isinstance(element, d.Quote):
                 pass
             if isinstance(element, d.OrderedList):
@@ -82,6 +87,26 @@ class Renderer(object):
         return blocks
 
     def render_chapter(self, chapter):
-        return b.Block(
-            main=...
+        elements = [d.Bold([d.Italic(chapter.title.elements)])]
+
+        lines = p.align(
+            text_elements=elements,
+            alignment=p.Alignment.left,
+            width=self.settings.main_width,
+            formatter=self.formatter
         )
+        lines.insert(0, "━" * self.settings.main_width)
+
+        # TODO: Notes
+        return b.Block(main=lines, block_offset=-2)
+
+    def render_paragraph(self, paragraph):
+        lines = p.align(
+            text_elements=paragraph.text.elements,
+            alignment=p.Alignment.left,
+            width=self.settings.main_width,
+            formatter=self.formatter
+        )
+
+        # TODO: Notes
+        return b.Block(main=lines)

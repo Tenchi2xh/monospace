@@ -2,7 +2,7 @@ import pyphen   # type: ignore
 import random
 
 from enum import Enum
-from typing import List, Union, Optional
+from typing import List, Union, Optional, Type
 
 from ..domain import document as d
 from ..formatting import Formatter, FormatTag
@@ -17,12 +17,19 @@ wrap = pyphen_dictionary.wrap
 
 Line = List[Union[FormatTag, str]]
 
+# FIXME: Bug: '*italic*.' -> '<i>italic<i> .'
+# spaces are added between punctuation and tagged text
+
+# FIXME: Bug: pyphen can't hyphenate special characters
+
 
 def flatten(elements: d.TextElements) -> Line:
     result: List[Union[FormatTag, str]] = []
     for element in elements:
         if isinstance(element, str):
             result.append(element)
+        elif isinstance(element, d.Unprocessed):
+            result.append("<UNPROCESSED: %s>" % element.kind)
         else:
             tag = FormatTag(element.__class__.__name__)
             result.append(tag)
@@ -35,7 +42,7 @@ def align(
     text_elements: List[Union[d.TextElement, str]],
     alignment: Alignment,
     width: int,
-    formatter: Optional[Formatter] = None
+    formatter: Optional[Type[Formatter]] = None
 ) -> List[str]:
 
     elements = flatten(text_elements)
@@ -154,7 +161,5 @@ def align(
             return [elem for elem in line if isinstance(elem, str)]
 
     joined = ["".join(strings(line)) for line in lines]
-
-    print(joined)
 
     return joined

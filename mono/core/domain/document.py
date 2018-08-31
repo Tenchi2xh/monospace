@@ -84,7 +84,6 @@ class Bold(TextElement):
 @dataclass
 class CrossRef(TextElement):
     identifier: str
-    title: str
 
 
 Note = object()

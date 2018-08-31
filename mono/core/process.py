@@ -1,5 +1,6 @@
 from typing import Optional, Any, Dict, List, Tuple
 from .domain import document as d
+from .formatting import styles
 
 
 def process(ast: dict) -> Tuple[Dict[str, str], List[d.Element]]:
@@ -33,7 +34,6 @@ class Processor(object):
             "summary-of-key-rules": "Summary of key rules",
             "foreword": "Foreword",
         })
-        print(self.cross_references)
         self.processed = self.process_elements(ast["blocks"])
 
     def find_references(self, elements: list) -> Dict[str, str]:
@@ -116,11 +116,14 @@ class Processor(object):
             identifier = value[2][0][1:]
             assert identifier in self.cross_references,\
                 "Link points to unknown reference '%s'" % identifier
+
+            title = styles.small_caps(self.cross_references[identifier])
             return d.CrossRef(
+                children=[title],
                 identifier=identifier,
-                title=self.cross_references[identifier]
             )
         else:
+            # Link's text: self.process_elements(value[1])
             return d.Unprocessed("TrueLink")
 
 
