@@ -91,6 +91,11 @@ class Code(TextElement):
     pass
 
 
+@dataclass
+class Quoted(TextElement):
+    pass
+
+
 Note = object()
 
 

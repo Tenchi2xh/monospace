@@ -1,6 +1,7 @@
 from typing import Optional, Any, Dict, List, Tuple
 from .domain import document as d
 from .formatting import styles
+from .symbols.characters import double_quotes, single_quotes
 
 
 def process(ast: dict) -> Tuple[Dict[str, str], List[d.Element]]:
@@ -79,6 +80,8 @@ class Processor(object):
             return self.process_link(value)
         elif kind == "Code":
             return d.Code([styles.monospace(value[1])])
+        elif kind == "Quoted":
+            return self.process_quoted(value)
         elif kind == "Space":
             return d.space
 
@@ -127,6 +130,14 @@ class Processor(object):
         else:
             # Link's text: self.process_elements(value[1])
             return d.Unprocessed("TrueLink")
+
+    def process_quoted(self, value):
+        quotes = double_quotes
+        if value[0]["t"] == "SingleQuote":
+            quotes = single_quotes
+
+        elements = self.process_elements(value[1])
+        return d.Quoted(children=[quotes[0]] + elements + [quotes[1]])
 
 
 class Metadata(object):
