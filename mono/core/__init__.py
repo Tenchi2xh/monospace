@@ -1,9 +1,9 @@
 from .parse import parse
 from .process import process
-from .prerender import prerender
 from .render import render
+from .layout import layout
 
-__all__ = ["parse", "process", "prerender", "render"]
+__all__ = ["parse", "process", "render", "layout"]
 
 """Rendering pipeline for books
 
@@ -25,7 +25,7 @@ __all__ = ["parse", "process", "prerender", "render"]
      │ mono AST │     and the data is laid out in a way
      └──────────┘     that will make it easier to render.
            │
-      prerender()
+        render()
            │
            ▼
      ┌──────────┐
@@ -33,7 +33,7 @@ __all__ = ["parse", "process", "prerender", "render"]
      │  blocks  │     and only need to be set on a page.
      └──────────┘
            │
-       render()       Page breaks, side notes, etc.
+       layout()       Lay blocks on pages, handle breaks, side notes, etc.
            │
            ▼
      ┏━━━━━━━━━━┓

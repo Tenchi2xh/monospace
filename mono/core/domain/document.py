@@ -10,15 +10,15 @@ class StructureElement:
     pass
 
 
-Element = Union[StructureElement, TextElement, str]
-
-
-# --- Structure Elements ------------------------------------------------------
-
 @dataclass
-class Text(StructureElement):
+class Text:
     elements: List[Union[TextElement, str]]
     notes: List["Text"] = field(default_factory=list)
+
+
+Element = Union[StructureElement, TextElement, str]
+
+# --- Structure Elements ------------------------------------------------------
 
 
 @dataclass
