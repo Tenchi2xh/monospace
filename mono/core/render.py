@@ -1,21 +1,22 @@
 from typing import Dict, List, Optional, Type
+from dataclasses import replace
 
 from .domain import document as d
 from .domain import blocks as b
 from .domain import Settings
 from .rendering import paragraph as p
-from .formatting import Formatter
+from .formatting import Formatter, styles
 
 """Split a document into granular rendered blocks
 
 Render all elements of a document and produce blocks.
 Blocks indicate where a page can break, for example:
 
-An OrderedList with two list entries,
-each having two paragraphs of their own,
-should produce 4 rendered blocks.
+    An OrderedList with two list entries,
+    each having two paragraphs of their own,
+    should produce 4 rendered blocks.
 
-Each block has two parts: a main part, and a side part.
+Every Block has two parts: a main part, and a side part.
 The side part will be set in the margin by the main renderer.
 A side part contains:
 
@@ -54,16 +55,15 @@ def render(
     cross_references: Dict[str, str],
     formatter: Optional[Type[Formatter]] = None
 ) -> List[b.Block]:
-    renderer = Renderer(elements, settings, cross_references, formatter)
-    return renderer.blocks
+    renderer = Renderer(settings, cross_references, formatter)
+    return renderer.render_elements(elements)
 
 
 class Renderer(object):
-    def __init__(self, elements, settings, cross_references, formatter=None):
+    def __init__(self, settings, cross_references, formatter=None):
         self.settings: Settings = settings
         self.cross_references: Dict[str, str] = cross_references
         self.formatter = formatter
-        self.blocks = self.render_elements(elements)
 
     def render_elements(self, elements) -> List[b.Block]:
         blocks: List[b.Block] = []
@@ -79,11 +79,50 @@ class Renderer(object):
             if isinstance(element, d.Quote):
                 pass
             if isinstance(element, d.OrderedList):
-                pass
+                blocks.extend(self.render_list(element, ordered=True))
             if isinstance(element, d.UnorderedList):
-                pass
+                blocks.extend(self.render_list(element, ordered=False))
             if isinstance(element, d.Unprocessed):
                 pass
+        return blocks
+
+    def render_list(self, ordered_list, ordered=False):
+        blocks = []
+
+        # Create sub-renderer that will create thinner blocks
+        renderer = Renderer(
+            settings=replace(
+                self.settings,
+                page_width=self.settings.page_width - self.settings.tab_size
+            ),
+            cross_references=self.cross_references,
+            formatter=self.formatter
+        )
+
+        # Render all list entries and indent them
+        # If sub-renderers also render nested lists, they will indent them
+        # so the indentation adds up, no need to count levels :)
+
+        # TODO: Add bullets/numbers
+
+        for i, elements in enumerate(ordered_list.list_elements):
+            sub_blocks = renderer.render_elements(elements)
+
+            indent = " " * self.settings.tab_size
+            for block in sub_blocks:
+                for j, line in enumerate(block.main):
+                    block.main[j] = indent + line
+
+            # Decorate
+            bullet = "•"
+            if ordered:
+                bullet = styles.circled(i)
+            first_line = sub_blocks[0].main[0]
+            decorated_line = bullet + first_line[len(bullet):]
+            sub_blocks[0].main[0] = decorated_line
+
+            blocks.extend(sub_blocks)
+
         return blocks
 
     def render_chapter(self, chapter):

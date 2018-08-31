@@ -58,7 +58,7 @@ class Processor(object):
         # --- Structural ------------------------------------------------------
         if kind == "Header":
             return self.process_header(value)
-        elif kind == "Para":
+        elif kind == "Para" or kind == "Plain":
             return self.process_paragraph(value)
         elif kind == "BlockQuote":
             return self.process_quote(value)

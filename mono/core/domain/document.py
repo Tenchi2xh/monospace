@@ -96,7 +96,8 @@ Note = object()
 
 @dataclass
 class Space:
-    pass
+    def __repr__(self):
+        return "_"
 
 
 space = Space()
