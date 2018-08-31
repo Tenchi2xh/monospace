@@ -1,0 +1,29 @@
+{
+    "folders":
+    [
+        {
+            "path": ".",
+            "follow_symlinks": true,
+            "folder_exclude_patterns": [
+                "__pycache__",
+                ".mypy_cache",
+                ".pytest_cache",
+                ".venv"
+            ]
+        }
+    ],
+    "settings": {
+        "python_virtualenv": "$project_path/.venv/",
+        "python_interpreter": "$project_path/.venv/bin/python",
+        "python_package_paths": [
+            "$project_path/.venv/lib/python3.7/site-packages"
+        ],
+        "SublimeLinter.linters.mypy.disable": false,
+        "SublimeLinter.linters.mypy.executable": "$project_path/.venv/bin/mypy",
+        "SublimeLinter.linters.flake8.disable": false,
+        "SublimeLinter.linters.flake.executable": "$project_path/.venv/bin/flake8",
+    },
+    "build_systems":
+    [
+    ]
+}
