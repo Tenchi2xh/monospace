@@ -1,9 +1,10 @@
 [tool.poetry]
 name = "mono"
 version = "0.1.0"
-description = ""
+description = "Book typesetter for the terminal"
 readme = "README.md"
 authors = ["Hamza Haiken <tenchi@team2xh.net>"]
+keywords = ["typesetting", "terminal"]
 
 [tool.poetry.dependencies]
 python = "*"
@@ -11,10 +12,10 @@ click = "^6.7"
 pypandoc = "^1.4"
 pyphen = "^0.9.5"
 ptpython = "=0.41.0"
-mypy = "^0.620.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"
 ptpython = "^0.41.0"
 better-exceptions = "^0.2.1"
 flake8 = "^3.5"
+mypy = "^0.620.0"
