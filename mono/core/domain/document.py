@@ -86,4 +86,9 @@ class CrossRef(TextElement):
     identifier: str
 
 
+@dataclass
+class Code(TextElement):
+    pass
+
+
 Note = object()

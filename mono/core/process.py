@@ -77,6 +77,8 @@ class Processor(object):
             return d.Italic(children=self.process_elements(value))
         elif kind == "Link":
             return self.process_link(value)
+        elif kind == "Code":
+            return d.Code([styles.monospace(value[1])])
         elif kind == "Space":
             return None
 
