@@ -12,19 +12,20 @@ random.seed(1337)
 
 Alignment = Enum("Alignment", ["left", "center", "right", "justify"])
 
+
+# TODO: Language in settings for hyphen dictionary
 pyphen_dictionary = pyphen.Pyphen(lang="en_US")
 wrap = pyphen_dictionary.wrap
 
 Line = List[Union[FormatTag, str]]
-
-# FIXME: Bug: '*italic*.' -> '<i>italic<i> .'
-# spaces are added between punctuation and tagged text
 
 
 def flatten(elements: d.TextElements) -> Line:
     result: List[Union[FormatTag, str]] = []
     for element in elements:
         if isinstance(element, str):
+            result.append(element)
+        elif isinstance(element, d.Space):
             result.append(element)
         elif isinstance(element, d.Unprocessed):
             result.append("<UNPROCESSED: %s>" % element.kind)
@@ -46,6 +47,7 @@ def align(
     elements = flatten(text_elements)
     lines: List[Line] = [[]]
     open_tags: List[str] = []
+    non_word_buffer: List[Union[d.Space, FormatTag]] = []
 
     def line_length(line: Line, with_spaces=False) -> int:
         only_words = [e for e in line if isinstance(e, str)]
@@ -57,7 +59,24 @@ def align(
     def room_left(line: Line) -> int:
         return width - line_length(line, with_spaces=True)
 
-    def end_line(next_word=None):
+    def process_buffer(line):
+        for element in non_word_buffer:
+            if isinstance(element, FormatTag):
+                tag = element
+                if tag.open:
+                    open_tags.append(tag.kind)
+                else:
+                    last_index = next(
+                        i for i, k in list(enumerate(open_tags))[::-1]
+                        if k == tag.kind
+                    )
+                    open_tags.pop(last_index)
+                line.append(tag)
+            elif isinstance(element, d.Space):
+                line.append(element)
+        non_word_buffer.clear()
+
+    def end_line(next_word=None, also_process_buffer=False):
         next_line = []
         # Close all unclosed tags, and re-open them on the next line
         for kind in reversed(open_tags):
@@ -65,6 +84,8 @@ def align(
         for kind in open_tags:
             next_line.append(FormatTag(kind=kind))
         if next_word:
+            if also_process_buffer:
+                process_buffer(next_line)
             next_line.append(next_word)
         lines.append(next_line)
 
@@ -75,17 +96,8 @@ def align(
     for element in elements:
         line = lines[-1]
 
-        if isinstance(element, FormatTag):
-            tag = element
-            if tag.open:
-                open_tags.append(tag.kind)
-            else:
-                last_index = next(
-                    i for i, k in list(enumerate(open_tags))[::-1]
-                    if k == tag.kind
-                )
-                open_tags.pop(last_index)
-            line.append(tag)
+        if not isinstance(element, str):
+            non_word_buffer.append(element)
             continue
 
         word: str = element
@@ -93,16 +105,27 @@ def align(
         available = room_left(line)
 
         if len(word) <= available:
+            process_buffer(line)
             line.append(word)
         else:
             hyphenized = wrap(word, available)
 
             if hyphenized:
                 left, right = hyphenized
+                process_buffer(line)
                 line.append(left)
                 end_line(next_word=right)
             else:
-                end_line(next_word=word)
+                # We are breaking the line, we don't want to put
+                # the trailing spaces at the beginning of the next line
+                non_word_buffer = [
+                    e for e in non_word_buffer
+                    if not isinstance(e, d.Space)
+                ]
+                end_line(next_word=word, also_process_buffer=True)
+
+    # No more word was on the line, but maybe some tags were there
+    process_buffer(lines[-1])
 
     # --- Step 2 --------------------------------------------------------------
     # Depending on alignment, insert appropriate amount of spaces between words
@@ -112,18 +135,11 @@ def align(
             pass
         else:
             # Alignment is either left or right:
-            # there will be only one space between words
-
-            # Insert a space after each word except the last
-            # (Start from the right for easy insertion)
-
-            last = True
-            for i in range(len(line) - 1, -1, -1):
-                if isinstance(line[i], str):
-                    if last:
-                        last = False
-                        continue
-                    line[i] += " "
+            # there will be only one space between words.
+            # Replace all Space object with single spaces:
+            for i, e in enumerate(line):
+                if isinstance(e, d.Space):
+                    line[i] = " "
 
     # --- Step 3 --------------------------------------------------------------
     # Add necessary padding

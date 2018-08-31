@@ -2,6 +2,15 @@ from mono.core.rendering.paragraph import align, Alignment, flatten
 from mono.core.domain import document as d
 from mono.core.formatting import Formatter, FormatTag
 
+s = d.space
+
+
+# https://stackoverflow.com/a/6300649
+def intersperse(sequence, value):
+    result = [value] * (2 * len(sequence) - 1)
+    result[::2] = sequence
+    return result
+
 
 class TestFormatter(Formatter):
     @staticmethod
@@ -14,16 +23,16 @@ class TestFormatter(Formatter):
 
 def test_flatten():
     elements = [
-        "This", "text", "contains", "mixed", "styles:",
+        "This", s, "text", s, "contains", s, "mixed", s, "styles:", s,
         d.Bold([
-            "Hello,",
+            "Hello,", s,
             d.Italic(["World!"])
         ])
     ]
     expected = [
-        "This", "text", "contains", "mixed", "styles:",
+        "This", s, "text", s, "contains", s, "mixed", s, "styles:", s,
         FormatTag("Bold", open=True),
-        "Hello,",
+        "Hello,", s,
         FormatTag("Italic", open=True),
         "World!",
         FormatTag("Italic", open=False),
@@ -35,7 +44,7 @@ def test_flatten():
 
 def test_plain_paragraph_rendering():
     text = "Smile spoke total few great had never their too. Amongst moments do in arrived at my replied. Fat weddings servants but man believed prospect. Companions understood is as especially pianoforte connection introduced. Nay newspaper can sportsman are admitting gentleman belonging his. Is oppose no he summer lovers twenty in. Not his difficulty boisterous surrounded bed. Seems folly if in given scale. Sex contented dependent conveying advantage can use."  # noqa
-    words = text.split()
+    words = intersperse(text.split(), d.space)
     width = 40
 
     expected_left = [
@@ -90,16 +99,16 @@ def test_plain_paragraph_rendering():
 
 def test_styled_paragraph_rendering():
     text = [
-        "Yet", "bed",
+        "Yet", s, "bed", s,
         d.Bold([
-            "any", "for",
+            "any", s, "for", s,
             d.Italic([
-                "travelling", "assistance"
+                "travelling", s, "assistance",
             ]),
-            "indulgence", "unpleasing", "foobar.",
+            s, "indulgence", s, "unpleasing", s, "foobar.",
         ]),
-        "Not", "thoughts",
-        d.Bold(["all", "exercise", "blessing."])
+        s, "Not", s, "thoughts", s,
+        d.Bold(["all", s, "exercise", s, "blessing."])
     ]
     width = 21
 
@@ -114,17 +123,12 @@ def test_styled_paragraph_rendering():
 
     expected_formatted = [
         "Yet bed <b>any for <i>trav-</i></b>",
-        "<b><i>elling assistance </i>in-</b>",
+        "<b><i>elling assistance</i> in-</b>",
         "<b>dulgence unpleasing</b>  ",
-        "<b>foobar. </b>Not thoughts<b></b> ",  # See fixme
+        "<b>foobar.</b> Not thoughts ",
         "<b>all exercise bless-</b>  ",
         "<b>ing.</b>                 ",
     ]
-
-    # FIXME: We generate a bit too many tags
-    # Here a tag starts and ends because
-    # "thoughts" is added to the line, then the open tag,
-    # then "all" is too big to fit, so we wrap and the open tag stays.
 
     unformatted = align(text, Alignment.left, width)
     formatted = align(text, Alignment.left, width, formatter=TestFormatter)
@@ -135,7 +139,7 @@ def test_styled_paragraph_rendering():
 
 def test_punctuation_after_tag():
     text = [
-        "Hello,",
+        "Hello,", s,
         d.Bold([
             "World"
         ]),

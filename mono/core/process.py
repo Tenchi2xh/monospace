@@ -80,7 +80,7 @@ class Processor(object):
         elif kind == "Code":
             return d.Code([styles.monospace(value[1])])
         elif kind == "Space":
-            return None
+            return d.space
 
         return d.Unprocessed(kind)
 

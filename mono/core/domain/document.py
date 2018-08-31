@@ -20,7 +20,7 @@ class Text:
     notes: List["Text"] = field(default_factory=list)
 
 
-Element = Union[StructureElement, TextElement, str]
+Element = Union[StructureElement, TextElement, "Space", str]
 
 # --- Structure Elements ------------------------------------------------------
 
@@ -92,3 +92,11 @@ class Code(TextElement):
 
 
 Note = object()
+
+
+@dataclass
+class Space:
+    pass
+
+
+space = Space()
