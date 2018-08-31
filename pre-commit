@@ -1,0 +1,11 @@
+#!/bin/sh
+
+echo "Checking project..."
+
+./check.sh
+exit_status=$?
+
+if [[ "${exit_status}" -ne 0 ]]; then
+    printf "\033[31mERROR:\033[m pre-commit check returned ${exit_status}\n"
+    exit ${exit_status}
+fi
