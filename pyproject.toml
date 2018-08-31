@@ -1,13 +1,14 @@
 [tool.poetry]
-name = "mono"
+name = "monospace"
 version = "0.1.0"
 description = "Book typesetter for the terminal"
 readme = "README.md"
 authors = ["Hamza Haiken <tenchi@team2xh.net>"]
 keywords = ["typesetting", "terminal"]
+repository = "https://github.com/Tenchi2xh/monospace"
 
 [tool.poetry.dependencies]
-python = "*"
+python = "^3.7"
 click = "^6.7"
 pypandoc = "^1.4"
 pyphen = "^0.9.5"

@@ -1,6 +1,6 @@
-from mono.core.rendering.paragraph import align, Alignment, flatten
-from mono.core.domain import document as d
-from mono.core.formatting import Formatter, FormatTag
+from monospace.core.rendering.paragraph import align, Alignment, flatten
+from monospace.core.domain import document as d
+from monospace.core.formatting import Formatter, FormatTag
 
 s = d.space
 

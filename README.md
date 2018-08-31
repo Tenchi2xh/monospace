@@ -2,17 +2,17 @@
 
 
 
-                                          ┌─────┬───┬───┬───┐
-                                          │ ╷ ╷ │ · │ ╷ │ · │
-                                          └─┴─┴─┴───┴─┴─┴───┘
-                                                             
-                                      <i>A monospace book typesetter</i>
+                                ┌─────┬───┬───┬───┬───┬───┬───┬───┬───┐
+                                │ ╷ ╷ │ · │ ╷ │ · ├   ┤ · │ · │   ┤   ╡
+                                └─┴─┴─┴───┴─┴─┴───┴───┤ ┌─┴─┴─┴───┴───┘
+                                                      └─┘
+                                     <i>A fixed-width book typesetter</i>
 
                          Now re-implementing from scratch, powered by <a href="https://pandoc.org/">ᴘᴀɴᴅᴏᴄ</a>.
 
 
    ━━━━━━━━━━━━━━━━━━
-           <b>About mono</b>    While this readme is incomplete, you can read about the concept
+      <b>About monospace</b>    While this readme is incomplete, you can read about the concept
                          for the project in the <a href="poc/README.md">ᴏʟᴅ ʀᴇᴀᴅᴍᴇ</a>. 
               <i>A short</i>    
          <i>introduction</i>    Or maybe you can get a preview of what is to come¹ with some

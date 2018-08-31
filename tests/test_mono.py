@@ -1,4 +1,4 @@
-from mono import __version__
+from monospace import __version__
 
 
 def test_version():
