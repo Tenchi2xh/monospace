@@ -20,8 +20,6 @@ Line = List[Union[FormatTag, str]]
 # FIXME: Bug: '*italic*.' -> '<i>italic<i> .'
 # spaces are added between punctuation and tagged text
 
-# FIXME: Bug: pyphen can't hyphenate special characters
-
 
 def flatten(elements: d.TextElements) -> Line:
     result: List[Union[FormatTag, str]] = []

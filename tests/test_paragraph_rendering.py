@@ -3,6 +3,15 @@ from mono.core.domain import document as d
 from mono.core.formatting import Formatter, FormatTag
 
 
+class TestFormatter(Formatter):
+    @staticmethod
+    def format_tag(tag):
+        if tag.kind == "Bold":
+            return "<b>" if tag.open else "</b>"
+        elif tag.kind == "Italic":
+            return "<i>" if tag.open else "</i>"
+
+
 def test_flatten():
     elements = [
         "This", "text", "contains", "mixed", "styles:",
@@ -80,14 +89,6 @@ def test_plain_paragraph_rendering():
 
 
 def test_styled_paragraph_rendering():
-    class TestFormatter(Formatter):
-        @staticmethod
-        def format_tag(tag):
-            if tag.kind == "Bold":
-                return "<b>" if tag.open else "</b>"
-            elif tag.kind == "Italic":
-                return "<i>" if tag.open else "</i>"
-
     text = [
         "Yet", "bed",
         d.Bold([
@@ -130,3 +131,17 @@ def test_styled_paragraph_rendering():
 
     assert unformatted == expected_unformatted
     assert formatted == expected_formatted
+
+
+def test_punctuation_after_tag():
+    text = [
+        "Hello,",
+        d.Bold([
+            "World"
+        ]),
+        "!"
+    ]
+
+    expected = ["Hello, <b>World</b>! "]
+
+    assert align(text, Alignment.left, 14, formatter=TestFormatter) == expected
