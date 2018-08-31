@@ -149,3 +149,12 @@ def test_punctuation_after_tag():
     expected = ["Hello, <b>World</b>! "]
 
     assert align(text, Alignment.left, 14, formatter=TestFormatter) == expected
+
+
+def test_punctuation_on_new_line():
+    text = ["Hello,", s, d.Bold(["World"]), "!"]
+    expected = [
+        "Hello,      ",
+        "World!      "
+    ]
+    assert align(text, Alignment.left, 12) == expected

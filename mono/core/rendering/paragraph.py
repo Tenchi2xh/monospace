@@ -37,6 +37,8 @@ def flatten(elements: d.TextElements) -> Line:
     return result
 
 
+# FIXME: Bug: punctuation can be pushed to the next line on its own
+
 def align(
     text_elements: List[Union[d.TextElement, str]],
     alignment: Alignment,
