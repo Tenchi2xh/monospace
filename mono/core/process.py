@@ -72,9 +72,9 @@ class Processor(object):
         elif kind == "Str":
             return value
         elif kind == "Strong":
-            return d.Bold(self.process_elements(value))
+            return d.Bold(children=self.process_elements(value))
         elif kind == "Emph":
-            return d.Italic(self.process_elements(value))
+            return d.Italic(children=self.process_elements(value))
         elif kind == "Link":
             return self.process_link(value)
         elif kind == "Space":
@@ -142,11 +142,8 @@ def join(elements: List[d.Element]) -> str:
             elif hasattr(element, "list_elements"):
                 for _elements in element.list_elements:
                     result.extend(do_join(_elements))
-            elif hasattr(element, "child"):
-                if isinstance(element.child, list):
-                    result.extend(element.child)
-                else:
-                    result.extend(do_join([element.child]))
+            elif hasattr(element, "children"):
+                result.extend(element.children)
         return result
 
     return " ".join(do_join(elements))

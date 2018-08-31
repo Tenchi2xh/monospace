@@ -2,17 +2,21 @@ from typing import List, Union
 from dataclasses import dataclass, field
 
 
+@dataclass
 class TextElement:
-    pass
+    children: List["Element"]
 
 
 class StructureElement:
     pass
 
 
+TextElements = List[Union[TextElement, str]]
+
+
 @dataclass
 class Text:
-    elements: List[Union[TextElement, str]]
+    elements: TextElements
     notes: List["Text"] = field(default_factory=list)
 
 
@@ -68,23 +72,17 @@ class Unprocessed(StructureElement):
 
 
 @dataclass
-class StyleElement(TextElement):
-    # Pandoc SHOULD only provide TextElements/str here
-    child: List[Element]
-
-
-@dataclass
-class Italic(StyleElement):
+class Italic(TextElement):
     pass
 
 
 @dataclass
-class Bold(StyleElement):
+class Bold(TextElement):
     pass
 
 
 @dataclass
-class CrossRef():
+class CrossRef(TextElement):
     identifier: str
     title: str
 

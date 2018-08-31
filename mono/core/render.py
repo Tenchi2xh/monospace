@@ -82,4 +82,6 @@ class Renderer(object):
         return blocks
 
     def render_chapter(self, chapter):
-        pass
+        return b.Block(
+            main=...
+        )
