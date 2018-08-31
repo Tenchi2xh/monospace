@@ -2,7 +2,7 @@ import pyphen   # type: ignore
 import random
 
 from enum import Enum
-from typing import List, Union, Optional, Type
+from typing import List, Union, Optional, Type, Callable
 
 from ..domain import document as d
 from ..formatting import Formatter, FormatTag
@@ -41,7 +41,8 @@ def align(
     text_elements: List[Union[d.TextElement, str]],
     alignment: Alignment,
     width: int,
-    formatter: Optional[Type[Formatter]] = None
+    formatter: Optional[Type[Formatter]] = None,
+    text_filter: Callable[[str], str] = lambda s: s
 ) -> List[str]:
 
     elements = flatten(text_elements)
@@ -164,7 +165,7 @@ def align(
 
     def format(elem):
         if isinstance(elem, str):
-            return elem
+            return text_filter(elem)
         else:
             return formatter.format_tag(elem)
 

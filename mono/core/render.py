@@ -73,7 +73,7 @@ class Renderer(object):
             if isinstance(element, d.SubChapter):
                 pass
             if isinstance(element, d.Section):
-                pass
+                blocks.append(self.render_section(element))
             if isinstance(element, d.Paragraph):
                 blocks.append(self.render_paragraph(element))
             if isinstance(element, d.Quote):
@@ -138,6 +138,20 @@ class Renderer(object):
 
         # TODO: Notes
         return b.Block(main=lines, block_offset=-2)
+
+    def render_section(self, section):
+        elements = [d.Bold(section.title.elements)]
+
+        lines = p.align(
+            text_elements=elements,
+            alignment=p.Alignment.left,
+            width=self.settings.main_width,
+            formatter=self.formatter,
+            text_filter=styles.small_caps
+        )
+
+        # TODO: Notes
+        return b.Block(main=lines)
 
     def render_paragraph(self, paragraph):
         lines = p.align(
