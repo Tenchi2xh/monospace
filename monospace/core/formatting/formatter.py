@@ -36,7 +36,11 @@ class Formatter(metaclass=ABCMeta):
     @staticmethod
     @abstractmethod
     def format_tags(line: List[Union[FormatTag, str]]) -> str:
-        """Returns the formatting necessary for given tags."""
+        """Returns the formatting necessary for given tags.
+
+        This is used in `paragraph.align`, but must also
+        be used for any inserted text in `Renderer` or in `layout`.
+        """
 
     @abstractproperty
     def file_extension(self) -> str:

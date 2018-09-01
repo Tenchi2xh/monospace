@@ -13,6 +13,7 @@ click = "^6.7"
 pypandoc = "^1.4"
 pyphen = "^0.9.5"
 ptpython = "=0.41.0"
+Jinja2 = "^2.10"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"

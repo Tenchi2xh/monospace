@@ -7,7 +7,7 @@ def character_map(string, alphabet):
 
 def number_map(number_string, alphabet):
     n = int(number_string)
-    return alphabet[n] + (" " if n <= 20 else "")
+    return alphabet[n]
 
 
 def number_map2(number_string, alphabet):

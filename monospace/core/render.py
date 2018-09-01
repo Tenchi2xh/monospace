@@ -5,7 +5,7 @@ from .domain import document as d
 from .domain import blocks as b
 from .domain import Settings
 from .rendering import paragraph as p
-from .formatting import Formatter, styles
+from .formatting import Formatter, styles, AnsiFormatter
 
 """Split a document into granular rendered blocks
 
@@ -103,23 +103,30 @@ class Renderer(object):
         # If sub-renderers also render nested lists, they will indent them
         # so the indentation adds up, no need to count levels :)
 
-        # TODO: Add bullets/numbers
+        def decorate(spaces, n):
+            bullet = "•"
+            offset = 1
+            if ordered:
+                bullet = styles.circled(n)
+                offset = 2  # Circled numbers are two characters wide...
+                if self.formatter == AnsiFormatter and n <= 20:
+                    # ...Unless you print them in a terminal and
+                    # the number is <= 20? o_O
+                    offset = 1
+
+            result = bullet + spaces[offset:]
+            return result
 
         for i, elements in enumerate(ordered_list.list_elements):
             sub_blocks = renderer.render_elements(elements)
 
-            indent = " " * self.settings.tab_size
-            for block in sub_blocks:
-                for j, line in enumerate(block.main):
-                    block.main[j] = indent + line
-
-            # Decorate
-            bullet = "•"
-            if ordered:
-                bullet = styles.circled(i)
-            first_line = sub_blocks[0].main[0]
-            decorated_line = bullet + first_line[len(bullet):]
-            sub_blocks[0].main[0] = decorated_line
+            for j, block in enumerate(sub_blocks):
+                for k, line in enumerate(block.main):
+                    indent = " " * self.settings.tab_size
+                    if j == 0 and k == 0:
+                        indent = decorate(indent, i)
+                    formatted_indent = self.formatter.format_tags([indent])
+                    block.main[k] = formatted_indent + line
 
             blocks.extend(sub_blocks)
 
@@ -134,7 +141,9 @@ class Renderer(object):
             width=self.settings.main_width,
             formatter=self.formatter
         )
-        lines.insert(0, "━" * self.settings.main_width)
+        line_elements = ["━" * self.settings.main_width]
+        formated_line = self.formatter.format_tags(line_elements)
+        lines.insert(0, formated_line)
 
         # TODO: Notes
         return b.Block(main=lines, block_offset=-2)
