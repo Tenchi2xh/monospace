@@ -1,6 +1,15 @@
 language: python
+
 python:
-  - "3.7-dev"
+  - "3.7"
+
+# Temporary, until Travis CI adds 3.7 officially
+dist: xenial
+sudo: true
+
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y pandoc
 install:
   - pip install poetry
   - poetry install
