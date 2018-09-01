@@ -224,7 +224,7 @@ currentdict end /unifont exch /ProcSet defineresource pop
     16#0000cd             % 4: blue              (Blue3)
     16#cd00cd             % 5: magenta           (Magenta3)
     16#00cdcd             % 6: cyan              (Cyan3)
-    16#cdcdcd             % 7: white             (AntiqueWhite)
+    16#cdcdcd             % 7: grey
     16#404040             % 8: bright black      (Grey25)
     16#ff0000             % 1/9: bright red      (Reed)
     16#00ff00             % 2/10: bright green   (Green)
@@ -346,11 +346,11 @@ currentdict end /unifont exch /ProcSet defineresource pop
 
 % black background
 /bk {
-        color-bg sethexcolor
+        0 fg
         -1 -1 moveto
-        -1 paper-h lineto
-        paper-w paper-h lineto
-        paper-w -1 lineto
+        -1 paper-h 1 add lineto
+        paper-w 1 add paper-h 1 add lineto
+        paper-w 1 add -1 lineto
         closepath fill
 } def
 
@@ -376,14 +376,17 @@ currentdict end /uniterm exch /ProcSet defineresource pop
 /uniterm/ProcSet findresource { def } forall
 
 % Width and height of characters
+% Ratio is 1:2 exactly
 /cH 1000 cpt def
 /cW cH 2 div def
 
+% Each character is rendered individually on a grid
+% using these steps
 /em cW def      % terminal grid x-step
 /ex cH def      % terminal grid y-step
 /tabstop 8 def
 
-/fR /Iosevka cH fontcmd def
+/fR /Iosevka-Light cH fontcmd def
 /fI /Iosevka-Italic cH fontcmd def
 /fB /Iosevka-Bold cH fontcmd def
 /fO /Iosevka-Bold-Italic cH fontcmd def
