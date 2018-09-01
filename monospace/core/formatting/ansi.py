@@ -1,5 +1,5 @@
 from typing import List, Union
-from .formatter import Formatter, FormatTag
+from .formatter import Formatter, FormatTag, Format as F
 
 
 def csi(params, end):
@@ -7,8 +7,8 @@ def csi(params, end):
 
 
 codes = {
-    "Bold": (csi([1], "m"), csi([22], "m")),
-    "Italic": (csi([3], "m"), csi([23], "m")),
+    F.Bold: (csi([1], "m"), csi([22], "m")),
+    F.Italic: (csi([3], "m"), csi([23], "m")),
 }
 
 

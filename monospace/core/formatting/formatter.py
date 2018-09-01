@@ -1,13 +1,16 @@
+from enum import Enum
 from typing import List, Union
 from dataclasses import dataclass
 from abc import ABCMeta, abstractmethod, abstractproperty
 
 from ..domain import Settings
 
+Format = Enum("Format", ["Bold", "Italic", "Code", "Quoted", "CrossRef"])
+
 
 @dataclass
 class FormatTag:
-    kind: str
+    kind: Format
     open: bool = True
 
     @property

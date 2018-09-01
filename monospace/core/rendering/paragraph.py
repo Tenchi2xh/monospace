@@ -5,7 +5,7 @@ from enum import Enum
 from typing import List, Union, Optional, Type, Callable
 
 from ..domain import document as d
-from ..formatting import Formatter, FormatTag
+from ..formatting import Formatter, FormatTag, Format
 
 
 random.seed(1337)
@@ -30,7 +30,7 @@ def flatten(elements: d.TextElements) -> Line:
         elif isinstance(element, d.Unprocessed):
             result.append("<UNPROCESSED: %s>" % element.kind)
         else:
-            tag = FormatTag(element.__class__.__name__)
+            tag = FormatTag(Format[element.__class__.__name__])
             result.append(tag)
             result.extend(flatten(element.children))  # type: ignore
             result.append(tag.close_tag)
