@@ -165,18 +165,18 @@ def align(
     # --- Step 4 --------------------------------------------------------------
     # Finalize each line with formatting
 
-    def format(elem):
-        if isinstance(elem, str):
-            return text_filter(elem)
-        else:
-            return formatter.format_tag(elem)
+    filtered_lines: List[List[Union[FormatTag, str]]] = [
+        [text_filter(elem) if isinstance(elem, str) else elem for elem in line]
+        for line in lines
+    ]
 
-    def strings(line):
-        if formatter is not None:
-            return [format(elem) for elem in line]
-        else:
-            return [elem for elem in line if isinstance(elem, str)]
-
-    joined = ["".join(strings(line)) for line in lines]
-
-    return joined
+    if formatter is not None:
+        return [
+            formatter.format_tags(line)
+            for line in filtered_lines
+        ]
+    else:
+        return [
+            "".join(elem for elem in line if isinstance(elem, str))
+            for line in filtered_lines
+        ]

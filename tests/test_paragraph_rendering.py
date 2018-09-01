@@ -1,6 +1,6 @@
 from monospace.core.rendering.paragraph import align, Alignment, flatten
 from monospace.core.domain import document as d
-from monospace.core.formatting import Formatter, FormatTag
+from monospace.core.formatting import HtmlFormatter, FormatTag
 
 s = d.space
 
@@ -10,15 +10,6 @@ def intersperse(sequence, value):
     result = [value] * (2 * len(sequence) - 1)
     result[::2] = sequence
     return result
-
-
-class TestFormatter(Formatter):
-    @staticmethod
-    def format_tag(tag):
-        if tag.kind == "Bold":
-            return "<b>" if tag.open else "</b>"
-        elif tag.kind == "Italic":
-            return "<i>" if tag.open else "</i>"
 
 
 def test_flatten():
@@ -131,7 +122,7 @@ def test_styled_paragraph_rendering():
     ]
 
     unformatted = align(text, Alignment.left, width)
-    formatted = align(text, Alignment.left, width, formatter=TestFormatter)
+    formatted = align(text, Alignment.left, width, formatter=HtmlFormatter)
 
     assert unformatted == expected_unformatted
     assert formatted == expected_formatted
@@ -148,7 +139,7 @@ def test_punctuation_after_tag():
 
     expected = ["Hello, <b>World</b>! "]
 
-    assert align(text, Alignment.left, 14, formatter=TestFormatter) == expected
+    assert align(text, Alignment.left, 14, formatter=HtmlFormatter) == expected
 
 
 def test_punctuation_on_new_line():

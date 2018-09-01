@@ -1,4 +1,5 @@
-from .formatter import Formatter
+from typing import List, Union
+from .formatter import Formatter, FormatTag
 
 
 def csi(params, end):
@@ -13,5 +14,13 @@ codes = {
 
 class AnsiFormatter(Formatter):
     @staticmethod
-    def format_tag(tag):
-        return codes.get(tag.kind, ("", ""))[int(not tag.open)]
+    def format_tags(line: List[Union[FormatTag, str]]) -> str:
+        result = ""
+        for elem in line:
+            if isinstance(elem, str):
+                result += elem
+            else:
+                tag = elem
+                result += codes.get(tag.kind, ("", ""))[int(not tag.open)]
+
+        return result
