@@ -1,4 +1,12 @@
+<div align=right>
+  <a href="https://pypi.org/project/monospace/"><img src="https://img.shields.io/pypi/v/monospace.svg?style=for-the-badge" alt="PyPI" /></a>
+  <a href="https://travis-ci.org/Tenchi2xh/monospace/"><img src="https://img.shields.io/travis/Tenchi2xh/monospace.svg?style=for-the-badge" alt="Travis (.org)" /></a>
+  <a href="https://app.codacy.com/project/Tenchi2xh/monospace/dashboard"><img src="https://img.shields.io/codacy/grade/4c34d93852b246c0b2facdb93ff70fbe.svg?style=for-the-badge" alt="Codacy grade" /></a>
+</div>
+<br/>
+
 <pre>
+
 
 
 
@@ -9,6 +17,9 @@
                                      <i>A fixed-width book typesetter</i>
 
                          Now re-implementing from scratch, powered by <a href="https://pandoc.org/">ᴘᴀɴᴅᴏᴄ</a>.
+
+
+
 
 
    ━━━━━━━━━━━━━━━━━━
