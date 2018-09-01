@@ -9,5 +9,9 @@ except OSError:
 
 
 def parse(source_filename) -> dict:
-    raw_ast: str = pypandoc.convert_file(source_filename, "json")
+    raw_ast: str = pypandoc.convert_file(
+        source_file=source_filename,
+        format="markdown",
+        to="json"
+    )
     return json.loads(raw_ast)

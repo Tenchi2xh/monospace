@@ -5,7 +5,7 @@ from .domain import document as d
 from .domain import blocks as b
 from .domain import Settings
 from .rendering import paragraph as p
-from .formatting import Formatter, styles, AnsiFormatter
+from .formatting import Formatter, styles, AnsiFormatter, FormatTag, Format
 
 """Split a document into granular rendered blocks
 
@@ -82,6 +82,8 @@ class Renderer(object):
                 blocks.extend(self.render_list(element, ordered=True))
             if isinstance(element, d.UnorderedList):
                 blocks.extend(self.render_list(element, ordered=False))
+            if isinstance(element, d.Aside):
+                blocks.append(self.render_aside(element))
             if isinstance(element, d.Unprocessed):
                 pass
         return blocks
@@ -90,13 +92,8 @@ class Renderer(object):
         blocks = []
 
         # Create sub-renderer that will create thinner blocks
-        renderer = Renderer(
-            settings=replace(
-                self.settings,
-                page_width=self.settings.page_width - self.settings.tab_size
-            ),
-            cross_references=self.cross_references,
-            formatter=self.formatter
+        renderer = self.get_subrenderer(
+            main_width=self.settings.main_width - self.settings.tab_size
         )
 
         # Render all list entries and indent them
@@ -172,3 +169,58 @@ class Renderer(object):
 
         # TODO: Notes
         return b.Block(main=lines)
+
+    def render_aside(self, aside):
+        # Note: although aside is composed of multiple blocks,
+        # we want to only return one block, because aside shouldn't be broken
+        lines = []
+
+        # Produce this:
+        # ....────────....
+        # ....(blocks)....
+        # ....────────....
+        #   ^          ^
+        #   \ tab_size /
+
+        main_width = self.settings.main_width
+        tab_size = self.settings.tab_size
+        f = self.formatter.format_tags
+
+        width = main_width - 2 * tab_size
+
+        gray = FormatTag(
+            kind=Format.Color,
+            data={"foreground": "#aaaaaa"}
+        )
+
+        left_indent = f([gray, " " * tab_size])
+        right_indent = f([" " * tab_size, gray.close_tag])
+        fence = left_indent + f(["─" * width]) + right_indent
+        empty_line = f([" " * main_width])
+
+        renderer = self.get_subrenderer(main_width=width)
+        blocks = renderer.render_elements(aside.elements)
+
+        lines.append(fence)
+        for block in blocks:
+            for line in block.main:
+                lines.append(left_indent + line + right_indent)
+            lines.append(empty_line)
+        lines[-1] = fence
+
+        # TODO: Notes
+        return b.Block(main=lines)
+
+    def get_subrenderer(self, main_width=None):
+        return Renderer(
+            settings=replace(
+                self.settings,
+                main_width=(
+                    self.settings.main_width
+                    if main_width is None
+                    else main_width
+                )
+            ),
+            cross_references=self.cross_references,
+            formatter=self.formatter
+        )

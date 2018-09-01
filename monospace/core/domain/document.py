@@ -64,6 +64,11 @@ class UnorderedList(StructureElement):
 
 
 @dataclass
+class Aside(StructureElement):
+    elements: List[Element]
+
+
+@dataclass
 class Unprocessed(StructureElement):
     kind: str
 

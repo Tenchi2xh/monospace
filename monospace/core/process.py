@@ -69,6 +69,8 @@ class Processor(object):
         elif kind == "BulletList":
             return d.UnorderedList(
                 [self.process_elements(elements) for elements in value])
+        elif kind == "Div":
+            return self.process_div(value)
         # --- Textual ---------------------------------------------------------
         elif kind == "Str":
             return value
@@ -138,6 +140,13 @@ class Processor(object):
 
         elements = self.process_elements(value[1])
         return d.Quoted(children=[quotes[0]] + elements + [quotes[1]])
+
+    def process_div(self, value):
+        kind = value[0][1][0]
+        if kind == "Aside":
+            return d.Aside(self.process_elements(value[1]))
+        else:
+            return d.Unprocessed("Div:" + kind)
 
 
 class Metadata(object):

@@ -56,7 +56,10 @@ class PostScriptFormatter(Formatter):
 
     @staticmethod
     def begin_file(settings: Settings) -> str:
-        return prolog_template.render(**vars(settings))
+        return prolog_template.render(
+            page_width=settings.page_width,
+            page_height=settings.page_height
+        )
 
     @staticmethod
     def begin_page(settings: Settings) -> str:

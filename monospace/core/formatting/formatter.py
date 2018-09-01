@@ -1,17 +1,22 @@
 from enum import Enum
-from typing import List, Union
-from dataclasses import dataclass
+from typing import List, Union, Any, Dict
+from dataclasses import dataclass, field
 from abc import ABCMeta, abstractmethod, abstractproperty
 
 from ..domain import Settings
 
-Format = Enum("Format", ["Bold", "Italic", "Code", "Quoted", "CrossRef"])
+Format = Enum("Format", [
+    "Bold", "Italic",
+    "Code", "Quoted", "CrossRef",
+    "Color"  # Warning: nesting colors will not be supported
+])
 
 
 @dataclass
 class FormatTag:
     kind: Format
     open: bool = True
+    data: Dict[str, Any] = field(default_factory=dict)
 
     @property
     def close_tag(self):
