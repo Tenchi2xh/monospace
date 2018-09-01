@@ -6,3 +6,4 @@ __pycache__/
 *.py[cod]
 *$py.class
 monospace.sublime-workspace
+.coverage
