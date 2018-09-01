@@ -20,6 +20,16 @@ wrap = pyphen_dictionary.wrap
 Line = List[Union[FormatTag, str]]
 
 
+def get_tag(element):
+    if isinstance(element, d.CrossRef):
+        print("identifier!", element.identifier)
+        return FormatTag(
+            Format.CrossRef,
+            data={"identifier": element.identifier}
+        )
+    return FormatTag(Format[element.__class__.__name__])
+
+
 def flatten(elements: d.TextElements) -> Line:
     result: List[Union[FormatTag, str]] = []
     for element in elements:
@@ -30,7 +40,7 @@ def flatten(elements: d.TextElements) -> Line:
         elif isinstance(element, d.Unprocessed):
             result.append("<UNPROCESSED: %s>" % element.kind)
         else:
-            tag = FormatTag(Format[element.__class__.__name__])
+            tag = get_tag(element)
             result.append(tag)
             result.extend(flatten(element.children))  # type: ignore
             result.append(tag.close_tag)
@@ -85,6 +95,7 @@ def align(
         for kind in reversed(open_tags):
             lines[-1].append(FormatTag(kind=kind).close_tag)
         for kind in open_tags:
+            # FIXME: Bug: original data object from tag is lost
             next_line.append(FormatTag(kind=kind))
         if next_word:
             if also_process_buffer:
