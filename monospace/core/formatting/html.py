@@ -1,9 +1,9 @@
 from typing import List, Union
-from .formatter import Formatter, FormatTag
+from .formatter import Formatter, FormatTag, Format as F
 
 tags = {
-    "Bold": "b",
-    "Italic": "i",
+    F.Bold: "b",
+    F.Italic: "i",
 }
 
 

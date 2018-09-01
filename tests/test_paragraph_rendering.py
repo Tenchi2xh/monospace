@@ -1,6 +1,6 @@
 from monospace.core.rendering.paragraph import align, Alignment, flatten
 from monospace.core.domain import document as d
-from monospace.core.formatting import HtmlFormatter, FormatTag
+from monospace.core.formatting import HtmlFormatter, FormatTag, Format as F
 
 s = d.space
 
@@ -22,12 +22,12 @@ def test_flatten():
     ]
     expected = [
         "This", s, "text", s, "contains", s, "mixed", s, "styles:", s,
-        FormatTag("Bold", open=True),
+        FormatTag(F.Bold, open=True),
         "Hello,", s,
-        FormatTag("Italic", open=True),
+        FormatTag(F.Italic, open=True),
         "World!",
-        FormatTag("Italic", open=False),
-        FormatTag("Bold", open=False)
+        FormatTag(F.Italic, open=False),
+        FormatTag(F.Bold, open=False)
     ]
 
     assert flatten(elements) == expected
