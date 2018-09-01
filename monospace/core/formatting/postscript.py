@@ -15,6 +15,8 @@ font_styles = {
 }
 
 DARK_MODE = True
+fg = "%d fg" % (15 if DARK_MODE else 0)
+# TODO: bg?
 
 
 class PostScriptFormatter(Formatter):
@@ -22,8 +24,9 @@ class PostScriptFormatter(Formatter):
 
     @staticmethod
     def format_tags(line: List[Union[FormatTag, str]]) -> str:
-        # Reset color, regular font, open group
-        result = "%d fg fR (" % (15 if DARK_MODE else 0)
+
+        # Regular font, open group
+        result = "fR ("
 
         # For color styles, closing the current group and invoking the next
         # color is enough.
@@ -40,7 +43,18 @@ class PostScriptFormatter(Formatter):
                 result += sanitize(elem)
             else:
                 tag = elem
-                if tag.kind in (F.Bold, F.Italic):
+
+                if tag.kind == F.Color:
+                    if tag.open:
+                        if "foreground" in tag.data:
+                            color = tag.data["foreground"]
+                            if color[0] != "#":
+                                color = "#" + color
+                            result += ") u 16%s sethexcolor (" % color
+                    else:
+                        result += ") u %s (" % fg
+
+                elif tag.kind in (F.Bold, F.Italic):
                     if tag.open:
                         current_font_styles.add(tag.kind)
                     else:
@@ -70,7 +84,7 @@ class PostScriptFormatter(Formatter):
 
     @staticmethod
     def format_line(line: str) -> str:
-        return "%s n" % line
+        return "%s %s n" % (fg, line)
 
     @staticmethod
     def end_page(settings: Settings) -> str:
