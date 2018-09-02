@@ -17,7 +17,7 @@ def layout(
     empty_line = formatter.format_tags([" " * s.page_width])
 
     def start_page():
-        for i in range(s.margin_top):
+        for _ in range(s.margin_top):
             pages[-1].append(empty_line)
 
     content_length = s.page_height - s.margin_top - s.margin_bottom

@@ -1,12 +1,3 @@
-from typing import Dict, List, Optional, Type
-from dataclasses import replace
-
-from .domain import document as d
-from .domain import blocks as b
-from .domain import Settings
-from .rendering import paragraph as p
-from .formatting import Formatter, styles, AnsiFormatter, FormatTag, Format
-
 """Split a document into granular rendered blocks
 
 Render all elements of a document and produce blocks.
@@ -47,6 +38,15 @@ Side blocks are rendered without padding and alignment:
 it is delegated to the main renderer, because the side blocks
 need to be aligned left or right depending on which page they are on.
 """
+
+from typing import Dict, List, Optional, Type
+from dataclasses import replace
+
+from .domain import document as d
+from .domain import blocks as b
+from .domain import Settings
+from .rendering import paragraph as p
+from .formatting import Formatter, styles, AnsiFormatter, FormatTag, Format
 
 
 def render(
