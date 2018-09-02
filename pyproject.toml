@@ -7,6 +7,9 @@ authors = ["Hamza Haiken <tenchi@team2xh.net>"]
 keywords = ["typesetting", "terminal"]
 repository = "https://github.com/Tenchi2xh/monospace"
 
+[tool.poetry.scripts]
+monospace = 'monospace:__main__'
+
 [tool.poetry.dependencies]
 python = "^3.7"
 click = "^6.7"
