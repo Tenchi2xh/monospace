@@ -1,4 +1,5 @@
 from typing import List, Union
+from ..domain import Settings
 from .formatter import Formatter, FormatTag, Format as F
 
 
@@ -37,6 +38,8 @@ def get_code(tag):
 
 
 class AnsiFormatter(Formatter):
+    file_extension = "ansi"
+
     @staticmethod
     def format_tags(line: List[Union[FormatTag, str]]) -> str:
         result = ""
@@ -47,3 +50,23 @@ class AnsiFormatter(Formatter):
                 result += get_code(elem)
 
         return result
+
+    @staticmethod
+    def begin_file(settings: Settings) -> str:
+        return ""
+
+    @staticmethod
+    def begin_page(settings: Settings) -> str:
+        return ""
+
+    @staticmethod
+    def format_line(line: str) -> str:
+        return line
+
+    @staticmethod
+    def end_page(settings: Settings) -> str:
+        return ""
+
+    @staticmethod
+    def end_file(settings: Settings) -> str:
+        return ""
