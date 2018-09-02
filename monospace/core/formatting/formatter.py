@@ -1,6 +1,7 @@
+import io
 from enum import Enum
-from typing import List, Union, Any, Dict
 from dataclasses import dataclass, field
+from typing import List, Union, Any, Dict
 from abc import ABCMeta, abstractmethod, abstractproperty
 
 from ..domain import Settings
@@ -28,7 +29,7 @@ class Formatter(metaclass=ABCMeta):
 
     @classmethod
     def write_file(cls, path: str, pages: List[List[str]], settings: Settings):
-        with open("%s.%s" % (path, cls.file_extension), "w") as f:
+        def do_write(f):
             def w(s):
                 f.write(s)
                 f.write("\n")
@@ -40,6 +41,12 @@ class Formatter(metaclass=ABCMeta):
                     w(cls.format_line(line))
                 w(cls.end_page(settings))
             w(cls.end_file(settings))
+
+        if isinstance(path, io.IOBase):
+            do_write(path)
+        else:
+            with open("%s.%s" % (path, cls.file_extension), "w") as f:
+                do_write(f)
 
     @staticmethod
     @abstractmethod
