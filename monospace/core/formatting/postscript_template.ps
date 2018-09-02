@@ -3,12 +3,10 @@
 % available at https://github.com/arsv/u2ps
 
 %%BeginProlog
-%%BeginResource: procset unidata
-2 dict dup begin
-/ReverseGlyphList <<
->> def
-end /unidata exch /ProcSet defineresource pop
-%%EndResource
+
+{{ fonts }}
+
+{{ reverse_glyphs }}
 
 %%BeingResource: procset gscompat
 2 dict begin
@@ -389,10 +387,10 @@ currentdict end /uniterm exch /ProcSet defineresource pop
 /ex cH def      % terminal grid y-step
 /tabstop 8 def
 
-/fR /Iosevka-Light cH fontcmd def
-/fI /Iosevka-Italic cH fontcmd def
-/fB /Iosevka-Bold cH fontcmd def
-/fO /Iosevka-Bold-Italic cH fontcmd def
+/fR /Iosevka-Plus-Light cH fontcmd def
+/fI /Iosevka-Plus-Italic cH fontcmd def
+/fB /Iosevka-Plus-Bold cH fontcmd def
+/fO /Iosevka-Plus-Bold-Italic cH fontcmd def
 
 % page size
 /paper-w em {{ page_width }} mul def

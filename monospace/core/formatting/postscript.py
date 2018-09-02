@@ -4,8 +4,22 @@ from typing import List, Union, Set
 from .formatter import Formatter, FormatTag, Format as F
 from ..domain import Settings
 
-raw_template = pkg_resources.resource_string(__name__, "template.ps")
-prolog_template = Template(raw_template.decode("UTF-8"))
+
+def get_file(name):
+    return pkg_resources.resource_string(__name__, name).decode("UTF-8")
+
+
+template = Template(get_file("postscript_template.ps"))
+
+fonts = "\n".join([
+    get_file("iosevka-plus-regular.t42"),
+    get_file("iosevka-plus-light.t42"),
+    get_file("iosevka-plus-italic.t42"),
+    get_file("iosevka-plus-bold.t42"),
+    get_file("iosevka-plus-bold-italic.t42"),
+])
+
+reverse_glyphs = get_file("reverse_glyphs.ps")
 
 font_styles = {
     (): "fR",
@@ -70,9 +84,11 @@ class PostScriptFormatter(Formatter):
 
     @staticmethod
     def begin_file(settings: Settings) -> str:
-        return prolog_template.render(
+        return template.render(
+            fonts=fonts,
+            reverse_glyphs=reverse_glyphs,
             page_width=settings.page_width,
-            page_height=settings.page_height
+            page_height=settings.page_height,
         )
 
     @staticmethod
