@@ -31,7 +31,6 @@ def tag(format_tag):
     tag_name = tags[kind]
 
     if kind in tag_attributes and format_tag.open:
-        print(format_tag)
         attributes = tag_attributes[kind](format_tag)
         formatted = " ".join('%s="%s"' % (k, v) for k, v in attributes.items())
         return "<%s %s>" % (tag_name, formatted)
