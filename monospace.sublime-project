@@ -8,7 +8,8 @@
                 "__pycache__",
                 ".mypy_cache",
                 ".pytest_cache",
-                ".venv"
+                ".venv",
+                "dist"
             ]
         }
     ],
@@ -21,7 +22,7 @@
         "SublimeLinter.linters.mypy.disable": false,
         "SublimeLinter.linters.mypy.executable": "$project_path/.venv/bin/mypy",
         "SublimeLinter.linters.flake8.disable": false,
-        "SublimeLinter.linters.flake.executable": "$project_path/.venv/bin/flake8",
+        "SublimeLinter.linters.flake8.executable": "$project_path/.venv/bin/flake8",
     },
     "build_systems":
     [
