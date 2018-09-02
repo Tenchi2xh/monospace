@@ -8,7 +8,7 @@ keywords = ["typesetting", "terminal"]
 repository = "https://github.com/Tenchi2xh/monospace"
 
 [tool.poetry.scripts]
-monospace = 'monospace:__main__'
+monospace = 'monospace.cli:monospace'
 
 [tool.poetry.dependencies]
 python = "^3.7"
