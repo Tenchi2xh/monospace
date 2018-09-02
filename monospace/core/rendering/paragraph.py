@@ -22,7 +22,6 @@ Line = List[Union[FormatTag, str]]
 
 def get_tag(element):
     if isinstance(element, d.CrossRef):
-        print("identifier!", element.identifier)
         return FormatTag(
             Format.CrossRef,
             data={"identifier": element.identifier}
