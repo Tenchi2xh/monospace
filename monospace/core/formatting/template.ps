@@ -40,11 +40,14 @@ currentdict end /gscompat exch /ProcSet defineresource pop
 % (utf-8-string) ushow -
 /ushow {
         deutf {                                                 % c
+                gsave
                 ushow.findglyph {                               % c /glyph
                         ushow.printglyph                        %
                 } {                                             % c
                         ushow.substitute
                 } ifelse
+                grestore
+                em 0 rmoveto
         } forall                                                %
 } def
 
@@ -392,8 +395,8 @@ currentdict end /uniterm exch /ProcSet defineresource pop
 /fO /Iosevka-Bold-Italic cH fontcmd def
 
 % page size
-/paper-w cW {{ page_width }} mul def
-/paper-h cH {{ page_height }} mul def
+/paper-w em {{ page_width }} mul def
+/paper-h ex {{ page_height }} mul def
 /margin-t 0 def
 /margin-r 0 def
 /margin-b 0 def

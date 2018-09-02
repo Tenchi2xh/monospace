@@ -46,7 +46,8 @@ from .domain import document as d
 from .domain import blocks as b
 from .domain import Settings
 from .rendering import paragraph as p
-from .formatting import Formatter, styles, AnsiFormatter, FormatTag, Format
+from .formatting import Formatter, styles, AnsiFormatter,\
+                        PostScriptFormatter, FormatTag, Format
 
 
 def render(
@@ -110,6 +111,8 @@ class Renderer(object):
                     # ...Unless you print them in a terminal and
                     # the number is <= 20? o_O
                     offset = 1
+                if self.formatter == PostScriptFormatter:
+                    offset = 1  # ps template has fixed offsets
 
             result = bullet + spaces[offset:]
             return result
