@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "monospace"
-version = "0.1.6"
+version = "0.1.7"
 description = "Book typesetter for the terminal"
 readme = "README.md"
 authors = ["Hamza Haiken <tenchi@team2xh.net>"]
