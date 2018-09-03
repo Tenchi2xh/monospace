@@ -29,17 +29,16 @@ def highlight_code_block(
     words: List[List[Union[FormatTag, str]]] = [[]]
 
     if lexer:
-        for e in list(lexer.get_tokens(code_block.code)):
-            # Map pygments styles for each token to a list of FormatTag
-            style_map = {}
-            for token_type, values in style._styles.items():
-                tags = []
-                if values[0]:
-                    tags.append(FormatTag(
-                        kind=F.ForegroundColor,
-                        data={"color": "#" + values[0]}
-                    ))
-                style_map[token_type] = tags
+        # Map pygments styles for each token to a list of FormatTag
+        style_map = {}
+        for token_type, values in style._styles.items():
+            tags = []
+            if values[0]:
+                tags.append(FormatTag(
+                    kind=F.ForegroundColor,
+                    data={"color": "#" + values[0]}
+                ))
+            style_map[token_type] = tags
 
         tokens = lexer.get_tokens(code_block.code)
         last_line = words[-1]
