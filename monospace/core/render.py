@@ -203,13 +203,8 @@ class Renderer(object):
 
         width = main_width - 2 * tab_size
 
-        gray = FormatTag(
-            kind=F.ForegroundColor,
-            data={"color": "#aaaaaa"}
-        )
-
-        left_indent = f([gray, " " * tab_size])
-        right_indent = f([" " * tab_size, gray.close_tag])
+        left_indent = f([light_gray, " " * tab_size])
+        right_indent = f([" " * tab_size, light_gray.close_tag])
         fence = left_indent + f(["─" * width]) + right_indent
         empty_line = f([" " * main_width])
 
@@ -247,9 +242,17 @@ class Renderer(object):
         for i, line in enumerate(highlighted):
             highlighted[i] = indent_left + line + indent_right
 
-        spaces = ft([indent, bg, " " * (mw - ts * 2), bg.close_tag, indent])
-        highlighted.insert(0, spaces)
-        highlighted.append(spaces)
+        fences = []
+        for char in ("▔", "▁"):
+            fences.append(ft([
+                indent,
+                bg, dark_gray,
+                char * (mw - ts * 2),
+                dark_gray.close_tag, bg.close_tag,
+                indent
+            ]))
+        highlighted.insert(0, fences[0])
+        highlighted.append(fences[1])
 
         return b.Block(main=highlighted)
 
@@ -266,3 +269,7 @@ class Renderer(object):
             cross_references=self.cross_references,
             formatter=self.formatter
         )
+
+
+light_gray = FormatTag(kind=F.ForegroundColor, data={"color": "#aaaaaa"})
+dark_gray = FormatTag(kind=F.ForegroundColor, data={"color": "#444444"})
