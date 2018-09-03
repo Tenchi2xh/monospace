@@ -290,11 +290,15 @@ currentdict end /unifont exch /ProcSet defineresource pop
                 gc sethexcolor                  % (s) x0
                 % Move a tiny bit to the right to avoid gaps
                 % And move a fair bit down to avoid clipping the text
-                0.03 em mul -0.2 ex mul rmoveto  % (s) x0
+                % (I went with a microscope to find those perfect values)
+                % The vertical factor here determines the y-offset at which the boxes start
+                0.02 em mul -0.219 ex mul rmoveto  % (s) x0
                 % Multiply vertical movement a bit to avoid small gaps in rendering
-                0 1.03 ex mul rlineto           % (s) x0
+                % This vertical factor accounts for the height of the boxes
+                % It's not 100% perfect (clips a bit the font) but better than gaps
+                0 1.01 ex mul rlineto           % (s) x0
                 currentpoint exch pop lineto    % (s)
-                0 1.03 ex mul neg rlineto
+                0 1.01 ex mul neg rlineto
                 closepath fill
                 grestore
         } if

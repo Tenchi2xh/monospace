@@ -14,6 +14,8 @@ class Settings:
     margin_outside: int
     margin_bottom: int
 
+    source_file: str
+
     @property
     def page_width(self):
         return (
@@ -25,7 +27,7 @@ class Settings:
         )
 
     @staticmethod
-    def from_meta(meta):
+    def from_meta(meta, source_file):
         return Settings(
             main_width=get(meta, "dimensions.body-width", 70),
             page_height=get(meta, "dimensions.page-height", 20),
@@ -36,6 +38,7 @@ class Settings:
             margin_inside=get(meta, "dimensions.margins.inside", 10),
             margin_outside=get(meta, "dimensions.margins.outside", 5),
             margin_bottom=get(meta, "dimensions.margins.bottom", 5),
+            source_file=source_file
         )
 
 

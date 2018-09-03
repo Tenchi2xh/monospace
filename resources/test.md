@@ -14,7 +14,7 @@ dimensions:
 
 # Typography in ten minutes (A chapter)
 
-[Test *foo*](http://foo.com)
+![Caption](vt100.jpg)
 
 ```python
 for line in words:

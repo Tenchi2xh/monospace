@@ -75,6 +75,11 @@ class CodeBlock(StructureElement):
 
 
 @dataclass
+class Image(StructureElement):
+    uri: str
+
+
+@dataclass
 class Unprocessed(StructureElement):
     kind: str
 

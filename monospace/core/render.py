@@ -41,11 +41,12 @@ need to be aligned left or right depending on which page they are on.
 
 from typing import Dict, List, Optional, Type
 from dataclasses import replace
+import os
 
 from .domain import document as d
 from .domain import blocks as b
 from .domain import Settings
-from .rendering import paragraph as p, code
+from .rendering import paragraph as p, code, images
 from .formatting import Formatter, styles, AnsiFormatter,\
                         PostScriptFormatter, FormatTag, Format as F
 
@@ -83,6 +84,8 @@ class Renderer(object):
                 blocks.append(self.render_aside(element))
             if isinstance(element, d.CodeBlock):
                 blocks.append(self.render_code_block(element))
+            elif isinstance(element, d.Image):
+                blocks.append(self.render_image(element))
 
             # Unimplemented:
             if (
@@ -255,6 +258,27 @@ class Renderer(object):
         highlighted.append(fences[1])
 
         return b.Block(main=highlighted)
+
+    def render_image(self, image):
+        extension = image.uri.rsplit(".", 1)[-1]
+        cwd = os.path.dirname(self.settings.source_file)
+        real_uri = os.path.join(cwd, image.uri)
+
+        if extension in ("png", "jpg", "jpeg"):
+            # TODO: Attributes for level of detail
+            width = self.settings.main_width - 2 * self.settings.tab_size
+            image_lines = images.ansify(real_uri, self.formatter, width)
+            indent = self.formatter.format_tags(" " * self.settings.tab_size)
+            indented = [
+                indent + line + indent
+                for line in image_lines
+            ]
+
+            # TODO: Caption
+            return b.Block(main=indented)
+        else:
+            return b.Block(
+                main=self.formatter.format_tags("<UNRENDERED: Image>"))
 
     def get_subrenderer(self, main_width=None):
         return Renderer(

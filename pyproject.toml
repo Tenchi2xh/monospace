@@ -18,6 +18,7 @@ pyphen = "^0.9.5"
 ptpython = "=0.41.0"
 Jinja2 = "^2.10"
 cursebox-lib = "^1.0"
+Pillow = "^5.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"

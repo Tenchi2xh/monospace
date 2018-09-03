@@ -1,4 +1,4 @@
-from typing import Optional, Any, Dict, List, Tuple
+from typing import Optional, Any, Dict, List
 
 from .domain import Settings
 from .formatting import styles
@@ -6,10 +6,10 @@ from .domain import document as d
 from .symbols.characters import double_quotes, single_quotes
 
 
-def process(ast: dict) -> Tuple[Settings, Dict[str, str], List[d.Element]]:
+def process(ast: dict, source_file):
     # TODO: Add support for settings for the typesetting and metadata
     meta = process_meta(ast["meta"])
-    settings = Settings.from_meta(meta)
+    settings = Settings.from_meta(meta, source_file)
     processor = Processor(ast)
 
     cross_references = processor.cross_references
@@ -78,6 +78,8 @@ class Processor(object):
         elif kind == "CodeBlock":
             language = "" if not value[0][1] else value[0][1][0]
             return d.CodeBlock(language=language, code=value[1])
+        elif kind == "Image":
+            return d.Image(uri=value[2][0])
         # --- Textual ---------------------------------------------------------
         elif kind == "Str":
             return value
@@ -103,6 +105,11 @@ class Processor(object):
         )
 
     def process_paragraph(self, value):
+        text = self.make_text(value)
+        if any(isinstance(e, d.Image) for e in text.elements):
+            if len(text.elements) != 1:
+                raise ValueError("Inline images are not supported")
+            return text.elements[0]
         return d.Paragraph(self.make_text(value))
 
     def process_quote(self, value):
