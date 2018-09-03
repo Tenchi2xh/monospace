@@ -1,8 +1,11 @@
 #!/bin/sh
 
+# Put this file in .git/hooks
+
 echo "Checking project..."
 
-./check.sh
+# Git hooks execute from the root of the repo
+./scripts/check.sh
 exit_status=$?
 
 if [[ "${exit_status}" -ne 0 ]]; then
