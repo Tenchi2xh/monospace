@@ -71,22 +71,32 @@ class Renderer(object):
         for element in elements:
             if isinstance(element, d.Chapter):
                 blocks.append(self.render_chapter(element))
-            if isinstance(element, d.SubChapter):
-                pass
             if isinstance(element, d.Section):
                 blocks.append(self.render_section(element))
             if isinstance(element, d.Paragraph):
                 blocks.append(self.render_paragraph(element))
-            if isinstance(element, d.Quote):
-                pass
             if isinstance(element, d.OrderedList):
                 blocks.extend(self.render_list(element, ordered=True))
             if isinstance(element, d.UnorderedList):
                 blocks.extend(self.render_list(element, ordered=False))
             if isinstance(element, d.Aside):
                 blocks.append(self.render_aside(element))
-            if isinstance(element, d.Unprocessed):
-                pass
+
+            # Unimplemented:
+            if (
+                isinstance(element, d.SubChapter)
+                or isinstance(element, d.Quote)
+                or isinstance(element, d.Unprocessed)
+            ):
+                if isinstance(element, d.Unprocessed):
+                    kind = element.kind
+                else:
+                    kind = element.__class__.__name__
+
+                blocks.append(self.render_paragraph(
+                    d.Paragraph(text=d.Text(["<UNRENDERED: %s>" % kind]))
+                ))
+
         return blocks
 
     def render_list(self, ordered_list, ordered=False):
