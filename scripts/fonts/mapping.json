@@ -1,0 +1,23 @@
+{
+    "bases": {
+        "regular": "iosevka/iosevka-light.ttf",
+        "bold": "iosevka/iosevka-bold.ttf",
+        "italic": "iosevka/iosevka-italic.ttf",
+        "bold-italic": "iosevka/iosevka-bolditalic.ttf"
+    },
+    "extensions": [
+        {
+            "files": {
+                "regular": "iosevka/iosevka-slab-thin.ttf",
+                "bold": "iosevka/iosevka-slab-medium.ttf",
+                "italic": "iosevka/iosevka-slab-lightitalic.ttf",
+                "bold-italic": "iosevka/iosevka-slab-bolditalic.ttf"
+            },
+            "ranges": [
+                {"from": ["41", "5A"], "to": ["1D670", "1D689"]},
+                {"from": ["61", "7A"], "to": ["1D68A", "1D6A3"]},
+                {"from": ["30", "39"], "to": ["1D7F6", "1D7FF"]}
+            ]
+        }
+    ]
+}

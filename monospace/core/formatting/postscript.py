@@ -13,7 +13,6 @@ template = Template(get_file("postscript_template.ps"))
 
 fonts = "\n".join([
     get_file("iosevka-plus-regular.t42"),
-    get_file("iosevka-plus-light.t42"),
     get_file("iosevka-plus-italic.t42"),
     get_file("iosevka-plus-bold.t42"),
     get_file("iosevka-plus-bold-italic.t42"),
