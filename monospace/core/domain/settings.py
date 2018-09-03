@@ -23,3 +23,28 @@ class Settings:
             + self.side_spacing
             + self.main_width
         )
+
+    @staticmethod
+    def from_meta(meta):
+        return Settings(
+            main_width=get(meta, "dimensions.body-width", 70),
+            page_height=get(meta, "dimensions.page-height", 20),
+            side_width=get(meta, "dimensions.notes-width", 60),
+            side_spacing=get(meta, "dimensions.separation", 4),
+            tab_size=get(meta, "dimensions.indentations", 4),
+            margin_top=get(meta, "dimensions.margins.top", 5),
+            margin_inside=get(meta, "dimensions.margins.inside", 10),
+            margin_outside=get(meta, "dimensions.margins.outside", 5),
+            margin_bottom=get(meta, "dimensions.margins.bottom", 5),
+        )
+
+
+def get(dictionary, key, default):
+    keys = key.split(".")
+    current = dictionary
+    for key in keys:
+        if isinstance(current, dict) and key in current:
+            current = current[key]
+        else:
+            return default
+    return current

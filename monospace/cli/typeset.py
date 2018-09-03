@@ -6,7 +6,7 @@ import subprocess
 import webbrowser
 
 from ..core.formatting import AnsiFormatter, HtmlFormatter, PostScriptFormatter
-from .util import do_typeset, dummy_settings
+from .util import do_typeset
 
 
 formatters = {
@@ -49,7 +49,7 @@ def typeset(markdown_file, to, preview, do_open):
                 "Option --preview is not available with format 'pdf'")
         filename = sys.stdout
 
-    do_typeset(markdown_file, formatter, dummy_settings, filename)
+    do_typeset(markdown_file, formatter, filename)
 
     if to == "pdf":
         subprocess.check_call(["ps2pdf", filename + ".ps", filename + ".pdf"])

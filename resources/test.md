@@ -1,3 +1,17 @@
+---
+dimensions:
+    page-height: 60
+    body-width: 70
+    notes-width: 20
+    separation: 4
+    indentations: 4
+    margins:
+        top: 5
+        bottom: 5
+        inside: 10
+        outside: 5
+...
+
 # Typography in ten minutes (A chapter)
 
 [Test *foo*](http://foo.com)

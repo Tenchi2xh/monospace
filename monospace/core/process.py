@@ -1,17 +1,21 @@
 from typing import Optional, Any, Dict, List, Tuple
-from .domain import document as d
+
+from .domain import Settings
 from .formatting import styles
+from .domain import document as d
 from .symbols.characters import double_quotes, single_quotes
 
 
-def process(ast: dict) -> Tuple[Dict[str, str], List[d.Element]]:
+def process(ast: dict) -> Tuple[Settings, Dict[str, str], List[d.Element]]:
     # TODO: Add support for settings for the typesetting and metadata
-    # meta = ast["meta"]
+    meta = process_meta(ast["meta"])
+    settings = Settings.from_meta(meta)
     processor = Processor(ast)
+
     cross_references = processor.cross_references
     document_elements = processor.processed
 
-    return cross_references, document_elements
+    return settings, cross_references, document_elements
 
 
 class Processor(object):
@@ -176,3 +180,30 @@ def join(elements: List[d.Element]) -> str:
         return result
 
     return " ".join(do_join(elements))
+
+
+def process_meta(meta: dict) -> dict:
+    result: dict = {}
+    for k, v in meta.items():
+        kind = v["t"]
+        content = v["c"]
+
+        if kind == "MetaMap":
+            result[k] = process_meta(content)
+        elif kind == "MetaInlines":
+            value = ""
+            for elem in content:
+                if elem["t"] == "Str":
+                    value += elem["c"]
+                elif elem["t"] == "Space":
+                    value += " "
+                else:
+                    raise TypeError("Unknown meta value type: %s" % elem["t"])
+            try:
+                result[k] = int(value)
+            except ValueError:
+                try:
+                    result[k] = float(value)
+                except ValueError:
+                    result[k] = value
+    return result
