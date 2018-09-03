@@ -69,6 +69,12 @@ class Aside(StructureElement):
 
 
 @dataclass
+class CodeBlock(StructureElement):
+    language: str
+    code: str
+
+
+@dataclass
 class Unprocessed(StructureElement):
     kind: str
 

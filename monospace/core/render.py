@@ -45,7 +45,7 @@ from dataclasses import replace
 from .domain import document as d
 from .domain import blocks as b
 from .domain import Settings
-from .rendering import paragraph as p
+from .rendering import paragraph as p, code
 from .formatting import Formatter, styles, AnsiFormatter,\
                         PostScriptFormatter, FormatTag, Format
 
@@ -81,6 +81,8 @@ class Renderer(object):
                 blocks.extend(self.render_list(element, ordered=False))
             if isinstance(element, d.Aside):
                 blocks.append(self.render_aside(element))
+            if isinstance(element, d.CodeBlock):
+                blocks.append(self.render_code_block(element))
 
             # Unimplemented:
             if (
@@ -223,6 +225,22 @@ class Renderer(object):
 
         # TODO: Notes
         return b.Block(main=lines)
+
+    def render_code_block(self, code_block):
+        highlighted = code.highlight_code_block(
+            code_block=code_block,
+            formatter=self.formatter,
+            # We want a tab size on each side, plus a character for background
+            width=self.settings.main_width - self.settings.tab_size * 2 - 2,
+        )
+        # TODO: background color
+        indent = self.formatter.format_tags([
+            " " * (self.settings.tab_size + 1)
+        ])
+        for i, line in enumerate(highlighted):
+            highlighted[i] = indent + line + indent
+
+        return b.Block(main=highlighted)
 
     def get_subrenderer(self, main_width=None):
         return Renderer(

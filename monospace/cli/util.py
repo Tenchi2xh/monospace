@@ -3,7 +3,7 @@ from ..core.domain import Settings
 from ..core.formatting import PostScriptFormatter
 
 dummy_settings = Settings(
-    main_width=60,
+    main_width=70,
     side_width=20,
     page_height=60,
 

@@ -71,6 +71,8 @@ class Processor(object):
                 [self.process_elements(elements) for elements in value])
         elif kind == "Div":
             return self.process_div(value)
+        elif kind == "CodeBlock":
+            return d.CodeBlock(language=value[0][1], code=value[1])
         # --- Textual ---------------------------------------------------------
         elif kind == "Str":
             return value
