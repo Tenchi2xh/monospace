@@ -63,8 +63,9 @@ monospace = {
     "6": "𝟼", "7": "𝟽", "8": "𝟾", "9": "𝟿",
 }
 
-# Q and X missing from unicode
+# X missing from unicode
 # (but small x looks like a small cap X anyway)
+# Q only displays nice in postscript, so replaced with "Q"
 small_caps = {
     "A": "ᴀ", "B": "ʙ", "C": "ᴄ", "D": "ᴅ", "E": "ᴇ", "F": "ꜰ",
     "G": "ɢ", "H": "ʜ", "I": "ɪ", "J": "ᴊ", "K": "ᴋ", "L": "ʟ",
@@ -72,6 +73,7 @@ small_caps = {
     "S": "ꜱ", "T": "ᴛ", "U": "ᴜ", "V": "ᴠ", "W": "ᴡ", "X": "x",
     "Y": "ʏ", "Z": "ᴢ",
 }
+small_cap_q = "ꞯ"
 small_caps.update(
     {str(i): char for i, char in enumerate(subscript)}
 )

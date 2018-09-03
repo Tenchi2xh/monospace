@@ -4,6 +4,10 @@
 
 Use the `process_elements` method to 'process' the **elements**. See chapter [](#a-sub-section).
 
+### Quick test
+
+This is just a [](#quick-test).
+
 *This a **bold** claim*, but I stand behind it: if you learn and follow these five typography rules, you will be a better typographer than nearly every writer—and even most graphic designers.
 
 ### A sub-section

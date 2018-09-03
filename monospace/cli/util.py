@@ -1,5 +1,6 @@
 from .. import core
 from ..core.domain import Settings
+from ..core.formatting import PostScriptFormatter
 
 dummy_settings = Settings(
     main_width=60,
@@ -17,6 +18,10 @@ dummy_settings = Settings(
 
 
 def do_typeset(markdown_file, formatter, settings, output):
+    if formatter == PostScriptFormatter:
+        from ..core.symbols import characters
+        characters.small_caps["Q"] = characters.small_cap_q
+
     ast = core.parse(markdown_file)
     references, elements = core.process(ast)
     blocks = core.render(elements, settings, references, formatter=formatter)
