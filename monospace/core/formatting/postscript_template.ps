@@ -383,8 +383,13 @@ currentdict end /uniterm exch /ProcSet defineresource pop
 
 % Each character is rendered individually on a grid
 % using these steps
-/em cW def      % terminal grid x-step
-/ex cH def      % terminal grid y-step
+% The ratio here is 1:2.5 for two reasons:
+% 1. Gives more space between lines, easier to read
+% 2. It's the perfect ratio for aligning ANSI block characters
+%    with Iosevka with no overlap or spacing
+/em cW def               % terminal grid x-step
+/ex 1.25 cH mul def      % terminal grid y-step
+
 /tabstop 8 def
 
 /fR /Iosevka-Plus-Light cH fontcmd def
