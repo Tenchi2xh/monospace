@@ -118,6 +118,7 @@ class PostScriptFormatter(Formatter):
 
 
 def sanitize(s: str) -> str:
+    s = s.replace("\\", "\\\\")
     s = s.replace("(", r"\(")
     s = s.replace(")", r"\)")
     return s
