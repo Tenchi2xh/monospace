@@ -1,6 +1,10 @@
+import os
 import sys
 import click
+import pathlib
 import subprocess
+import webbrowser
+
 from ..core.formatting import AnsiFormatter, HtmlFormatter, PostScriptFormatter
 from .util import do_typeset, dummy_settings
 
@@ -22,25 +26,35 @@ formatters = {
     type=click.Choice(formatters.keys()), required=True,
     help="Destination format.")
 @click.option(
-    "-p", "--print", "do_print",
+    "-p", "--preview", "preview",
     is_flag=True, default=False,
-    help="Do not save a file, print to stdout."
+    help="Do not save a file, just print to stdout."
 )
-def typeset(markdown_file, to, do_print):
-    """Typeset MARKDOWN_FILE into a book.
+@click.option(
+    "-O", "--open", "do_open",
+    is_flag=True, default=False,
+    help="Open output file."
+)
+def typeset(markdown_file, to, preview, do_open):
+    """Typeset a markdown file into a book.
 
     Saves the formatted book in the same directory as the input file.
     """
     filename = markdown_file.rsplit(".md", 1)[0]
     formatter = formatters[to]
 
-    if do_print:
+    if preview:
         if to == "pdf":
             raise click.UsageError(
-                "Option --print is not available with format 'pdf'")
+                "Option --preview is not available with format 'pdf'")
         filename = sys.stdout
 
     do_typeset(markdown_file, formatter, dummy_settings, filename)
 
     if to == "pdf":
         subprocess.check_call(["ps2pdf", filename + ".ps", filename + ".pdf"])
+
+    if do_open and not preview:
+        path = os.path.abspath("%s.%s" % (filename, to))
+        uri = pathlib.Path(path).as_uri()
+        webbrowser.open(uri)
