@@ -105,6 +105,7 @@ class Processor(object):
         level = value[0]
         metadata = Metadata(value[1])
 
+        subtitle = None
         if "subtitle" in metadata.attributes:
             subtitle = d.Text(metadata.attributes["subtitle"].split())
 
