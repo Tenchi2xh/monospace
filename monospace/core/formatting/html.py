@@ -6,13 +6,17 @@ from ..domain import Settings
 tags = {
     F.Bold: "b",
     F.Italic: "i",
-    F.Color: "span",
+    F.ForegroundColor: "span",
+    F.BackgroundColor: "span",
     F.CrossRef: "a",
 }
 
+# FIXME: Keep track of BG/FG appearance
+# We don't want to close the wrong tag
 tag_attributes = {
-    # TODO: background
-    F.Color: lambda tag: {"style": "color: %s" % tag.data["foreground"]},
+    F.ForegroundColor: lambda tag: {"style": "color: %s" % tag.data["color"]},
+    F.BackgroundColor: lambda tag: {"style": "background-color: %s"
+                                             % tag.data["color"]},
     # This makes the links real but they don't work (no anchors set)
     F.CrossRef: lambda tag: {
         "href": (
@@ -62,7 +66,7 @@ class HtmlFormatter(Formatter):
             "<head>",
             "<style>",
             "    body { margin: 0 }",
-            "    pre { font-family: Iosevka, monospace }",
+            "    pre { font-family: Iosevka, monospace; line-height: 1.2 }",
             "    a { text-decoration: none }",
             "    a:hover { text-decoration: underline }",
             "    .container { overflow: scroll }",

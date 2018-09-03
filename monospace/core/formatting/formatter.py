@@ -9,7 +9,8 @@ from ..domain import Settings
 Format = Enum("Format", [
     "Bold", "Italic",
     "Code", "Quoted", "CrossRef",
-    "Color"  # Warning: nesting colors will not be supported
+    # Warning: nesting colors of the same type will not be supported
+    "ForegroundColor", "BackgroundColor"
 ])
 
 

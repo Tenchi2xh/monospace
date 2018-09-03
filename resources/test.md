@@ -2,6 +2,21 @@
 
 [Test *foo*](http://foo.com)
 
+```python
+for line in words:
+    print("foo")
+    new_line()
+    last_line = wrapped[-1]
+
+    for word in line:
+        if current_length + len(word) > width:
+            new_line()
+            last_line = wrapped[-1]
+
+        last_line.append(word)
+        current_length += len(word)
+```
+
 Use the `process_elements` method to 'process' the **elements**. See chapter [](#a-sub-section).
 
 ### Quick test

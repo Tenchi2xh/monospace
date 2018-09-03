@@ -13,20 +13,17 @@ def rgb(hexa):
     return int(hexa[:2], 16), int(hexa[2:4], 16), int(hexa[4:6], 16)
 
 
-def tag_color(tag):
-    fg = csi([39], "m")
-    bg = csi([49], "m")
-    if "foreground" in tag.data:
-        fg = csi([38, 2, *rgb(tag.data["foreground"])], "m")
-    if "background" in tag.data:
-        bg = csi([48, 2, *rgb(tag.data["background"])], "m")
-    return fg + bg
+def tag_color(tag, fg):
+    return csi([38 if fg else 48, 2, *rgb(tag.data["color"])], "m")
 
 
 codes = {
     F.Bold: (csi([1], "m"), csi([22], "m")),
     F.Italic: (csi([3], "m"), csi([23], "m")),
-    F.Color: lambda tag: tag_color(tag) if tag.open else csi([39, 49], "m")
+    F.ForegroundColor: lambda tag: (tag_color(tag, fg=True)
+                                    if tag.open else csi([39], "m")),
+    F.BackgroundColor: lambda tag: (tag_color(tag, fg=False)
+                                    if tag.open else csi([49], "m"))
 }
 
 

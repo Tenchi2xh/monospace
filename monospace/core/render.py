@@ -47,7 +47,7 @@ from .domain import blocks as b
 from .domain import Settings
 from .rendering import paragraph as p, code
 from .formatting import Formatter, styles, AnsiFormatter,\
-                        PostScriptFormatter, FormatTag, Format
+                        PostScriptFormatter, FormatTag, Format as F
 
 
 def render(
@@ -204,8 +204,8 @@ class Renderer(object):
         width = main_width - 2 * tab_size
 
         gray = FormatTag(
-            kind=Format.Color,
-            data={"foreground": "#aaaaaa"}
+            kind=F.ForegroundColor,
+            data={"color": "#aaaaaa"}
         )
 
         left_indent = f([gray, " " * tab_size])
@@ -227,18 +227,29 @@ class Renderer(object):
         return b.Block(main=lines)
 
     def render_code_block(self, code_block):
+        ft = self.formatter.format_tags
+        ts = self.settings.tab_size
+        mw = self.settings.main_width
+
         highlighted = code.highlight_code_block(
             code_block=code_block,
             formatter=self.formatter,
-            # We want a tab size on each side, plus a character for background
-            width=self.settings.main_width - self.settings.tab_size * 2 - 2,
+            # We want a tab size on each side,
+            # plus a 2 characters for background
+            width=(mw - ts * 2 - 4),
         )
-        # TODO: background color
-        indent = self.formatter.format_tags([
-            " " * (self.settings.tab_size + 1)
-        ])
+
+        bg = FormatTag(kind=F.BackgroundColor, data={"color": "#222222"})
+        indent = " " * ts
+        indent_left = ft([indent, bg, "  "])
+        indent_right = ft(["  ", bg.close_tag, indent])
+
         for i, line in enumerate(highlighted):
-            highlighted[i] = indent + line + indent
+            highlighted[i] = indent_left + line + indent_right
+
+        spaces = ft([indent, bg, " " * (mw - ts * 2), bg.close_tag, indent])
+        highlighted.insert(0, spaces)
+        highlighted.append(spaces)
 
         return b.Block(main=highlighted)
 

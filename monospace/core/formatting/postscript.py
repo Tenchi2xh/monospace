@@ -57,15 +57,22 @@ class PostScriptFormatter(Formatter):
             else:
                 tag = elem
 
-                if tag.kind == F.Color:
+                if tag.kind in (F.ForegroundColor, F.BackgroundColor):
+                    foreground = tag.kind == F.ForegroundColor
+
                     if tag.open:
-                        if "foreground" in tag.data:
-                            color = tag.data["foreground"]
-                            if color[0] != "#":
-                                color = "#" + color
+                        color = tag.data["color"]
+                        if color[0] != "#":
+                            color = "#" + color
+                        if foreground:
                             result += ") u 16%s sethexcolor (" % color
+                        else:
+                            result += ") u /gc 16%s def (" % color
                     else:
-                        result += ") u %s (" % fg
+                        if foreground:
+                            result += ") u %s (" % fg
+                        else:
+                            result += ") u /gc null def ("
 
                 elif tag.kind in (F.Bold, F.Italic):
                     if tag.open:
