@@ -61,12 +61,22 @@ class HtmlFormatter(Formatter):
     @staticmethod
     def begin_file(settings: Settings) -> str:
         HtmlFormatter.counter = 0
+        fg, bg = ("white", "black")
+        if settings.light:
+            fg, bg = bg, fg
         return "\n".join([
             "<html>",
             "<head>",
             "<style>",
-            "    body { margin: 0 }",
-            "    pre { font-family: Iosevka, monospace; line-height: 1.2 }",
+            "    body {",
+            "        margin: 0;",
+            "        background-color: %s;" % bg,
+            "    }",
+            "    pre {"
+            "        font-family: Iosevka, monospace;",
+            "        line-height: 1.2;",
+            "        color: %s;" % fg,
+            "    }",
             "    a { text-decoration: none }",
             "    a:hover { text-decoration: underline }",
             "    .container { overflow: scroll }",
