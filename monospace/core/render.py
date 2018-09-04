@@ -205,8 +205,11 @@ class Renderer(object):
 
         width = main_width - 2 * tab_size
 
-        left_indent = ft([light_gray, " " * tab_size])
-        right_indent = ft([" " * tab_size, light_gray.close_tag])
+        color = light_gray
+        if self.settings.light:
+            color = mid_gray
+        left_indent = ft([color, " " * tab_size])
+        right_indent = ft([" " * tab_size, color.close_tag])
         fence = left_indent + ft(["─" * width]) + right_indent
         empty_line = ft([" " * main_width])
 
@@ -234,9 +237,13 @@ class Renderer(object):
             # We want a tab size on each side,
             # plus a 2 characters for background
             width=(mw - ts * 2 - 4),
+            light=self.settings.light
         )
 
         bg = FormatTag(kind=F.BackgroundColor, data={"color": "#222222"})
+        if self.settings.light:
+            bg.data["color"] = "#eeeeee"
+
         indent = " " * ts
         indent_left = ft([indent, bg, "  "])
         indent_right = ft(["  ", bg.close_tag, indent])
@@ -245,12 +252,15 @@ class Renderer(object):
             highlighted[i] = indent_left + line + indent_right
 
         fences = []
+        fence_color = dark_gray
+        if self.settings.light:
+            fence_color = light_gray
         for char in ("▔", "▁"):
             fences.append(ft([
                 indent,
-                bg, dark_gray,
+                bg, fence_color,
                 char * (mw - ts * 2),
-                dark_gray.close_tag, bg.close_tag,
+                fence_color.close_tag, bg.close_tag,
                 indent
             ]))
         highlighted.insert(0, fences[0])
@@ -298,4 +308,5 @@ class Renderer(object):
 
 
 light_gray = FormatTag(kind=F.ForegroundColor, data={"color": "#aaaaaa"})
+mid_gray = FormatTag(kind=F.ForegroundColor, data={"color": "#888888"})
 dark_gray = FormatTag(kind=F.ForegroundColor, data={"color": "#444444"})

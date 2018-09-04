@@ -12,7 +12,8 @@ from ..formatting import FormatTag, Format as F
 def highlight_code_block(
     code_block: d.CodeBlock,
     format_func: Callable,
-    width: int
+    width: int,
+    light: bool = False
 ) -> List[str]:
     try:
         lexer = get_lexer_by_name(code_block.language)
@@ -24,7 +25,9 @@ def highlight_code_block(
     #  border, roman, sans, mono]
     # (https://github.com/nex3/pygments/blob/master/pygments/style.py#L49)
     # hex values have no leading '#'
-    style = get_style_by_name("monokai")  # TODO: Make this a setting + meta
+
+    # TODO: Make this a setting + meta
+    style = get_style_by_name("manni" if light else "monokai")
 
     words: List[List[Union[FormatTag, str]]] = [[]]
 
