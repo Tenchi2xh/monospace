@@ -22,17 +22,21 @@ def layout(
 
     content_length = s.page_height - s.margin_top - s.margin_bottom
 
-    def indent():
-        if len(pages) % 2 == 1:
-            margin = s.margin_outside + s.side_width + s.side_spacing
-        else:
-            margin = s.margin_inside
-        return formatter.format_tags([" " * margin], settings)
+    def indent(line):
+        margin_left = s.margin_outside + s.side_width + s.side_spacing
+        margin_right = s.margin_inside
+        if len(pages) % 2 == 0:
+            margin_left, margin_right = margin_right, margin_left
+        return (
+            formatter.format_tags([" " * margin_left], settings)
+            + line
+            + formatter.format_tags([" " * margin_right], settings)
+        )
 
     start_page()
     for block in blocks:
         for line in block.main:
-            pages[-1].append(indent() + line)
+            pages[-1].append(indent(line))
             if len(pages[-1]) >= content_length:
                 pages.append([])
                 start_page()

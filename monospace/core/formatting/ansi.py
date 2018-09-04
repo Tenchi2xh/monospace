@@ -17,20 +17,38 @@ def tag_color(tag, fg):
     return csi([38 if fg else 48, 2, *rgb(tag.data["color"])], "m")
 
 
+def reset_fg(settings):
+    if settings.light:
+        return csi([30], "m")
+    return csi([39], "m")
+
+
+def reset_bg(settings):
+    if settings.light:
+        return csi([107], "m")
+    return csi([49], "m")
+
+
+def fg_sequence(tag, settings):
+    return tag_color(tag, fg=True) if tag.open else reset_fg(settings)
+
+
+def bg_sequence(tag, settings):
+    return tag_color(tag, fg=False) if tag.open else reset_bg(settings)
+
+
 codes = {
     F.Bold: (csi([1], "m"), csi([22], "m")),
     F.Italic: (csi([3], "m"), csi([23], "m")),
-    F.ForegroundColor: lambda tag: (tag_color(tag, fg=True)
-                                    if tag.open else csi([39], "m")),
-    F.BackgroundColor: lambda tag: (tag_color(tag, fg=False)
-                                    if tag.open else csi([49], "m"))
+    F.ForegroundColor: fg_sequence,
+    F.BackgroundColor: bg_sequence,
 }
 
 
-def get_code(tag):
+def get_code(tag, settings):
     code = codes.get(tag.kind, ("", ""))
     if callable(code):
-        return code(tag)
+        return code(tag, settings)
     return code[not tag.open]
 
 
@@ -44,7 +62,7 @@ class AnsiFormatter(Formatter):
             if isinstance(elem, str):
                 result += elem
             else:
-                result += get_code(elem)
+                result += get_code(elem, settings)
 
         return result
 
@@ -58,7 +76,7 @@ class AnsiFormatter(Formatter):
 
     @staticmethod
     def format_line(line: str, settings) -> str:
-        return line
+        return reset_fg(settings) + reset_bg(settings) + line + csi([0], "m")
 
     @staticmethod
     def end_page(settings: Settings) -> str:
