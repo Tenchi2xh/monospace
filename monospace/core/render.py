@@ -166,27 +166,30 @@ class Renderer(object):
 
     def render_subchapter(self, subchapter):
         line = ["━" * self.settings.side_width]
-        title = [d.Bold(subchapter.title.elements)]
-        subtitle = [d.Italic(subchapter.subtitle.elements)]
-
         formatted_line = self.format(line)
+
+        title = [d.Bold(subchapter.title.elements)]
         title_lines = p.align(
             text_elements=title,
             alignment=p.Alignment.left,
             width=self.settings.side_width,
             format_func=self.format
         )
-        space = self.format([" " * self.settings.side_width])
-        subtitle_lines = p.align(
-            text_elements=subtitle,
-            alignment=p.Alignment.left,
-            width=self.settings.side_width,
-            format_func=self.format
-        )
 
-        return b.Block(
-            sides=[[formatted_line] + title_lines + [space] + subtitle_lines],
-        )
+        side = [formatted_line] + title_lines
+
+        if subchapter.subtitle:
+            subtitle = [d.Italic(subchapter.subtitle.elements)]
+            subtitle_lines = p.align(
+                text_elements=subtitle,
+                alignment=p.Alignment.left,
+                width=self.settings.side_width,
+                format_func=self.format
+            )
+            space = self.format([" " * self.settings.side_width])
+            side += [space] + subtitle_lines
+
+        return b.Block(sides=[side])
 
     def render_section(self, section):
         elements = [d.Bold(section.title.elements)]
