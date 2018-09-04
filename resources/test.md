@@ -15,7 +15,7 @@ dimensions:
 
 # Typography in ten minutes (A chapter)
 
-![Caption](vt100.jpg)
+Use the `process_elements` method to 'process' the **elements**. See chapter [](#a-sub-section).
 
 ```python
 for line in words:
@@ -32,19 +32,11 @@ for line in words:
         current_length += len(word)
 ```
 
-Use the `process_elements` method to 'process' the **elements**. See chapter [](#a-sub-section).
-
-### Quick test
-
-This is just a [](#quick-test).
-
 *This a **bold** claim*, but I stand behind it: if you learn and follow these five typography rules, you will be a better typographer than nearly every writer—and even most graphic designers.
 
 ### A sub-section
 
 All it takes is ten minutes: five minutes to read these rules once. Then five minutes to read them again.
-
-> Premature optimization is the root of all evil. **Donald E. Knuth**
 
 :::: Aside
 **Small but necessary interruption**: This online book isn't supported by banner ads. It's supported by readers like you. If you find these tips valuable, see [](#how-to-pay) for this book. There's plenty of other material too - see the [](#table-of-contents).
@@ -53,6 +45,8 @@ All it takes is ten minutes: five minutes to read these rules once. Then five mi
 ## This is a sub-chapter {subtitle="It looks cool"}
 
 Ready? Go.
+
+> Premature optimization is the root of all evil. **Donald E. Knuth**
 
 1. The typographic quality of your document is determined largely by how the [](#body-text) looks. Why? Because there's more body text than anything else. So start every project by making the body text look good. Then worry about the rest.
 
@@ -79,6 +73,8 @@ Ready? Go.
 
     If that's impossible, you can still make good typography with system fonts. But choose wisely. And never choose [](#times-new-roman) or [](#arial), as those fonts are favored only by the apathetic and sloppy. Not by typographers. Not by you.
 
+![Caption](vt100.jpg)
+
 ## In conclusion {subtitle="Another sub-chapter"}
 
 That's it. As you put these five rules to work, you'll notice your documents starting to look more like professionally published material.
@@ -86,4 +82,28 @@ That's it. As you put these five rules to work, you'll notice your documents sta
 If you're ready for a little more, try the [](#summary-of-key-rules).
 
 If you're ready for a lot more, start at the [](#foreword) and keep reading.
+
+## Vetito lino oculis {subtitle="(It's Latin nonsense)"}
+
+Exarsit in vires novis, taurorum, communem utriusque ululatibus quercus leto
+illiusque pectora primo. Auctor **pallor** plectro Narcissumque citra tibi inrita
+aves templa. Illa rapinae Triones primo ibi Bacchus; hic
+et quaeque. Cinyrae et mala soror
+capellae fando.
+
+- Illa non Iovi attonitamque belli pertimuitque nomine
+- De curvique staret ovi facto intortos
+- Grata resolutaque discordibus poterat solus vincant
+- Non servaverat arvis haec domus fovi satiatur
+- Animae et adfata populus clara nocturnos fluviumque
+
+Desiderat aras *restituit* quae Dianae cursu;
+obscuram me ossa turba quamquam quoque mea. Saevisque supervenit lactens
+conplexa: pretium cruori; vides finiat.
+
+1. Tot dixit exit nil
+2. Caeneus sanae quantoque nobis
+3. Me ramos
+4. Sacra seduxit Amathunta Olympi tonitrus adhuc atria
+5. Quem campus
 

@@ -68,6 +68,7 @@ class HtmlFormatter(Formatter):
             "<html>",
             "<head>",
             "<style>",
+            "    a { color: %s; }" % fg,
             "    body {",
             "        margin: 0;",
             "        background-color: %s;" % bg,

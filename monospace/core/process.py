@@ -94,7 +94,7 @@ class Processor(object):
             return d.Code([styles.monospace(value[1])])
         elif kind == "Quoted":
             return self.process_quoted(value)
-        elif kind == "Space":
+        elif kind == "Space" or kind == "SoftBreak":
             return d.space
 
         return d.Unprocessed(kind)
