@@ -1,6 +1,7 @@
 from typing import Optional, Any, Dict, List
 
 from .domain import Settings
+from ..util import intersperse
 from .formatting import styles
 from .domain import document as d
 from .symbols.characters import double_quotes, single_quotes
@@ -121,17 +122,22 @@ class Processor(object):
 
         subtitle = None
         if "subtitle" in metadata.attributes:
-            subtitle = d.Text(metadata.attributes["subtitle"].split())
+            subtitle = d.Text(
+                elements=intersperse(
+                    metadata.attributes["subtitle"].split(),
+                    d.space
+                )
+            )
 
-        text = self.make_text(value[2])
+        title = self.make_text(value[2])
 
         assert level in (1, 2, 3), "Hedings must be of level 1, 2 or 3"
         if level == 1:
-            return d.Chapter(title=text)
+            return d.Chapter(title=title)
         elif level == 2:
-            return d.SubChapter(title=text, subtitle=subtitle)
+            return d.SubChapter(title=title, subtitle=subtitle)
         else:
-            return d.Section(title=text)
+            return d.Section(title=title)
 
     def process_link(self, value):
         if value[2] and value[2][0].startswith("#"):

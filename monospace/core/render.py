@@ -72,23 +72,25 @@ class Renderer(object):
         for element in elements:
             if isinstance(element, d.Chapter):
                 blocks.append(self.render_chapter(element))
-            if isinstance(element, d.Section):
+            elif isinstance(element, d.SubChapter):
+                blocks.append(self.render_subchapter(element))
+            elif isinstance(element, d.Section):
                 blocks.append(self.render_section(element))
-            if isinstance(element, d.Paragraph):
+            elif isinstance(element, d.Paragraph):
                 blocks.append(self.render_paragraph(element))
-            if isinstance(element, d.OrderedList):
+            elif isinstance(element, d.OrderedList):
                 blocks.extend(self.render_list(element, ordered=True))
-            if isinstance(element, d.UnorderedList):
+            elif isinstance(element, d.UnorderedList):
                 blocks.extend(self.render_list(element, ordered=False))
-            if isinstance(element, d.Aside):
+            elif isinstance(element, d.Aside):
                 blocks.append(self.render_aside(element))
-            if isinstance(element, d.CodeBlock):
+            elif isinstance(element, d.CodeBlock):
                 blocks.append(self.render_code_block(element))
             elif isinstance(element, d.Image):
                 blocks.append(self.render_image(element))
 
             # Unimplemented:
-            if (
+            elif (
                 isinstance(element, d.SubChapter)
                 or isinstance(element, d.Quote)
                 or isinstance(element, d.Unprocessed)
@@ -160,7 +162,31 @@ class Renderer(object):
         lines.insert(0, self.format(fence))
 
         # TODO: Notes
-        return b.Block(main=lines, block_offset=-2)
+        return b.Block(main=lines)
+
+    def render_subchapter(self, subchapter):
+        line = ["━" * self.settings.side_width]
+        title = [d.Bold(subchapter.title.elements)]
+        subtitle = [d.Italic(subchapter.subtitle.elements)]
+
+        formatted_line = self.format(line)
+        title_lines = p.align(
+            text_elements=title,
+            alignment=p.Alignment.left,
+            width=self.settings.side_width,
+            format_func=self.format
+        )
+        space = self.format([" " * self.settings.side_width])
+        subtitle_lines = p.align(
+            text_elements=subtitle,
+            alignment=p.Alignment.left,
+            width=self.settings.side_width,
+            format_func=self.format
+        )
+
+        return b.Block(
+            sides=[[formatted_line] + title_lines + [space] + subtitle_lines],
+        )
 
     def render_section(self, section):
         elements = [d.Bold(section.title.elements)]

@@ -1,15 +1,9 @@
-from monospace.core.rendering.paragraph import align, Alignment, flatten
+from monospace.util import intersperse
 from monospace.core.domain import document as d, Settings
+from monospace.core.rendering.paragraph import align, Alignment, flatten
 from monospace.core.formatting import HtmlFormatter, FormatTag, Format as F
 
 s = d.space
-
-
-# https://stackoverflow.com/a/6300649
-def intersperse(sequence, value):
-    result = [value] * (2 * len(sequence) - 1)
-    result[::2] = sequence
-    return result
 
 
 def test_flatten():
