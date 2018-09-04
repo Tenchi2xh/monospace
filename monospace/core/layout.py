@@ -33,13 +33,19 @@ def layout(
             + formatter.format_tags([" " * margin_right], settings)
         )
 
+    def finish_page():
+        lines_left = content_length - len(pages[-1])
+        pages[-1].extend([empty_line] * (s.margin_bottom + lines_left))
+
     start_page()
     for block in blocks:
         for line in block.main:
             pages[-1].append(indent(line))
             if len(pages[-1]) >= content_length:
+                finish_page()
                 pages.append([])
                 start_page()
         pages[-1].append(empty_line)
+    finish_page()
 
     return pages
