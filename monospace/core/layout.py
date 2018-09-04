@@ -80,7 +80,6 @@ def layout(
 
         highest_side_offset = max(sides.keys(), default=0) + 1
         main_height = len(main)
-        print(sides, highest_side_offset, main_height)
 
         for j in range(max(main_height, highest_side_offset)):
             line = ""
