@@ -140,19 +140,22 @@ class Processor(object):
             return d.Section(title=title)
 
     def process_link(self, value):
-        if value[2] and value[2][0].startswith("#"):
-            identifier = value[2][0][1:]
-            assert identifier in self.cross_references,\
-                "Link points to unknown reference '%s'" % identifier
+        if not value[2]:
+            raise ValueError("Missing URI for link %s" % value)
 
-            title = styles.small_caps(self.cross_references[identifier])
-            return d.CrossRef(
-                children=[title],
-                identifier=identifier,
-            )
-        else:
-            # Link's text: self.process_elements(value[1])
-            return d.Unprocessed("TrueLink")
+        identifier = value[2][0]
+        title = join(self.process_elements(value[1]))
+
+        if identifier.startswith("#"):
+            assert identifier[1:] in self.cross_references,\
+                "Link points to unknown reference '%s'" % identifier
+            title = self.cross_references[identifier]
+
+        formatted_title = styles.small_caps(title)
+        return d.CrossRef(
+            children=[formatted_title],
+            identifier=value[2][0]
+        )
 
     def process_quoted(self, value):
         quotes = double_quotes

@@ -20,7 +20,7 @@ tag_attributes = {
     # This makes the links real but they don't work (no anchors set)
     F.CrossRef: lambda tag: {
         "href": (
-            "#%s" % tag.data["identifier"]
+            tag.data["identifier"]
             if "identifier" in tag.data
             else "XXX"  # This is related to bug in paragraph.py
         )
