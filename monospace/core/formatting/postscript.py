@@ -27,16 +27,16 @@ font_styles = {
     (F.Bold, F.Italic): "fO"
 }
 
-DARK_MODE = True
-fg = "%d fg" % (15 if DARK_MODE else 0)
-# TODO: bg?
+
+def reset_color(settings):
+    return "%d fg" % (0 if settings.light else 15)
 
 
 class PostScriptFormatter(Formatter):
     file_extension = "ps"
 
     @staticmethod
-    def format_tags(line: List[Union[FormatTag, str]]) -> str:
+    def format_tags(line: List[Union[FormatTag, str]], settings) -> str:
 
         # Regular font, open group
         result = "fR ("
@@ -70,7 +70,7 @@ class PostScriptFormatter(Formatter):
                             result += ") u /gc 16%s def (" % color
                     else:
                         if foreground:
-                            result += ") u %s (" % fg
+                            result += ") u %s (" % reset_color(settings)
                         else:
                             result += ") u /gc null def ("
 
@@ -100,13 +100,13 @@ class PostScriptFormatter(Formatter):
     @staticmethod
     def begin_page(settings: Settings) -> str:
         result = ""
-        if DARK_MODE:
+        if not settings.light:
             result += "bk "
         return result + "tr"
 
     @staticmethod
-    def format_line(line: str) -> str:
-        return "%s %s n" % (fg, line)
+    def format_line(line: str, settings) -> str:
+        return "%s %s n" % (reset_color(settings), line)
 
     @staticmethod
     def end_page(settings: Settings) -> str:

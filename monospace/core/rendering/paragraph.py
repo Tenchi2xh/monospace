@@ -2,10 +2,10 @@ import pyphen   # type: ignore
 import random
 
 from enum import Enum
-from typing import List, Union, Optional, Type, Callable
+from typing import List, Union, Optional, Callable
 
 from ..domain import document as d
-from ..formatting import Formatter, FormatTag, Format
+from ..formatting import FormatTag, Format
 
 
 random.seed(1337)
@@ -52,7 +52,7 @@ def align(
     text_elements: List[Union[d.TextElement, str]],
     alignment: Alignment,
     width: int,
-    formatter: Optional[Type[Formatter]] = None,
+    format_func: Optional[Callable] = None,
     text_filter: Callable[[str], str] = lambda s: s
 ) -> List[str]:
 
@@ -180,9 +180,9 @@ def align(
         for line in lines
     ]
 
-    if formatter is not None:
+    if format_func is not None:
         return [
-            formatter.format_tags(line)
+            format_func(line)
             for line in filtered_lines
         ]
     else:

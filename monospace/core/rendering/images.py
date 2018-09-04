@@ -1,12 +1,13 @@
 from typing import List
 from PIL import Image  # type: ignore
+from typing import Callable
 
-from ..formatting import Formatter, Format as F, FormatTag
+from ..formatting import Format as F, FormatTag
 
 detailed = True
 
 
-def ansify(uri: str, formatter: Formatter, width: int) -> List[str]:
+def ansify(uri: str, format_func: Callable, width: int) -> List[str]:
     original = Image.open(uri)
 
     ratio = original.height / original.width
@@ -35,7 +36,7 @@ def ansify(uri: str, formatter: Formatter, width: int) -> List[str]:
                 line.extend([t, t2, "▄", t2.close_tag, t.close_tag])
             else:
                 line.extend([t, "█", t.close_tag])
-        lines.append(formatter.format_tags(line))
+        lines.append(format_func(line))
 
     return lines
 

@@ -47,7 +47,7 @@ class HtmlFormatter(Formatter):
     counter = 0  # Bad!
 
     @staticmethod
-    def format_tags(line: List[Union[FormatTag, str]]) -> str:
+    def format_tags(line: List[Union[FormatTag, str]], settings) -> str:
         result = ""
         for elem in line:
             if isinstance(elem, str):
@@ -82,7 +82,7 @@ class HtmlFormatter(Formatter):
         return '<div class="page"><pre>'
 
     @staticmethod
-    def format_line(line: str) -> str:
+    def format_line(line: str, settings) -> str:
         return line
 
     @staticmethod

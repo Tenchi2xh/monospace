@@ -213,4 +213,6 @@ def process_meta(meta: dict) -> dict:
                     result[k] = float(value)
                 except ValueError:
                     result[k] = value
+        elif kind == "MetaBool":
+            result[k] = content
     return result

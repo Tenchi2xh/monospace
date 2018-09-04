@@ -39,7 +39,7 @@ class Formatter(metaclass=ABCMeta):
             for page in pages:
                 w(cls.begin_page(settings))
                 for line in page:
-                    w(cls.format_line(line))
+                    w(cls.format_line(line, settings))
                 w(cls.end_page(settings))
             w(cls.end_file(settings))
 
@@ -51,7 +51,7 @@ class Formatter(metaclass=ABCMeta):
 
     @staticmethod
     @abstractmethod
-    def format_tags(line: List[Union[FormatTag, str]]) -> str:
+    def format_tags(line: List[Union[FormatTag, str]], settings) -> str:
         """Returns the formatting necessary for given tags.
 
         This is used in `paragraph.align`, but must also
@@ -74,7 +74,7 @@ class Formatter(metaclass=ABCMeta):
 
     @staticmethod
     @abstractmethod
-    def format_line(line: str) -> str:
+    def format_line(line: str, settings: Settings) -> str:
         """Formats a line in this format.
 
         The line must have been formatted using `format_tag` calls.

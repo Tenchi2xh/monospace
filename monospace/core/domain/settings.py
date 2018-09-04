@@ -15,6 +15,7 @@ class Settings:
     margin_bottom: int
 
     source_file: str
+    light: bool
 
     @property
     def page_width(self):
@@ -38,7 +39,8 @@ class Settings:
             margin_inside=get(meta, "dimensions.margins.inside", 10),
             margin_outside=get(meta, "dimensions.margins.outside", 5),
             margin_bottom=get(meta, "dimensions.margins.bottom", 5),
-            source_file=source_file
+            source_file=source_file,
+            light=get(meta, "light-theme", False)
         )
 
 

@@ -14,7 +14,7 @@ def layout(
     s = settings
     pages: List[List[str]] = [[]]
 
-    empty_line = formatter.format_tags([" " * s.page_width])
+    empty_line = formatter.format_tags([" " * s.page_width], settings)
 
     def start_page():
         for _ in range(s.margin_top):
@@ -27,7 +27,7 @@ def layout(
             margin = s.margin_outside + s.side_width + s.side_spacing
         else:
             margin = s.margin_inside
-        return formatter.format_tags([" " * margin])
+        return formatter.format_tags([" " * margin], settings)
 
     start_page()
     for block in blocks:

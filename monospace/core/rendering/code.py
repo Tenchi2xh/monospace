@@ -1,17 +1,17 @@
 import re
-from typing import List, Union
+from typing import List, Union, Callable
 from pygments.lexers import get_lexer_by_name  # type: ignore
 from pygments.styles import get_style_by_name  # type: ignore
 from pygments.token import Token  # type: ignore
 from pygments.util import ClassNotFound  # type: ignore
 
 from ..domain import document as d
-from ..formatting import Formatter, FormatTag, Format as F
+from ..formatting import FormatTag, Format as F
 
 
 def highlight_code_block(
     code_block: d.CodeBlock,
-    formatter: Formatter,
+    format_func: Callable,
     width: int
 ) -> List[str]:
     try:
@@ -90,5 +90,5 @@ def highlight_code_block(
             current_length += len(word)
 
     rjust_last()
-    formatted_lines = [formatter.format_tags(l) for l in wrapped]
+    formatted_lines = [format_func(l) for l in wrapped]
     return ["".join(l) for l in formatted_lines]

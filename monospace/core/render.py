@@ -140,7 +140,7 @@ class Renderer(object):
                     indent = " " * self.settings.tab_size
                     if j == 0 and k == 0:
                         indent = decorate(indent, i)
-                    formatted_indent = self.formatter.format_tags([indent])
+                    formatted_indent = self.format([indent])
                     block.main[k] = formatted_indent + line
 
             blocks.extend(sub_blocks)
@@ -154,11 +154,10 @@ class Renderer(object):
             text_elements=elements,
             alignment=p.Alignment.left,
             width=self.settings.main_width,
-            formatter=self.formatter
+            format_func=self.format
         )
-        line_elements = ["━" * self.settings.main_width]
-        formated_line = self.formatter.format_tags(line_elements)
-        lines.insert(0, formated_line)
+        fence = ["━" * self.settings.main_width]
+        lines.insert(0, self.format(fence))
 
         # TODO: Notes
         return b.Block(main=lines, block_offset=-2)
@@ -170,7 +169,7 @@ class Renderer(object):
             text_elements=elements,
             alignment=p.Alignment.left,
             width=self.settings.main_width,
-            formatter=self.formatter,
+            format_func=self.format,
             text_filter=styles.small_caps
         )
 
@@ -182,7 +181,7 @@ class Renderer(object):
             text_elements=paragraph.text.elements,
             alignment=p.Alignment.left,
             width=self.settings.main_width,
-            formatter=self.formatter
+            format_func=self.format
         )
 
         # TODO: Notes
@@ -202,14 +201,14 @@ class Renderer(object):
 
         main_width = self.settings.main_width
         tab_size = self.settings.tab_size
-        f = self.formatter.format_tags
+        ft = self.format
 
         width = main_width - 2 * tab_size
 
-        left_indent = f([light_gray, " " * tab_size])
-        right_indent = f([" " * tab_size, light_gray.close_tag])
-        fence = left_indent + f(["─" * width]) + right_indent
-        empty_line = f([" " * main_width])
+        left_indent = ft([light_gray, " " * tab_size])
+        right_indent = ft([" " * tab_size, light_gray.close_tag])
+        fence = left_indent + ft(["─" * width]) + right_indent
+        empty_line = ft([" " * main_width])
 
         renderer = self.get_subrenderer(main_width=width)
         blocks = renderer.render_elements(aside.elements)
@@ -225,13 +224,13 @@ class Renderer(object):
         return b.Block(main=lines)
 
     def render_code_block(self, code_block):
-        ft = self.formatter.format_tags
+        ft = self.format
         ts = self.settings.tab_size
         mw = self.settings.main_width
 
         highlighted = code.highlight_code_block(
             code_block=code_block,
-            formatter=self.formatter,
+            format_func=self.format,
             # We want a tab size on each side,
             # plus a 2 characters for background
             width=(mw - ts * 2 - 4),
@@ -267,8 +266,8 @@ class Renderer(object):
         if extension in ("png", "jpg", "jpeg"):
             # TODO: Attributes for level of detail
             width = self.settings.main_width - 2 * self.settings.tab_size
-            image_lines = images.ansify(real_uri, self.formatter, width)
-            indent = self.formatter.format_tags(" " * self.settings.tab_size)
+            image_lines = images.ansify(real_uri, self.format, width)
+            indent = self.format(" " * self.settings.tab_size)
             indented = [
                 indent + line + indent
                 for line in image_lines
@@ -278,7 +277,7 @@ class Renderer(object):
             return b.Block(main=indented)
         else:
             return b.Block(
-                main=self.formatter.format_tags("<UNRENDERED: Image>"))
+                main=self.format(["<UNRENDERED: Image>"]))
 
     def get_subrenderer(self, main_width=None):
         return Renderer(
@@ -293,6 +292,9 @@ class Renderer(object):
             cross_references=self.cross_references,
             formatter=self.formatter
         )
+
+    def format(self, elems):
+        return self.formatter.format_tags(elems, self.settings)
 
 
 light_gray = FormatTag(kind=F.ForegroundColor, data={"color": "#aaaaaa"})
