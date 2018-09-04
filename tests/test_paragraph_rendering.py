@@ -1,5 +1,5 @@
 from monospace.core.rendering.paragraph import align, Alignment, flatten
-from monospace.core.domain import document as d
+from monospace.core.domain import document as d, Settings
 from monospace.core.formatting import HtmlFormatter, FormatTag, Format as F
 
 s = d.space
@@ -121,8 +121,11 @@ def test_styled_paragraph_rendering():
         "<b>ing.</b>                 ",
     ]
 
+    settings = Settings.from_meta({}, "")
+    format_func = lambda t: HtmlFormatter.format_tags(t, settings)  # noqa
+
     unformatted = align(text, Alignment.left, width)
-    formatted = align(text, Alignment.left, width, formatter=HtmlFormatter)
+    formatted = align(text, Alignment.left, width, format_func=format_func)
 
     assert unformatted == expected_unformatted
     assert formatted == expected_formatted
@@ -137,9 +140,12 @@ def test_punctuation_after_tag():
         "!"
     ]
 
+    settings = Settings.from_meta({}, "")
+    format_func = lambda t: HtmlFormatter.format_tags(t, settings)  # noqa
+
     expected = ["Hello, <b>World</b>! "]
 
-    assert align(text, Alignment.left, 14, formatter=HtmlFormatter) == expected
+    assert align(text, Alignment.left, 14, format_func=format_func) == expected
 
 
 def ignore_test_punctuation_on_new_line():

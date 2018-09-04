@@ -1,5 +1,5 @@
 ---
-light-theme: true
+light-theme: false
 dimensions:
     page-height: 60
     body-width: 70
