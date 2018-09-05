@@ -149,7 +149,7 @@ class Processor(object):
         if identifier.startswith("#"):
             assert identifier[1:] in self.cross_references,\
                 "Link points to unknown reference '%s'" % identifier
-            title = self.cross_references[identifier]
+            title = self.cross_references[identifier[1:]]
 
         formatted_title = styles.small_caps(title)
         return d.CrossRef(

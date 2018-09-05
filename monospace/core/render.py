@@ -255,6 +255,52 @@ class Renderer(object):
         # TODO: Notes
         return b.Block(main=lines)
 
+    def indent_lines(
+        self,
+        lines: List[str],
+        left_width: int,
+        right_width: int,
+        top_line: Optional[str]=None,
+        bottom_line: Optional[str]=None,
+        before: Optional[str]=None,
+        after: Optional[str]=None,
+        wrap_with: Optional[List[FormatTag]]=None,
+    ):
+        """
+        Indents a list of lines with the following format:
+
+            ....TTTTTTTTTT....    T: Top line
+            bbbbllllllllll....    b: before
+            ....llllllllll....    l: lines
+            ....llllllllllaaaa    b: after
+            ....BBBBBBBBBB....    B: Bottom line
+
+        Note: lines are expected to be all the same width
+        """
+        ft = self.format
+        result = []
+
+        open_tags = [] if wrap_with is None else wrap_with
+        close_tags = [tag.close_tag for tag in open_tags]
+
+        left_indent = ft([*open_tags, " " * left_width])
+        right_indent = ft([" " * right_width, *close_tags])
+
+        if top_line is not None:
+            top_line = left_indent + ft(top_line) + right_indent
+            result.append(top_line)
+
+        for i, line in enumerate(lines):
+            left = before if before and i == 0 else left_indent
+            right = after if after and i == len(lines) - 1 else right_indent
+            lines.append(left + line + right)
+
+        if bottom_line is not None:
+            bottom_line = left_indent + ft(bottom_line) + right_indent
+            result.append(bottom_line)
+
+        return result
+
     def render_code_block(self, code_block):
         ft = self.format
         ts = self.settings.tab_size
