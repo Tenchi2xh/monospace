@@ -212,7 +212,7 @@ class Renderer(object):
     def render_paragraph(self, paragraph):
         lines = p.align(
             text_elements=paragraph.text.elements,
-            alignment=p.Alignment.left,
+            alignment=p.Alignment.justify,
             width=self.settings.main_width,
             format_func=self.format
         )

@@ -1,6 +1,7 @@
 import pyphen   # type: ignore
 import random
 
+from copy import copy
 from enum import Enum
 from typing import List, Union, Optional, Callable
 
@@ -12,6 +13,12 @@ random.seed(1337)
 
 Alignment = Enum("Alignment", ["left", "center", "right", "justify"])
 
+# FIXME: Justify doesn't work, fix is as follows
+# NOTE: This will also fix the issue where the dot in "*bold*." could wrap.
+# Do a `split()` on `d.space`. Resulting groups are logical words
+# Fix the code to work with that and that should be about it.
+# Maybe make class Word with correct __len__ and have an add() which
+# adds a string to the last str of the word
 
 # TODO: Language in settings for hyphen dictionary
 pyphen_dictionary = pyphen.Pyphen(lang="en_US")
@@ -143,23 +150,47 @@ def align(
     # --- Step 2 --------------------------------------------------------------
     # Depending on alignment, insert appropriate amount of spaces between words
 
-    for line in lines:
-        if alignment == Alignment.justify:
-            pass
-        else:
-            # Alignment is either left or right:
-            # there will be only one space between words.
-            # Replace all Space object with single spaces:
-            for i, e in enumerate(line):
-                if isinstance(e, d.Space):
-                    line[i] = " "
+    for i, line in enumerate(lines):
+        # For the last line, we will let it be left-aligned
+        if alignment == Alignment.justify and i < len(lines) - 1:
+            # To justify the paragraph, we will take a random sample
+            # of words from the line and add a space to them
+
+            # with_space=True because each word will get one space after
+            spaces_to_add = width - line_length(line, with_spaces=True)
+            indices_candidates = [
+                i for i, elem in enumerate(line)
+                if isinstance(elem, str)  # We can only add spaces to words
+            ]
+            indices_candidates.pop()  # No space after last word
+
+            # If we have more spaces to add than candidates,
+            # we need to double the population space.
+            population: List[int] = copy(indices_candidates)
+            while spaces_to_add > len(population):
+                population.extend(indices_candidates)
+
+            # print(line_length(line, with_spaces=True),
+            #       len(population), spaces_to_add)
+            # "Small_but_necessary_interruption:_This_online_book_isn’t_sup-"
+            # print(line)
+
+            indices = random.sample(population, spaces_to_add)
+            for index in indices:
+                assert isinstance(line[index], str)
+                line[index] = line[index] + " "
+
+        # Replace all Space object with single spaces:
+        for i, e in enumerate(line):
+            if isinstance(e, d.Space):
+                line[i] = " "
 
     # --- Step 3 --------------------------------------------------------------
     # Add necessary padding
     for line in lines:
         padding = " " * (width - line_length(line))
 
-        if alignment == Alignment.left:
+        if alignment == Alignment.left or alignment == Alignment.justify:
             line.append(padding)
 
         elif alignment == Alignment.right:
