@@ -15,6 +15,8 @@ dimensions:
 
 # Typography in ten minutes (A chapter)
 
+> Premature optimization is the root of all evil. **Donald E. Knuth**
+
 Use the `process_elements` method to 'process' the **elements**. See chapter [](#a-sub-section).
 
 ```python
@@ -32,6 +34,8 @@ for line in words:
         current_length += len(word)
 ```
 
+## Foobar {subtitle="Baz?"}
+
 *This a **bold** claim*, but I stand behind it: if you learn and follow these five typography rules, you will be a better typographer than nearly every writer—and even most graphic designers.
 
 ### A sub-section
@@ -45,8 +49,6 @@ All it takes is ten minutes: five minutes to read these rules once. Then five mi
 ## This is a sub-chapter {subtitle="It looks cool"}
 
 Ready? Go.
-
-> Premature optimization is the root of all evil. **Donald E. Knuth**
 
 1. The typographic quality of your document is determined largely by how the [](#body-text) looks. Why? Because there's more body text than anything else. So start every project by making the body text look good. Then worry about the rest.
 

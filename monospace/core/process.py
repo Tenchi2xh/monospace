@@ -114,7 +114,8 @@ class Processor(object):
         return d.Paragraph(self.make_text(value))
 
     def process_quote(self, value):
-        return d.Quote(self.make_text(value))
+        # Quote text elements are wrapped in a paragraph
+        return d.Quote(self.make_text(value).elements[0].text)
 
     def process_header(self, value):
         level = value[0]

@@ -88,11 +88,12 @@ class Renderer(object):
                 blocks.append(self.render_code_block(element))
             elif isinstance(element, d.Image):
                 blocks.append(self.render_image(element))
+            elif isinstance(element, d.Quote):
+                blocks.append(self.render_quote(element))
 
             # Unimplemented:
             elif (
                 isinstance(element, d.SubChapter)
-                or isinstance(element, d.Quote)
                 or isinstance(element, d.Unprocessed)
             ):
                 if isinstance(element, d.Unprocessed):
@@ -133,7 +134,7 @@ class Renderer(object):
                     offset = 1  # ps template has fixed offsets
 
             result = bullet + spaces[offset:]
-            return result
+            return self.format(result)
 
         for i, elements in enumerate(ordered_list.list_elements):
             sub_blocks = renderer.render_elements(elements)
@@ -162,6 +163,7 @@ class Renderer(object):
         )
         fence = ["━" * self.settings.main_width]
         lines.insert(0, self.format(fence))
+        lines.append(self.format([" " * self.settings.main_width]))
 
         # TODO: Notes
         return b.Block(main=lines)
@@ -258,6 +260,36 @@ class Renderer(object):
             left_width=tab_size, right_width=tab_size,
             top_line=fence, bottom_line=fence,
             inner_tags=[color]
+        ))
+
+    def render_quote(self, quote):
+        tab_size = self.settings.tab_size
+        content_width = self.settings.main_width - tab_size * 2
+
+        elements = quote.text.elements
+
+        author_lines = []
+        if isinstance(elements[-1], d.Bold):
+            author = ["—", d.space] + elements.pop().children
+            author_lines = p.align(
+                text_elements=author,
+                alignment=p.Alignment.right,
+                width=content_width,
+                format_func=self.format
+            )
+
+        lines = p.align(
+            text_elements=[d.Italic(elements)],
+            alignment=p.Alignment.center,
+            width=content_width,
+            format_func=self.format
+        )
+
+        empty_line = self.format(" " * content_width)
+
+        return b.Block(main=self.indent(
+            lines=lines + [empty_line] + author_lines,
+            left_width=tab_size, right_width=tab_size,
         ))
 
     def render_code_block(self, code_block):
@@ -362,10 +394,10 @@ class Renderer(object):
         right_indent = ft([*close_inner, " " * right_width, *close_outer])
 
         if before:
-            before = ft([*open_outer, before, *open_inner])
+            before = ft(open_outer) + before + ft(open_inner)
 
         if after:
-            after = ft([*close_inner, after, *close_outer])
+            after = ft(close_inner) + after + ft(close_outer)
 
         if top_line:
             top_line = left_indent + top_line + right_indent
