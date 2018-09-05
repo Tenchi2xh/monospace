@@ -118,7 +118,8 @@ class Renderer(object):
         # If sub-renderers also render nested lists, they will indent them
         # so the indentation adds up, no need to count levels :)
 
-        def decorate(spaces, n):
+        def decorated_indent(n):
+            spaces = " " * self.settings.tab_size
             bullet = "•"
             offset = 1
             if ordered:
@@ -138,12 +139,13 @@ class Renderer(object):
             sub_blocks = renderer.render_elements(elements)
 
             for j, block in enumerate(sub_blocks):
-                for k, line in enumerate(block.main):
-                    indent = " " * self.settings.tab_size
-                    if j == 0 and k == 0:
-                        indent = decorate(indent, i)
-                    formatted_indent = self.format([indent])
-                    block.main[k] = formatted_indent + line
+                decorated = decorated_indent(i) if j == 0 else None
+                block.main = self.indent(
+                    lines=block.main,
+                    left_width=4,
+                    right_width=0,
+                    before=decorated
+                )
 
             blocks.extend(sub_blocks)
 
@@ -219,7 +221,6 @@ class Renderer(object):
     def render_aside(self, aside):
         # Note: although aside is composed of multiple blocks,
         # we want to only return one block, because aside shouldn't be broken
-        lines = []
 
         # Produce this:
         # ....────────....
@@ -237,69 +238,27 @@ class Renderer(object):
         color = light_gray
         if self.settings.light:
             color = mid_gray
-        left_indent = ft([color, " " * tab_size])
-        right_indent = ft([" " * tab_size, color.close_tag])
-        fence = left_indent + ft(["─" * width]) + right_indent
+
+        fence = ft(["─" * width])
         empty_line = ft([" " * main_width])
 
         renderer = self.get_subrenderer(main_width=width)
         blocks = renderer.render_elements(aside.elements)
 
-        lines.append(fence)
+        lines = []
         for block in blocks:
             for line in block.main:
-                lines.append(left_indent + line + right_indent)
+                lines.append(line)
             lines.append(empty_line)
-        lines[-1] = fence
+        lines.pop()
 
         # TODO: Notes
-        return b.Block(main=lines)
-
-    def indent_lines(
-        self,
-        lines: List[str],
-        left_width: int,
-        right_width: int,
-        top_line: Optional[str]=None,
-        bottom_line: Optional[str]=None,
-        before: Optional[str]=None,
-        after: Optional[str]=None,
-        wrap_with: Optional[List[FormatTag]]=None,
-    ):
-        """
-        Indents a list of lines with the following format:
-
-            ....TTTTTTTTTT....    T: Top line
-            bbbbllllllllll....    b: before
-            ....llllllllll....    l: lines
-            ....llllllllllaaaa    b: after
-            ....BBBBBBBBBB....    B: Bottom line
-
-        Note: lines are expected to be all the same width
-        """
-        ft = self.format
-        result = []
-
-        open_tags = [] if wrap_with is None else wrap_with
-        close_tags = [tag.close_tag for tag in open_tags]
-
-        left_indent = ft([*open_tags, " " * left_width])
-        right_indent = ft([" " * right_width, *close_tags])
-
-        if top_line is not None:
-            top_line = left_indent + ft(top_line) + right_indent
-            result.append(top_line)
-
-        for i, line in enumerate(lines):
-            left = before if before and i == 0 else left_indent
-            right = after if after and i == len(lines) - 1 else right_indent
-            lines.append(left + line + right)
-
-        if bottom_line is not None:
-            bottom_line = left_indent + ft(bottom_line) + right_indent
-            result.append(bottom_line)
-
-        return result
+        return b.Block(main=self.indent(
+            lines=lines,
+            left_width=tab_size, right_width=tab_size,
+            top_line=fence, bottom_line=fence,
+            inner_tags=[color]
+        ))
 
     def render_code_block(self, code_block):
         ft = self.format
@@ -314,34 +273,26 @@ class Renderer(object):
             width=(mw - ts * 2 - 4),
             light=self.settings.light
         )
+        for i in range(len(highlighted)):
+            highlighted[i] = ft(["  "]) + highlighted[i] + ft(["  "])
 
         bg = FormatTag(kind=F.BackgroundColor, data={"color": "#222222"})
         if self.settings.light:
             bg.data["color"] = "#eeeeee"
 
-        indent = " " * ts
-        indent_left = ft([indent, bg, "  "])
-        indent_right = ft(["  ", bg.close_tag, indent])
-
-        for i, line in enumerate(highlighted):
-            highlighted[i] = indent_left + line + indent_right
-
-        fences = []
         fence_color = dark_gray
         if self.settings.light:
             fence_color = light_gray
-        for char in ("▔", "▁"):
-            fences.append(ft([
-                indent,
-                bg, fence_color,
-                char * (mw - ts * 2),
-                fence_color.close_tag, bg.close_tag,
-                indent
-            ]))
-        highlighted.insert(0, fences[0])
-        highlighted.append(fences[1])
 
-        return b.Block(main=highlighted)
+        top = ft([fence_color, "▔" * (mw - ts * 2), fence_color.close_tag])
+        bottom = ft([fence_color, "▁" * (mw - ts * 2), fence_color.close_tag])
+
+        return b.Block(main=self.indent(
+            lines=highlighted,
+            left_width=ts, right_width=ts,
+            top_line=top, bottom_line=bottom,
+            inner_tags=[bg]
+        ))
 
     def render_image(self, image):
         extension = image.uri.rsplit(".", 1)[-1]
@@ -352,14 +303,12 @@ class Renderer(object):
             # TODO: Attributes for level of detail
             width = self.settings.main_width - 2 * self.settings.tab_size
             image_lines = images.ansify(real_uri, self.format, width)
-            indent = self.format(" " * self.settings.tab_size)
-            indented = [
-                indent + line + indent
-                for line in image_lines
-            ]
 
             # TODO: Caption
-            return b.Block(main=indented)
+            return b.Block(main=self.indent(
+                lines=image_lines,
+                left_width=self.settings.tab_size,
+                right_width=self.settings.tab_size))
         else:
             return b.Block(
                 main=self.format(["<UNRENDERED: Image>"]))
@@ -377,6 +326,61 @@ class Renderer(object):
             cross_references=self.cross_references,
             formatter=self.formatter
         )
+
+    def indent(
+        self,
+        lines: List[str],
+        left_width: int,
+        right_width: int,
+        top_line: Optional[str]=None,
+        bottom_line: Optional[str]=None,
+        before: Optional[str]=None,
+        after: Optional[str]=None,
+        outer_tags: Optional[List[FormatTag]]=None,
+        inner_tags: Optional[List[FormatTag]]=None,
+    ):
+        """
+        Indents a list of lines with the following format:
+
+            ....TTTTTTTTTT....    T: Top line
+            bbbbllllllllll....    b: before
+            ....llllllllll....    l: lines
+            ....llllllllllaaaa    b: after
+            ....BBBBBBBBBB....    B: Bottom line
+
+        Note: lines are expected to be all the same width
+        """
+        ft = self.format
+        result = []
+
+        open_outer = [] if outer_tags is None else outer_tags
+        close_outer = [tag.close_tag for tag in open_outer]
+        open_inner = [] if inner_tags is None else inner_tags
+        close_inner = [tag.close_tag for tag in open_inner]
+
+        left_indent = ft([*open_outer, " " * left_width, *open_inner])
+        right_indent = ft([*close_inner, " " * right_width, *close_outer])
+
+        if before:
+            before = ft([*open_outer, before, *open_inner])
+
+        if after:
+            after = ft([*close_inner, after, *close_outer])
+
+        if top_line:
+            top_line = left_indent + top_line + right_indent
+            result.append(top_line)
+
+        for i, line in enumerate(lines):
+            left = before if before and i == 0 else left_indent
+            right = after if after and i == len(lines) - 1 else right_indent
+            result.append(left + line + right)
+
+        if bottom_line:
+            bottom_line = left_indent + bottom_line + right_indent
+            result.append(bottom_line)
+
+        return result
 
     def format(self, elems):
         return self.formatter.format_tags(elems, self.settings)
