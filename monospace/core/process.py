@@ -91,7 +91,7 @@ class Processor(object):
         elif kind == "Link":
             return self.process_link(value)
         elif kind == "Code":
-            return d.Code([styles.monospace(value[1])])
+            return d.Code(stylize(value[1], styles.monospace))
         elif kind == "Quoted":
             return self.process_quoted(value)
         elif kind == "Space" or kind == "SoftBreak":
@@ -152,9 +152,9 @@ class Processor(object):
                 "Link points to unknown reference '%s'" % identifier
             title = self.cross_references[identifier[1:]]
 
-        formatted_title = styles.small_caps(title)
+        formatted_title = stylize(title, styles.small_caps)
         return d.CrossRef(
-            children=[formatted_title],
+            children=formatted_title,
             identifier=value[2][0]
         )
 
@@ -225,4 +225,14 @@ def process_meta(meta: dict) -> dict:
                     result[k] = value
         elif kind == "MetaBool":
             result[k] = content
+    return result
+
+
+def stylize(text, style):
+    words = text.split()
+    result = []
+    for word in words:
+        result.append(style(word))
+        result.append(d.space)
+    result.pop()
     return result
