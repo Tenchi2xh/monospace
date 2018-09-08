@@ -8,7 +8,6 @@ from .symbols.characters import double_quotes, single_quotes
 
 
 def process(ast: dict, source_file):
-    # TODO: Add support for settings for the typesetting and metadata
     meta = process_meta(ast["meta"])
     settings = Settings.from_meta(meta, source_file)
     processor = Processor(ast)

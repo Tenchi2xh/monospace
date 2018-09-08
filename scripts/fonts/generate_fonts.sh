@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #./download.sh
 
 fontforge -script extend.py mapping.json

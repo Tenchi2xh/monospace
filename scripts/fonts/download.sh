@@ -1,3 +1,5 @@
+#!/bin/bash
+
 IOSEVKA_VERSION=1.14.3
 IOSEVKA_VARIANT=ss10
 
