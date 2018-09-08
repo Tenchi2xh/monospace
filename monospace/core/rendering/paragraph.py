@@ -3,7 +3,9 @@ import random
 
 from copy import copy
 from enum import Enum
-from typing import List, Union, Optional, Callable
+from itertools import groupby
+from dataclasses import dataclass
+from typing import List, Union, Optional, Callable, Tuple
 
 from ..domain import document as d
 from ..formatting import FormatTag, Format
@@ -13,47 +15,12 @@ random.seed(1337)
 
 Alignment = Enum("Alignment", ["left", "center", "right", "justify"])
 
-# FIXME: Justify doesn't work, fix is as follows
-# NOTE: This will also fix the issue where the dot in "*bold*." could wrap.
-# Do a `split()` on `d.space`. Resulting groups are logical words
-# Fix the code to work with that and that should be about it.
-# Maybe make class Word with correct __len__ and have an add() which
-# adds a string to the last str of the word
+Element = Union[FormatTag, str]
 
 # TODO: Language in settings for hyphen dictionary
 pyphen_dictionary = pyphen.Pyphen(lang="en_US")
 wrap = pyphen_dictionary.wrap
 
-Line = List[Union[FormatTag, str]]
-
-
-def get_tag(element):
-    if isinstance(element, d.CrossRef):
-        return FormatTag(
-            Format.CrossRef,
-            data={"identifier": element.identifier}
-        )
-    return FormatTag(Format[element.__class__.__name__])
-
-
-def flatten(elements: d.TextElements) -> Line:
-    result: List[Union[FormatTag, str]] = []
-    for element in elements:
-        if isinstance(element, str):
-            result.append(element)
-        elif isinstance(element, d.Space):
-            result.append(element)
-        elif isinstance(element, d.Unprocessed):
-            result.append("<UNPROCESSED: %s>" % element.kind)
-        else:
-            tag = get_tag(element)
-            result.append(tag)
-            result.extend(flatten(element.children))  # type: ignore
-            result.append(tag.close_tag)
-    return result
-
-
-# FIXME: Bug: punctuation can be pushed to the next line on its own
 
 def align(
     text_elements: List[Union[d.TextElement, str]],
@@ -64,22 +31,24 @@ def align(
 ) -> List[str]:
 
     elements = flatten(text_elements)
+    words = [Word(elems) for elems in split(elements, d.space)]
+
+    Line = List[Union[Element, d.Space]]
     lines: List[Line] = [[]]
     open_tags: List[str] = []
-    non_word_buffer: List[Union[d.Space, FormatTag]] = []
 
     def line_length(line: Line, with_spaces=False) -> int:
         only_words = [e for e in line if isinstance(e, str)]
         length_words = sum(len(word) for word in only_words)
         if with_spaces:
-            return len(only_words) + length_words
+            return length_words + line.count(d.space)
         return length_words
 
     def room_left(line: Line) -> int:
         return width - line_length(line, with_spaces=True)
 
-    def process_buffer(line):
-        for element in non_word_buffer:
+    def append_word(word, line):
+        for element in word.elems:
             if isinstance(element, FormatTag):
                 tag = element
                 if tag.open:
@@ -91,12 +60,15 @@ def align(
                     )
                     open_tags.pop(last_index)
                 line.append(tag)
-            elif isinstance(element, d.Space):
+            else:
                 line.append(element)
-        non_word_buffer.clear()
+        line.append(d.space)
 
-    def end_line(next_word=None, also_process_buffer=False):
+    def end_line(next_word=None):
         next_line = []
+        # Remove trailing space first
+        if lines[-1][-1] == d.space:
+            lines[-1].pop()
         # Close all unclosed tags, and re-open them on the next line
         for kind in reversed(open_tags):
             lines[-1].append(FormatTag(kind=kind).close_tag)
@@ -104,48 +76,36 @@ def align(
             # FIXME: Bug: original data object from tag is lost
             next_line.append(FormatTag(kind=kind))
         if next_word:
-            if also_process_buffer:
-                process_buffer(next_line)
-            next_line.append(next_word)
+            append_word(next_word, next_line)
         lines.append(next_line)
 
     # --- Step 1 --------------------------------------------------------------
     # Break up elements in lines (with hyphenation)
     # and cross tags over the line when tags are still open.
 
-    for element in elements:
+    for word in words:
         line = lines[-1]
-
-        if not isinstance(element, str):
-            non_word_buffer.append(element)
-            continue
-
-        word: str = element
 
         available = room_left(line)
 
         if len(word) <= available:
-            process_buffer(line)
-            line.append(word)
+            append_word(word, line)
         else:
-            hyphenized = wrap(word, available)
+            hyphenized = wrap(word.word(), available)
 
             if hyphenized:
-                left, right = hyphenized
-                process_buffer(line)
-                line.append(left)
+                index = len(hyphenized[0]) - 1
+                left, right = word.split_at(index)
+                # Don't add a hyphen if the word is a compound word
+                if not left.word().endswith("-"):
+                    left += "-"
+                append_word(left, line)
                 end_line(next_word=right)
             else:
-                # We are breaking the line, we don't want to put
-                # the trailing spaces at the beginning of the next line
-                non_word_buffer = [
-                    e for e in non_word_buffer
-                    if not isinstance(e, d.Space)
-                ]
-                end_line(next_word=word, also_process_buffer=True)
+                end_line(next_word=word)
 
-    # No more word was on the line, but maybe some tags were there
-    process_buffer(lines[-1])
+    end_line()
+    lines.pop()
 
     # --- Step 2 --------------------------------------------------------------
     # Depending on alignment, insert appropriate amount of spaces between words
@@ -188,7 +148,7 @@ def align(
     # --- Step 3 --------------------------------------------------------------
     # Add necessary padding
     for line in lines:
-        padding = " " * (width - line_length(line))
+        padding = " " * (width - line_length(line, with_spaces=True))
 
         if alignment == Alignment.left or alignment == Alignment.justify:
             line.append(padding)
@@ -206,7 +166,7 @@ def align(
     # --- Step 4 --------------------------------------------------------------
     # Finalize each line with formatting
 
-    filtered_lines: List[List[Union[FormatTag, str]]] = [
+    filtered_lines = [
         [text_filter(elem) if isinstance(elem, str) else elem for elem in line]
         for line in lines
     ]
@@ -221,3 +181,67 @@ def align(
             "".join(elem for elem in line if isinstance(elem, str))
             for line in filtered_lines
         ]
+
+
+@dataclass
+class Word():
+    elems: List[Element]
+
+    def __len__(self):
+        return len(self.word())
+
+    def __iadd__(self, s: str):
+        last_str_index = next(
+            i for i, elem in list(enumerate(self.elems))[::-1]
+            if isinstance(elem, str)
+        )
+        self.elems[last_str_index] += s
+        return self
+
+    def word(self) -> str:
+        return "".join(elem for elem in self.elems if isinstance(elem, str))
+
+    def split_at(self, index) -> Tuple["Word", "Word"]:
+        left: List[Element] = []
+        right: List[Element] = []
+        i = 0
+        for i, elem in enumerate(self.elems):
+            if isinstance(elem, str):
+                if i <= index < i + len(elem):
+                    left.append(elem[:index - i])
+                    right.append(elem[index - i:])
+                    right.extend(self.elems[i + 1:])
+                    break
+            left.append(elem)
+        return Word(left), Word(right)
+
+
+def get_tag(element):
+    if isinstance(element, d.CrossRef):
+        return FormatTag(
+            Format.CrossRef,
+            data={"identifier": element.identifier}
+        )
+    return FormatTag(Format[element.__class__.__name__])
+
+
+def flatten(elements: d.TextElements) -> List[Union[FormatTag, str]]:
+    result: List[Union[FormatTag, str]] = []
+    for element in elements:
+        if isinstance(element, str):
+            result.append(element)
+        elif isinstance(element, d.Space):
+            result.append(element)
+        elif isinstance(element, d.Unprocessed):
+            result.append("<%s>" % element.kind)
+        else:
+            tag = get_tag(element)
+            result.append(tag)
+            result.extend(flatten(element.children))  # type: ignore
+            result.append(tag.close_tag)
+    return result
+
+
+def split(iterable, separator):
+    groups = groupby(iterable, lambda e: e != separator)
+    return (list(group) for b, group in groups if b)
