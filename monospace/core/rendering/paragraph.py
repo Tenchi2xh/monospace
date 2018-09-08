@@ -205,13 +205,14 @@ class Word():
         left: List[Element] = []
         right: List[Element] = []
         i = 0
-        for i, elem in enumerate(self.elems):
+        for j, elem in enumerate(self.elems):
             if isinstance(elem, str):
                 if i <= index < i + len(elem):
                     left.append(elem[:index - i])
                     right.append(elem[index - i:])
-                    right.extend(self.elems[i + 1:])
+                    right.extend(self.elems[j + 1:])
                     break
+                i += len(elem)
             left.append(elem)
         return Word(left), Word(right)
 
