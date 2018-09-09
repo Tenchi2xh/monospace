@@ -190,8 +190,8 @@ def get_tag(element):
     return FormatTag(Format[element.__class__.__name__])
 
 
-def flatten(elements: d.TextElements) -> List[Union[FormatTag, str]]:
-    result: List[Union[FormatTag, str]] = []
+def flatten(elements: d.TextElements) -> List[Union[Element, d.Space]]:
+    result: List[Union[Element, d.Space]] = []
     for element in elements:
         if isinstance(element, str):
             result.append(element)
