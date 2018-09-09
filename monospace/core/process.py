@@ -79,7 +79,7 @@ class Processor(object):
             language = "" if not value[0][1] else value[0][1][0]
             return d.CodeBlock(language=language, code=value[1])
         elif kind == "Image":
-            return d.Image(uri=value[2][0])
+            return d.Image(uri=value[2][0], **dict(value[0][2]))
         # --- Textual ---------------------------------------------------------
         elif kind == "Str":
             return value

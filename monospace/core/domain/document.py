@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Union, Optional
 from dataclasses import dataclass, field
 
 
@@ -77,6 +77,8 @@ class CodeBlock(StructureElement):
 @dataclass
 class Image(StructureElement):
     uri: str
+    palette: Optional[str] = None
+    mode: Optional[str] = None
 
 
 @dataclass

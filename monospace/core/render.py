@@ -332,12 +332,20 @@ class Renderer(object):
         real_uri = os.path.join(cwd, image.uri)
 
         if extension in ("png", "jpg", "jpeg"):
-            # TODO: Attributes for level of detail
             width = self.settings.main_width - 2 * self.settings.tab_size
+            mode = images.Mode.Pixels
+            if image.mode is not None:
+                mode = images.Mode[image.mode]
+            palette = images.Palette.RGB
+            if image.palette is not None:
+                palette = images.Palette[image.palette]
+
             image_lines = images.ansify(
                 real_uri,
                 format_func=self.format,
-                width=width
+                width=width,
+                mode=mode,
+                palette=palette,
             )
 
             # TODO: Caption
