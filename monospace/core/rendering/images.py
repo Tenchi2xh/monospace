@@ -30,6 +30,8 @@ def ansify(
     original = Image.open(uri)
 
     if width is not None:
+        if mode == Mode.Super:
+            width *= 2
         ratio = original.height / original.width
         image = original.resize(
             (width, int(width * ratio)),
@@ -39,7 +41,7 @@ def ansify(
         image = original
 
     pixels = image.convert("RGBA").load()
-    lines = []
+    lines: List[str] = []
 
     def n_closest_color(n, color, palette):
         n_closest = nsmallest(
@@ -63,14 +65,100 @@ def ansify(
         c2 = pixels[x, y + 1]
         return [int(0.5 * (c1[i] + c2[i])) for i in range(3)]
 
+    def average_color2(*colors):
+        rgbs = zip(*colors)
+        return tuple([int(sum(comp) / len(comp)) for comp in rgbs])
+
+    if mode == Mode.Super:
+        for y in range(0, image.height - (image.height % 4), 4):
+            line = []
+            for x in range(0, image.width - (image.width % 2), 2):
+                c_y0x0 = pixels[x, y]
+                c_y0x1 = pixels[x, y + 1]
+                c_y1x0 = pixels[x + 1, y]
+                c_y1x1 = pixels[x + 1, y + 1]
+
+                c_y0x2 = pixels[x, y + 2]
+                c_y0x3 = pixels[x, y + 3]
+                c_y1x2 = pixels[x + 1, y + 2]
+                c_y1x3 = pixels[x + 1, y + 3]
+
+                tl = average_color2(c_y0x0, c_y0x1)
+                tr = average_color2(c_y1x0, c_y1x1)
+                bl = average_color2(c_y0x2, c_y0x3)
+                br = average_color2(c_y1x2, c_y1x3)
+
+                tl_tr = distance(tl, tr)
+                tl_bl = distance(tl, bl)
+                tl_br = distance(tl, br)
+                tr_bl = distance(tr, bl)
+                tr_br = distance(tr, br)
+                bl_br = distance(bl, br)
+
+                cats = {}
+
+                avg_d = (tl_tr + tl_bl + tl_br + tr_bl + tr_br + bl_br) / 6
+                avg_tl = (tl_tr + tl_bl + tl_br) / 3
+                avg_tr = (tl_tr + tr_bl + tr_br) / 3
+                avg_bl = (tl_bl + tr_bl + bl_br) / 3
+                avg_br = (tl_br + tr_br + bl_br) / 3
+
+                cats[tl] = "a" if avg_tl < avg_d else "b"
+                cats[tr] = "a" if avg_tr < avg_d else "b"
+                cats[bl] = "a" if avg_bl < avg_d else "b"
+                cats[br] = "a" if avg_br < avg_d else "b"
+
+                c_a = average_color2(*[k for k, v in cats.items() if v == "a"])
+                c_b = average_color2(*[k for k, v in cats.items() if v == "b"])
+
+                if not c_a:
+                    block = " "
+                    c_a = (0, 0, 0)
+                elif not c_b:
+                    block = "█"
+                    c_b = (0, 0, 0)
+                else:
+                    pattern = cats[tl] + cats[tr] + cats[bl] + cats[br]
+                    # We have two colors: there's at least one on each
+                    # side of the averge distance, by nature of an average
+                    mapping = {
+                        "aaab": "▛",
+                        "aaba": "▜",
+                        "aabb": "▀",
+                        "abaa": "▙",
+                        "abab": "▌",
+                        "abba": "▚",
+                        "abbb": "▘",
+                        "baaa": "▟",
+                        "baab": "▞",
+                        "baba": "▐",
+                        "babb": "▝",
+                        "bbaa": "▄",
+                        "bbab": "▖",
+                        "bbba": "▗",
+                    }
+                    block = mapping[pattern]
+
+                t_a = FormatTag(
+                    kind=F.ForegroundColor,
+                    data={"color": rgb_to_hex(*c_a[:3])}
+                )
+                t_b = FormatTag(
+                    kind=F.BackgroundColor,
+                    data={"color": rgb_to_hex(*c_b[:3])}
+                )
+
+                line.extend([t_a, t_b, block, t_a.close_tag, t_b.close_tag])
+
+            lines.append(format_func(line))
+
+        return lines
+
     # If height is odd, forget about the last line
     for y in range(0, image.height - (image.height % 2), 2):
         line = []
         for x in range(image.width):
-            if mode == Mode.Super:
-                pass
-
-            elif mode == Mode.Pixels:
+            if mode == Mode.Pixels:
                 t1 = color_tag(pixels, x, y, palette, background=True)
                 t2 = color_tag(pixels, x, y + 1, palette)
                 line.extend([t1, t2, "▄", t2.close_tag, t1.close_tag])
