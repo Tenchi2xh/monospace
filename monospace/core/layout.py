@@ -40,9 +40,12 @@ def layout(
         needed = max(needed_main, needed_sides)
 
         occupied = len(current_page[0])
-        if content_length - occupied < needed:
+        page_break = not block.main and not block.sides
+        if content_length - occupied < needed or page_break:
             new_page()
             current_page = pages[-1]
+            if page_break:
+                continue
 
         # If we're at the beginning of the page, we don't need to offset block
         if len(current_page[0]) != 0:

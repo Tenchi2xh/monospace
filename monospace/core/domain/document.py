@@ -82,6 +82,11 @@ class Image(StructureElement):
 
 
 @dataclass
+class PageBreak(StructureElement):
+    pass
+
+
+@dataclass
 class Unprocessed(StructureElement):
     kind: str
 

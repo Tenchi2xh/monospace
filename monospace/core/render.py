@@ -90,6 +90,8 @@ class Renderer(object):
                 blocks.append(self.render_image(element))
             elif isinstance(element, d.Quote):
                 blocks.append(self.render_quote(element))
+            elif isinstance(element, d.PageBreak):
+                blocks.append(b.Block())
 
             # Unimplemented:
             elif (

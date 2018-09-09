@@ -80,6 +80,8 @@ class Processor(object):
             return d.CodeBlock(language=language, code=value[1])
         elif kind == "Image":
             return d.Image(uri=value[2][0], **dict(value[0][2]))
+        elif kind == "HorizontalRule":
+            return d.PageBreak()
         # --- Textual ---------------------------------------------------------
         elif kind == "Str":
             return value
