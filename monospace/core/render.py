@@ -334,7 +334,11 @@ class Renderer(object):
         if extension in ("png", "jpg", "jpeg"):
             # TODO: Attributes for level of detail
             width = self.settings.main_width - 2 * self.settings.tab_size
-            image_lines = images.ansify(real_uri, self.format, width)
+            image_lines = images.ansify(
+                real_uri,
+                format_func=self.format,
+                width=width
+            )
 
             # TODO: Caption
             return b.Block(main=self.indent(
