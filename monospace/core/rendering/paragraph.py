@@ -16,6 +16,7 @@ random.seed(1337)
 Alignment = Enum("Alignment", ["left", "center", "right", "justify"])
 
 Element = Union[FormatTag, str]
+Line = List[Union[Element, d.Space]]
 
 # TODO: Language in settings for hyphen dictionary
 pyphen_dictionary = pyphen.Pyphen(lang="en_US")
@@ -32,84 +33,48 @@ def align(
 
     elements = flatten(text_elements)
     words = [Word(elems) for elems in split(elements, d.space)]
+    lines = break_words(words, width)
+    insert_spaces(lines, alignment, width)
+    add_padding(lines, alignment, width)
+    return format_lines(lines, text_filter, format_func)
 
-    Line = List[Union[Element, d.Space]]
-    lines: List[Line] = [[]]
-    open_tags: List[str] = []
 
-    def line_length(line: Line, with_spaces=False) -> int:
-        only_words = [e for e in line if isinstance(e, str)]
-        length_words = sum(len(word) for word in only_words)
-        if with_spaces:
-            return length_words + line.count(d.space)
-        return length_words
-
-    def room_left(line: Line) -> int:
-        return width - line_length(line, with_spaces=True)
-
-    def append_word(word, line):
-        for element in word.elems:
-            if isinstance(element, FormatTag):
-                tag = element
-                if tag.open:
-                    open_tags.append(tag.kind)
-                else:
-                    last_index = next(
-                        i for i, k in list(enumerate(open_tags))[::-1]
-                        if k == tag.kind
-                    )
-                    open_tags.pop(last_index)
-                line.append(tag)
-            else:
-                line.append(element)
-        line.append(d.space)
-
-    def end_line(next_word=None):
-        next_line = []
-        # Remove trailing space first
-        if lines[-1][-1] == d.space:
-            lines[-1].pop()
-        # Close all unclosed tags, and re-open them on the next line
-        for kind in reversed(open_tags):
-            lines[-1].append(FormatTag(kind=kind).close_tag)
-        for kind in open_tags:
-            # FIXME: Bug: original data object from tag is lost
-            next_line.append(FormatTag(kind=kind))
-        if next_word:
-            append_word(next_word, next_line)
-        lines.append(next_line)
-
-    # --- Step 1 --------------------------------------------------------------
+def break_words(words, width):
     # Break up elements in lines (with hyphenation)
     # and cross tags over the line when tags are still open.
+
+    lines: List[Line] = [[]]
+    open_tags: List[str] = []
 
     for word in words:
         line = lines[-1]
 
-        available = room_left(line)
+        available = room_left(line, width)
 
         if len(word) <= available:
-            append_word(word, line)
+            append_word(word, line, open_tags)
         else:
-            hyphenized = wrap(word.word(), available)
+            hyphenated = wrap(word.word(), available)
 
-            if hyphenized:
-                index = len(hyphenized[0]) - 1
+            if hyphenated:
+                index = len(hyphenated[0]) - 1
                 left, right = word.split_at(index)
                 # Don't add a hyphen if the word is a compound word
                 if not left.word().endswith("-"):
                     left += "-"
-                append_word(left, line)
-                end_line(next_word=right)
+                append_word(left, line, open_tags)
+                end_line(lines, open_tags, next_word=right)
             else:
-                end_line(next_word=word)
+                end_line(lines, open_tags, next_word=word)
 
-    end_line()
+    end_line(lines, open_tags)
     lines.pop()
 
-    # --- Step 2 --------------------------------------------------------------
-    # Depending on alignment, insert appropriate amount of spaces between words
+    return lines
 
+
+def insert_spaces(lines, alignment, width):
+    # Depending on alignment, insert appropriate amount of spaces between words
     for i, line in enumerate(lines):
         # For the last line, we will let it be left-aligned
         if alignment == Alignment.justify and i < len(lines) - 1:
@@ -130,21 +95,18 @@ def align(
             while spaces_to_add > len(population):
                 population.extend(indices_candidates)
 
-            # print(line_length(line, with_spaces=True),
-            #       len(population), spaces_to_add)
-            # "Small_but_necessary_interruption:_This_online_book_isn’t_sup-"
-            # print(line)
-
             indices = random.sample(population, spaces_to_add)
             for index in indices:
                 assert isinstance(line[index], str)
                 line[index] = line[index] + " "
 
         # Replace all Space object with single spaces:
-        for i, e in enumerate(line):
+        for j, e in enumerate(line):
             if isinstance(e, d.Space):
-                line[i] = " "
+                line[j] = " "
 
+
+def add_padding(lines, alignment, width):
     # --- Step 3 --------------------------------------------------------------
     # Add necessary padding
     for line in lines:
@@ -163,6 +125,8 @@ def align(
             line.insert(0, left_padding)
             line.append(right_padding)
 
+
+def format_lines(lines, text_filter, format_func):
     # --- Step 4 --------------------------------------------------------------
     # Finalize each line with formatting
 
@@ -184,7 +148,7 @@ def align(
 
 
 @dataclass
-class Word():
+class Word:
     elems: List[Element]
 
     def __len__(self):
@@ -246,3 +210,49 @@ def flatten(elements: d.TextElements) -> List[Union[FormatTag, str]]:
 def split(iterable, separator):
     groups = groupby(iterable, lambda e: e != separator)
     return (list(group) for b, group in groups if b)
+
+
+def line_length(line: Line, with_spaces=False) -> int:
+    only_words = [e for e in line if isinstance(e, str)]
+    length_words = sum(len(word) for word in only_words)
+    if with_spaces:
+        return length_words + line.count(d.space)
+    return length_words
+
+
+def room_left(line: Line, width: int) -> int:
+    return width - line_length(line, with_spaces=True)
+
+
+def append_word(word, line, open_tags):
+    for element in word.elems:
+        if isinstance(element, FormatTag):
+            tag = element
+            if tag.open:
+                open_tags.append(tag.kind)
+            else:
+                last_index = next(
+                    i for i, k in list(enumerate(open_tags))[::-1]
+                    if k == tag.kind
+                )
+                open_tags.pop(last_index)
+            line.append(tag)
+        else:
+            line.append(element)
+    line.append(d.space)
+
+
+def end_line(lines, open_tags, next_word=None):
+    next_line = []
+    # Remove trailing space first
+    if lines[-1][-1] == d.space:
+        lines[-1].pop()
+    # Close all unclosed tags, and re-open them on the next line
+    for kind in reversed(open_tags):
+        lines[-1].append(FormatTag(kind=kind).close_tag)
+    for kind in open_tags:
+        # FIXME: Bug: original data object from tag is lost
+        next_line.append(FormatTag(kind=kind))
+    if next_word:
+        append_word(next_word, next_line, open_tags)
+    lines.append(next_line)

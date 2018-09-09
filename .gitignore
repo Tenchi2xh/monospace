@@ -7,3 +7,5 @@ __pycache__/
 *$py.class
 monospace.sublime-workspace
 .coverage
+.idea/
+*.iml
