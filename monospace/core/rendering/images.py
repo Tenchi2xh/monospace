@@ -69,6 +69,9 @@ def ansify(
         rgbs = zip(*colors)
         return tuple([int(sum(comp) / len(comp)) for comp in rgbs])
 
+    def brightness(color):
+        return sum(color[:3]) / 3
+
     if mode == Mode.Super:
         for y in range(0, image.height - (image.height % 4), 4):
             line = []
@@ -88,25 +91,18 @@ def ansify(
                 bl = average_color2(c_y0x2, c_y0x3)
                 br = average_color2(c_y1x2, c_y1x3)
 
-                tl_tr = distance(tl, tr)
-                tl_bl = distance(tl, bl)
-                tl_br = distance(tl, br)
-                tr_bl = distance(tr, bl)
-                tr_br = distance(tr, br)
-                bl_br = distance(bl, br)
-
                 cats = {}
 
-                avg_d = (tl_tr + tl_bl + tl_br + tr_bl + tr_br + bl_br) / 6
-                avg_tl = (tl_tr + tl_bl + tl_br) / 3
-                avg_tr = (tl_tr + tr_bl + tr_br) / 3
-                avg_bl = (tl_bl + tr_bl + bl_br) / 3
-                avg_br = (tl_br + tr_br + bl_br) / 3
+                bri_tl = brightness(tl)
+                bri_tr = brightness(tr)
+                bri_bl = brightness(bl)
+                bri_br = brightness(br)
+                avg_bri = (bri_tl + bri_tr + bri_bl + bri_br) / 4
 
-                cats[tl] = "a" if avg_tl < avg_d else "b"
-                cats[tr] = "a" if avg_tr < avg_d else "b"
-                cats[bl] = "a" if avg_bl < avg_d else "b"
-                cats[br] = "a" if avg_br < avg_d else "b"
+                cats[tl] = "a" if bri_tl < avg_bri else "b"
+                cats[tr] = "a" if bri_tr < avg_bri else "b"
+                cats[bl] = "a" if bri_bl < avg_bri else "b"
+                cats[br] = "a" if bri_br < avg_bri else "b"
 
                 c_a = average_color2(*[k for k, v in cats.items() if v == "a"])
                 c_b = average_color2(*[k for k, v in cats.items() if v == "b"])
