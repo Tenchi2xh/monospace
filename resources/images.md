@@ -15,6 +15,14 @@ dimensions:
 
 # RGB
 
+## Quarter-blocks {subtitle="Uses “ ▖ ▗ ▘ ▙ ▚ ▛ ▜ ▝ ▞ ▟ ”"}
+
+![](lenna.png){palette=RGB mode=Super}
+
+![](ghibli2.jpg){palette=RGB mode=Super}
+
+---
+
 ## Half-blocks {subtitle="Uses “ ▄ ”"}
 
 ![](lenna.png){palette=RGB mode=Pixels}
@@ -32,6 +40,12 @@ dimensions:
 ---
 
 # xterm-256
+
+## Quarter-blocks {subtitle="Uses “ ▖ ▗ ▘ ▙ ▚ ▛ ▜ ▝ ▞ ▟ ”"}
+
+![](lenna.png){palette=Xterm mode=Super}
+
+![](ghibli2.jpg){palette=Xterm mode=Super}
 
 ## Half-blocks {subtitle="Uses “ ▄ ”"}
 
@@ -59,6 +73,12 @@ dimensions:
 
 # ANSI
 
+## Quarter-blocks {subtitle="Uses “ ▖ ▗ ▘ ▙ ▚ ▛ ▜ ▝ ▞ ▟ ”"}
+
+![](lenna.png){palette=ANSI mode=Super}
+
+![](ghibli2.jpg){palette=ANSI mode=Super}
+
 ## Half-blocks {subtitle="Uses “ ▄ ”"}
 
 ![](lenna.png){palette=ANSI mode=Pixels}
@@ -84,6 +104,12 @@ dimensions:
 ---
 
 # Monochrome
+
+## Quarter-blocks {subtitle="Uses “ ▖ ▗ ▘ ▙ ▚ ▛ ▜ ▝ ▞ ▟ ”"}
+
+![](lenna.png){palette=Monochrome mode=Super}
+
+![](ghibli2.jpg){palette=Monochrome mode=Super}
 
 ## Half-blocks {subtitle="Uses “ ▄ ”"}
 

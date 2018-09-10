@@ -55,7 +55,6 @@ def ansify(
 
 
 def superify(image, pixels, palette, format_func):
-    # FIXME: Respect palette
     lines = []
     for y in range(0, image.height - (image.height % 4), 4):
         line = []
@@ -125,6 +124,10 @@ def superify(image, pixels, palette, format_func):
                 }
                 block = mapping[pattern]
 
+            if palette != Palette.RGB:
+                color_a = n_closest_color(1, color_a, palette)[0]
+                color_b = n_closest_color(1, color_b, palette)[0]
+
             t_a = FormatTag(
                 kind=F.ForegroundColor,
                 data={"color": rgb_to_hex(*color_a)}
@@ -159,7 +162,7 @@ def ditherify(image, pixels, palette, format_func):
         line = []
         for x in range(image.width):
             c0 = average_color(pixels[x, y], pixels[x, y + 1])
-            c1, c2 = n_closest_color(2, c0, palettes[palette])
+            c1, c2 = n_closest_color(2, c0, palette)
 
             d01 = sqrt(distance(c0, c1))
             d12 = sqrt(distance(c1, c2))
@@ -189,7 +192,7 @@ def blockify(image, pixels, palette, format_func):
         for x in range(image.width):
             c = average_color(pixels[x, y], pixels[x, y + 1])
             if palette != Palette.RGB:
-                c = n_closest_color(1, c, palettes[palette])[0]
+                c = n_closest_color(1, c, palette)[0]
             h = rgb_to_hex(*c)
             t = FormatTag(kind=F.ForegroundColor, data={"color": h})
             line.extend([t, "█", t.close_tag])
@@ -197,7 +200,8 @@ def blockify(image, pixels, palette, format_func):
     return lines
 
 
-def n_closest_color(n, color, palette):
+def n_closest_color(n, color, palette_name):
+    palette = palettes[palette_name]
     n_closest = nsmallest(
         n, palette,
         key=lambda k: distance(color, palette[k])
@@ -208,7 +212,7 @@ def n_closest_color(n, color, palette):
 def color_tag(pixels, x, y, palette, background=False):
     r, g, b, _ = pixels[x, y]
     if palette != Palette.RGB:
-        r, g, b = n_closest_color(1, (r, g, b), palettes[palette])[0]
+        r, g, b = n_closest_color(1, (r, g, b), palette)[0]
     hex_color = rgb_to_hex(r, g, b)
     return FormatTag(
         kind=F.BackgroundColor if background else F.ForegroundColor,
