@@ -54,48 +54,6 @@ def ansify(
     return render(image, pixels, palette, format_func)
 
 
-def n_closest_color(n, color, palette):
-    n_closest = nsmallest(
-        n, palette,
-        key=lambda k: distance(color, palette[k])
-    )
-    return [palette[closest] for closest in n_closest]
-
-
-def color_tag(pixels, x, y, palette, background=False):
-    r, g, b, _ = pixels[x, y]
-    if palette != Palette.RGB:
-        r, g, b = n_closest_color(1, (r, g, b), palettes[palette])[0]
-    hex_color = rgb_to_hex(r, g, b)
-    return FormatTag(
-        kind=F.BackgroundColor if background else F.ForegroundColor,
-        data={"color": hex_color}
-    )
-
-
-def average_color(pixels, x, y):
-    c1 = pixels[x, y]
-    c2 = pixels[x, y + 1]
-    return [int(0.5 * (c1[i] + c2[i])) for i in range(3)]
-
-
-def average(values):
-    return sum(values) / len(values)
-
-
-def rgb_to_hex(r, g, b):
-    return '#%02x%02x%02x' % (r, g, b)
-
-
-def average_color2(*colors):
-    rgbs = zip(*colors)
-    return tuple([int(average(comp)) for comp in rgbs])
-
-
-def brightness(color):
-    return sum(color[:3]) / 3
-
-
 def superify(image, pixels, palette, format_func):
     # FIXME: Respect palette
     lines = []
@@ -110,7 +68,7 @@ def superify(image, pixels, palette, format_func):
             # We average the first and last two rows together
             # to get 2x2 pixels (four corners)
             corners = [
-                average_color2(original[i * 2][j], original[i * 2 + 1][j])
+                average_color(original[i * 2][j], original[i * 2 + 1][j])
                 for i in range(2)
                 for j in range(2)
             ]
@@ -133,8 +91,8 @@ def superify(image, pixels, palette, format_func):
 
             # Calculate the color for each group
             # (average of all colors in that group)
-            color_a = average_color2(*group_a)
-            color_b = average_color2(*group_b)
+            color_a = average_color(*group_a)
+            color_b = average_color(*group_b)
 
             if not color_a:
                 block = " "
@@ -169,11 +127,11 @@ def superify(image, pixels, palette, format_func):
 
             t_a = FormatTag(
                 kind=F.ForegroundColor,
-                data={"color": rgb_to_hex(*color_a[:3])}
+                data={"color": rgb_to_hex(*color_a)}
             )
             t_b = FormatTag(
                 kind=F.BackgroundColor,
-                data={"color": rgb_to_hex(*color_b[:3])}
+                data={"color": rgb_to_hex(*color_b)}
             )
 
             line.extend([t_a, t_b, block, t_a.close_tag, t_b.close_tag])
@@ -200,7 +158,7 @@ def ditherify(image, pixels, palette, format_func):
     for y in range(0, image.height - (image.height % 2), 2):
         line = []
         for x in range(image.width):
-            c0 = average_color(pixels, x, y)
+            c0 = average_color(pixels[x, y], pixels[x, y + 1])
             c1, c2 = n_closest_color(2, c0, palettes[palette])
 
             d01 = sqrt(distance(c0, c1))
@@ -229,7 +187,7 @@ def blockify(image, pixels, palette, format_func):
     for y in range(0, image.height - (image.height % 2), 2):
         line = []
         for x in range(image.width):
-            c = average_color(pixels, x, y)
+            c = average_color(pixels[x, y], pixels[x, y + 1])
             if palette != Palette.RGB:
                 c = n_closest_color(1, c, palettes[palette])[0]
             h = rgb_to_hex(*c)
@@ -237,3 +195,39 @@ def blockify(image, pixels, palette, format_func):
             line.extend([t, "█", t.close_tag])
         lines.append(format_func(line))
     return lines
+
+
+def n_closest_color(n, color, palette):
+    n_closest = nsmallest(
+        n, palette,
+        key=lambda k: distance(color, palette[k])
+    )
+    return [palette[closest] for closest in n_closest]
+
+
+def color_tag(pixels, x, y, palette, background=False):
+    r, g, b, _ = pixels[x, y]
+    if palette != Palette.RGB:
+        r, g, b = n_closest_color(1, (r, g, b), palettes[palette])[0]
+    hex_color = rgb_to_hex(r, g, b)
+    return FormatTag(
+        kind=F.BackgroundColor if background else F.ForegroundColor,
+        data={"color": hex_color}
+    )
+
+
+def average(values):
+    return sum(values) / len(values)
+
+
+def rgb_to_hex(r, g, b, *args):
+    return '#%02x%02x%02x' % (r, g, b)
+
+
+def average_color(*colors):
+    rgbs = zip(*colors)
+    return tuple([int(average(comp)) for comp in rgbs])
+
+
+def brightness(color):
+    return sum(color[:3]) / 3
