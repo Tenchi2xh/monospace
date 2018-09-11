@@ -7,7 +7,8 @@ from .formatting import Formatter
 def layout(
     blocks: List[b.Block],
     settings: Settings,
-    formatter: Type[Formatter]
+    formatter: Type[Formatter],
+    linear=False,
 ):
 
     # Left side: list of main lines
@@ -41,11 +42,13 @@ def layout(
 
         occupied = len(current_page[0])
         page_break = not block.main and not block.sides
-        if content_length - occupied < needed or page_break:
-            new_page()
-            current_page = pages[-1]
-            if page_break:
-                continue
+        # Don't break into pages when in linear mode
+        if not linear:
+            if content_length - occupied < needed or page_break:
+                new_page()
+                current_page = pages[-1]
+                if page_break:
+                    continue
 
         # If we're at the beginning of the page, we don't need to offset block
         if len(current_page[0]) != 0:
@@ -107,6 +110,9 @@ def layout(
                 )
 
         lines_left = s.margin_bottom + (content_length - j)
+        # In linear mode, the only one page is longer than content_length
+        if linear:
+            lines_left = s.margin_bottom
         rendered_page.extend([spaces(settings.page_width)] * lines_left)
 
         rendered_pages.append(rendered_page)

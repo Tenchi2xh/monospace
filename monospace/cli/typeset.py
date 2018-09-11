@@ -35,7 +35,12 @@ formatters = {
     is_flag=True, default=False,
     help="Open output file."
 )
-def typeset(markdown_file, to, preview, do_open):
+@click.option(
+    "-l", "--linear",
+    is_flag=True, default=False,
+    help="Produce only one long page."
+)
+def typeset(markdown_file, to, preview, do_open, linear):
     """Typeset a markdown file into a book.
 
     Saves the formatted book in the same directory as the input file.
@@ -49,7 +54,7 @@ def typeset(markdown_file, to, preview, do_open):
                 "Option --preview is not available with format 'pdf'")
         filename = sys.stdout
 
-    do_typeset(markdown_file, formatter, filename)
+    do_typeset(markdown_file, formatter, filename, linear=linear)
 
     if to == "pdf":
         subprocess.check_call(["ps2pdf", filename + ".ps", filename + ".pdf"])
