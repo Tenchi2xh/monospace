@@ -356,8 +356,26 @@ class Renderer(object):
                 left_width=self.settings.tab_size,
                 right_width=self.settings.tab_size))
         else:
-            return b.Block(
-                main=self.format(["<UNRENDERED: Image>"]))
+            with open(real_uri, "r") as f:
+                lines = f.read().splitlines()
+
+            max_length = max(len(line) for line in lines)
+            if max_length > self.settings.main_width:
+                raise RuntimeError(
+                    "Image '%s' is too wide: length %d is higher than %d"
+                    % (real_uri, max_length, self.settings.main_width)
+                )
+
+            padded_lines = [line.ljust(max_length) for line in lines]
+            formatted_lines = [self.format(line) for line in padded_lines]
+            left_indent = (self.settings.main_width - max_length) // 2
+            right_indent = self.settings.main_width - max_length - left_indent
+
+            return b.Block(main=self.indent(
+                lines=formatted_lines,
+                left_width=left_indent,
+                right_width=right_indent,
+            ))
 
     def get_subrenderer(self, main_width=None):
         return Renderer(
