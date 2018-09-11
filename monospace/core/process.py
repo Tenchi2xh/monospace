@@ -10,7 +10,7 @@ from .symbols.characters import double_quotes, single_quotes
 def process(ast: dict, source_file):
     meta = process_meta(ast["meta"])
     settings = Settings.from_meta(meta, source_file)
-    processor = Processor(ast)
+    processor = Processor(ast, settings)
 
     cross_references = processor.cross_references
     document_elements = processor.processed
@@ -19,7 +19,8 @@ def process(ast: dict, source_file):
 
 
 class Processor(object):
-    def __init__(self, ast: dict) -> None:
+    def __init__(self, ast: dict, settings: Settings) -> None:
+        self.settings = settings
         self.cross_references = self.find_references(ast["blocks"])
         # FIXME: This is just for the mockup
         self.cross_references.update({
@@ -132,14 +133,19 @@ class Processor(object):
             )
 
         title = self.make_text(value[2])
+        title_string = join([title])
+        id = next(
+            k for k, v in self.cross_references.items()
+            if v == title_string
+        )
 
         assert level in (1, 2, 3), "Hedings must be of level 1, 2 or 3"
         if level == 1:
-            return d.Chapter(title=title)
+            return d.Chapter(title=title, identifier=id)
         elif level == 2:
-            return d.SubChapter(title=title, subtitle=subtitle)
+            return d.SubChapter(title=title, subtitle=subtitle, identifier=id)
         else:
-            return d.Section(title=title)
+            return d.Section(title=title, identifier=id)
 
     def process_link(self, value):
         if not value[2]:
@@ -152,11 +158,13 @@ class Processor(object):
             assert identifier[1:] in self.cross_references,\
                 "Link points to unknown reference '%s'" % identifier
             title = self.cross_references[identifier[1:]]
+            if self.settings.github_anchors:
+                identifier = "#user-content-" + identifier[1:]
 
         formatted_title = stylize(title, styles.small_caps)
         return d.CrossRef(
             children=formatted_title,
-            identifier=value[2][0]
+            identifier=identifier
         )
 
     def process_quoted(self, value):

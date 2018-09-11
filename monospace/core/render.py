@@ -155,7 +155,12 @@ class Renderer(object):
         return blocks
 
     def render_chapter(self, chapter):
-        elements = [d.Bold([d.Italic(chapter.title.elements)])]
+        elements = [
+            d.Anchor(
+                [d.Bold([d.Italic(chapter.title.elements)])],
+                identifier=chapter.identifier
+            )
+        ]
 
         lines = p.align(
             text_elements=elements,
@@ -174,7 +179,12 @@ class Renderer(object):
         line = ["━" * self.settings.side_width]
         formatted_line = self.format(line)
 
-        title = [d.Bold(subchapter.title.elements)]
+        title = [
+            d.Anchor(
+                [d.Bold(subchapter.title.elements)],
+                identifier=subchapter.identifier
+            )
+        ]
         title_lines = p.align(
             text_elements=title,
             alignment=p.Alignment.left,
@@ -198,7 +208,12 @@ class Renderer(object):
         return b.Block(sides=[side])
 
     def render_section(self, section):
-        elements = [d.Bold(section.title.elements)]
+        elements = [
+            d.Anchor(
+                [d.Bold(section.title.elements)],
+                identifier=section.identifier
+            )
+        ]
 
         lines = p.align(
             text_elements=elements,

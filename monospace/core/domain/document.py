@@ -28,17 +28,20 @@ Element = Union[StructureElement, TextElement, "Space", str]
 @dataclass
 class Chapter(StructureElement):
     title: Text
+    identifier: str
 
 
 @dataclass
 class SubChapter(StructureElement):
     title: Text
     subtitle: Text
+    identifier: str
 
 
 @dataclass
 class Section(StructureElement):
     title: Text
+    identifier: str
 
 
 @dataclass
@@ -117,6 +120,11 @@ class Code(TextElement):
 @dataclass
 class Quoted(TextElement):
     pass
+
+
+@dataclass
+class Anchor(TextElement):
+    identifier: str
 
 
 Note = object()

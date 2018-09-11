@@ -9,6 +9,7 @@ tags = {
     F.ForegroundColor: "span",
     F.BackgroundColor: "span",
     F.CrossRef: "a",
+    F.Anchor: "a",
 }
 
 # FIXME: Keep track of BG/FG appearance
@@ -17,7 +18,6 @@ tag_attributes = {
     F.ForegroundColor: lambda tag: {"style": "color: %s" % tag.data["color"]},
     F.BackgroundColor: lambda tag: {"style": "background-color: %s"
                                              % tag.data["color"]},
-    # This makes the links real but they don't work (no anchors set)
     F.CrossRef: lambda tag: {
         "href": (
             tag.data["identifier"]
@@ -25,6 +25,9 @@ tag_attributes = {
             else "XXX"  # This is related to bug in paragraph.py
         )
     },
+    F.Anchor: lambda tag: {
+        "name": tag.data["identifier"] if "identifier" in tag.data else "XXX"
+    }
 }
 
 black_list = [F.Code, F.Quoted]

@@ -184,7 +184,12 @@ class Word:
 def get_tag(element):
     if isinstance(element, d.CrossRef):
         return FormatTag(
-            Format.CrossRef,
+            kind=Format.CrossRef,
+            data={"identifier": element.identifier}
+        )
+    elif isinstance(element, d.Anchor):
+        return FormatTag(
+            kind=Format.Anchor,
             data={"identifier": element.identifier}
         )
     return FormatTag(Format[element.__class__.__name__])

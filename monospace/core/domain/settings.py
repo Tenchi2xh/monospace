@@ -16,6 +16,7 @@ class Settings:
 
     source_file: str
     light: bool
+    github_anchors: bool
 
     @property
     def page_width(self):
@@ -40,7 +41,8 @@ class Settings:
             margin_outside=get(meta, "dimensions.margins.outside", 5),
             margin_bottom=get(meta, "dimensions.margins.bottom", 5),
             source_file=source_file,
-            light=get(meta, "light-theme", False)
+            light=get(meta, "light-theme", False),
+            github_anchors=get(meta, "github-anchors", False)
         )
 
 
