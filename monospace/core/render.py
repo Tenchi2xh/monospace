@@ -39,7 +39,7 @@ it is delegated to the main renderer, because the side blocks
 need to be aligned left or right depending on which page they are on.
 """
 
-from typing import Dict, List, Optional, Type
+from typing import Dict, List, Optional, Type, Iterator
 from dataclasses import replace
 import os
 
@@ -52,11 +52,11 @@ from .formatting import Formatter, styles, AnsiFormatter,\
 
 
 def render(
-    elements: List[d.Element],
+    elements: Iterator[d.Element],
     settings: Settings,
     cross_references: Dict[str, str],
     formatter: Optional[Type[Formatter]] = None
-) -> List[b.Block]:
+) -> Iterator[b.Block]:
     renderer = Renderer(settings, cross_references, formatter)
     return renderer.render_elements(elements)
 
@@ -67,31 +67,30 @@ class Renderer(object):
         self.cross_references: Dict[str, str] = cross_references
         self.formatter = formatter
 
-    def render_elements(self, elements) -> List[b.Block]:
-        blocks: List[b.Block] = []
+    def render_elements(self, elements) -> Iterator[b.Block]:
         for element in elements:
             if isinstance(element, d.Chapter):
-                blocks.append(self.render_chapter(element))
+                yield self.render_chapter(element)
             elif isinstance(element, d.SubChapter):
-                blocks.append(self.render_subchapter(element))
+                yield self.render_subchapter(element)
             elif isinstance(element, d.Section):
-                blocks.append(self.render_section(element))
+                yield self.render_section(element)
             elif isinstance(element, d.Paragraph):
-                blocks.append(self.render_paragraph(element))
+                yield self.render_paragraph(element)
             elif isinstance(element, d.OrderedList):
-                blocks.extend(self.render_list(element, ordered=True))
+                yield from self.render_list(element, ordered=True)
             elif isinstance(element, d.UnorderedList):
-                blocks.extend(self.render_list(element, ordered=False))
+                yield from self.render_list(element, ordered=False)
             elif isinstance(element, d.Aside):
-                blocks.append(self.render_aside(element))
+                yield self.render_aside(element)
             elif isinstance(element, d.CodeBlock):
-                blocks.append(self.render_code_block(element))
+                yield self.render_code_block(element)
             elif isinstance(element, d.Image):
-                blocks.append(self.render_image(element))
+                yield self.render_image(element)
             elif isinstance(element, d.Quote):
-                blocks.append(self.render_quote(element))
+                yield self.render_quote(element)
             elif isinstance(element, d.PageBreak):
-                blocks.append(b.Block())
+                yield b.Block()
 
             # Unimplemented:
             elif (
@@ -103,15 +102,11 @@ class Renderer(object):
                 else:
                     kind = element.__class__.__name__
 
-                blocks.append(self.render_paragraph(
+                yield self.render_paragraph(
                     d.Paragraph(text=d.Text(["<UNRENDERED: %s>" % kind]))
-                ))
-
-        return blocks
+                )
 
     def render_list(self, ordered_list, ordered=False):
-        blocks = []
-
         # Create sub-renderer that will create thinner blocks
         renderer = self.get_subrenderer(
             main_width=self.settings.main_width - self.settings.tab_size
@@ -149,10 +144,7 @@ class Renderer(object):
                     right_width=0,
                     before=decorated
                 )
-
-            blocks.extend(sub_blocks)
-
-        return blocks
+                yield block
 
     def render_chapter(self, chapter):
         elements = [

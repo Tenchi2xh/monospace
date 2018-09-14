@@ -1,31 +1,37 @@
-from typing import Type, List, Tuple, Dict
+from typing import Type, List, Tuple, Dict, Iterator
 
 from .domain import Settings, blocks as b
 from .formatting import Formatter
 
+# Left side: list of main lines
+# Right side, dict for the side notes: desired offset, line
+Page = Tuple[List[str], Dict[int, str]]
+RenderedPage = List[str]
+
 
 def layout(
-    blocks: List[b.Block],
+    blocks: Iterator[b.Block],
     settings: Settings,
     formatter: Type[Formatter],
     linear=False,
-):
-
-    # Left side: list of main lines
-    # Right side, dict for the side notes: desired offset, line
-    Page = Tuple[List[str], Dict[int, str]]
-    pages: List[Page] = []
+) -> Iterator[RenderedPage]:
 
     s = settings
     content_length = s.page_height - s.margin_top - s.margin_bottom
 
-    def new_page():
-        main = [""] * s.margin_top
-        sides = {}
-        pages.append((main, sides))
+    pages = break_blocks(blocks, linear, content_length, s.margin_top)
+    rendered_pages = render_pages(pages, linear, content_length, s, formatter)
 
-    new_page()
-    current_page = pages[-1]
+    return rendered_pages
+
+
+def break_blocks(blocks, linear, content_length, margin_top) -> Iterator[Page]:
+    def new_page() -> Page:
+        main = [""] * margin_top
+        sides: Dict[int, str] = {}
+        return (main, sides)
+
+    current_page = new_page()
 
     # TODO: add "break_before: bool" to block for chapters
     # (only break if occupied = 0)
@@ -45,8 +51,8 @@ def layout(
         # Don't break into pages when in linear mode
         if not linear:
             if content_length - occupied < needed or page_break:
-                new_page()
-                current_page = pages[-1]
+                yield current_page
+                current_page = new_page()
                 if page_break:
                     continue
 
@@ -64,7 +70,18 @@ def layout(
                     i += 1
                 i += 1  # Gap to separate sides from each other
 
-    rendered_pages: List[List[str]] = []
+    yield current_page
+
+
+def render_pages(
+    pages,
+    linear,
+    content_length,
+    settings,
+    formatter
+) -> Iterator[RenderedPage]:
+
+    s = settings
     ft = formatter.format_tags
 
     def spaces(width):
@@ -115,6 +132,4 @@ def layout(
             lines_left = s.margin_bottom
         rendered_page.extend([spaces(settings.page_width)] * lines_left)
 
-        rendered_pages.append(rendered_page)
-
-    return rendered_pages
+        yield rendered_page

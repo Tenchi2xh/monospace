@@ -55,7 +55,6 @@ def ansify(
 
 
 def superify(image, pixels, palette, format_func):
-    lines = []
     for y in range(0, image.height - (image.height % 4), 4):
         line = []
         for x in range(0, image.width - (image.width % 2), 2):
@@ -139,25 +138,20 @@ def superify(image, pixels, palette, format_func):
 
             line.extend([t_a, t_b, block, t_a.close_tag, t_b.close_tag])
 
-        lines.append(format_func(line))
-
-    return lines
+        yield format_func(line)
 
 
 def pixelify(image, pixels, palette, format_func):
-    lines: List[str] = []
     for y in range(0, image.height - (image.height % 2), 2):
         line = []
         for x in range(image.width):
             t1 = color_tag(pixels, x, y, palette, background=True)
             t2 = color_tag(pixels, x, y + 1, palette)
             line.extend([t1, t2, "▄", t2.close_tag, t1.close_tag])
-        lines.append(format_func(line))
-    return lines
+        yield format_func(line)
 
 
 def ditherify(image, pixels, palette, format_func):
-    lines: List[str] = []
     for y in range(0, image.height - (image.height % 2), 2):
         line = []
         for x in range(image.width):
@@ -181,12 +175,10 @@ def ditherify(image, pixels, palette, format_func):
             t1 = FormatTag(kind=F.ForegroundColor, data={"color": hex2})
             t2 = FormatTag(kind=F.BackgroundColor, data={"color": hex1})
             line.extend([t1, t2, block, t2.close_tag, t1.close_tag])
-        lines.append(format_func(line))
-    return lines
+        yield format_func(line)
 
 
 def blockify(image, pixels, palette, format_func):
-    lines: List[str] = []
     for y in range(0, image.height - (image.height % 2), 2):
         line = []
         for x in range(image.width):
@@ -196,8 +188,7 @@ def blockify(image, pixels, palette, format_func):
             h = rgb_to_hex(*c)
             t = FormatTag(kind=F.ForegroundColor, data={"color": h})
             line.extend([t, "█", t.close_tag])
-        lines.append(format_func(line))
-    return lines
+        yield format_func(line)
 
 
 def n_closest_color(n, color, palette_name):
