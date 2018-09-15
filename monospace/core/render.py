@@ -46,6 +46,7 @@ import os
 from .domain import document as d
 from .domain import blocks as b
 from .domain import Settings
+from .symbols import characters
 from .rendering import paragraph as p, code, images
 from .formatting import Formatter, styles, AnsiFormatter,\
                         PostScriptFormatter, FormatTag, Format as F
@@ -218,16 +219,35 @@ class Renderer(object):
         # TODO: Notes
         return b.Block(main=lines)
 
+    def render_notes(self, elements):
+        new_elements = []
+        notes = []
+        for elem in elements:
+            if isinstance(elem, d.Note):
+                sup = styles.number_map2(
+                    str(elem.count), characters.superscript)
+                side = [d.Italic([sup + ":", d.Space(), *elem.children])]
+                notes.append(p.align(
+                    text_elements=side,
+                    alignment=p.Alignment.left,
+                    width=self.settings.side_width,
+                    format_func=self.format
+                ))
+                new_elements.append(sup)
+            else:
+                new_elements.append(elem)
+        return new_elements, notes
+
     def render_paragraph(self, paragraph):
+        elements, notes = self.render_notes(paragraph.text.elements)
         lines = p.align(
-            text_elements=paragraph.text.elements,
+            text_elements=elements,
             alignment=p.Alignment.justify,
             width=self.settings.main_width,
             format_func=self.format
         )
 
-        # TODO: Notes
-        return b.Block(main=lines)
+        return b.Block(main=lines, sides=notes)
 
     def render_aside(self, aside):
         # Note: although aside is composed of multiple blocks,

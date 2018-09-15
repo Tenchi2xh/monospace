@@ -61,7 +61,7 @@ Ready? Go.
         3. I think so
     - Nihil agere delectat
 
-2. [](#point-size) is the how big the font is. In print, the most comfortable range for body text is **10–12 point**, or **15-25 pixels**^[This is a foot-note. Well, more like a side-note]. Not every font appears equally large at a given point size, so be prepared to adjust as needed.
+2. [](#point-size) is the how big the font is. In print, the most comfortable range for body text is **10–12 point**, or **15-25 pixels**^[This is a footnote. Well, more like a side note]. Not every font appears equally large at a given point size, so be prepared to adjust as needed.
 
 3. [](#line-spacing) is the vertical distance between lines. It should be **120–145%** of the point size. In word processors, use the "Exact" line-spacing option to achieve this. The default single-line option is too tight; the 1 1/2-line option is too loose. In CSS, use the `line-height` property (preferably with a unitless value, so 130% would become 1.3).
 
@@ -71,7 +71,7 @@ Ready? Go.
 
     In a printed document, this usually means [](#page-margins) larger than one inch (a [](#typewriter-habit)). On a web page, it usually means preventing the text from flowing to the edges of the browser window.
 
-5. And finally^[Another side-note. Exciting!], font choice. The fastest, easiest, and most visible improvement you can make to your typography is to ignore the fonts already loaded on your computer (known as [](#system-fonts)) and the [](#free-fonts) that inundate the internet. Instead, buy a professional font (like those found in [](#font-recommendations)). A professional font gives you the benefit of a professional designer's skills without having to hire one.
+5. And finally^[Another side note. Exciting!], font choice. The fastest, easiest, and most visible improvement you can make to your typography is to ignore the fonts already loaded on your computer (known as [](#system-fonts)) and the [](#free-fonts) that inundate the internet. Instead, buy a professional font (like those found in [](#font-recommendations)). A professional font gives you the benefit of a professional designer's skills without having to hire one.
 
     If that's impossible, you can still make good typography with system fonts. But choose wisely. And never choose [](#times-new-roman) or [](#arial), as those fonts are favored only by the apathetic and sloppy. Not by typographers. Not by you.
 

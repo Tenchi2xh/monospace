@@ -40,6 +40,7 @@ class Processor(object):
             "summary-of-key-rules": "Summary of key rules",
             "foreword": "Foreword",
         })
+        self.note_count = -1
         self.processed = self.process_elements(ast["blocks"])
 
     def find_references(self, elements: list) -> Dict[str, str]:
@@ -96,6 +97,8 @@ class Processor(object):
             return d.Code(stylize(value[1], styles.monospace))
         elif kind == "Quoted":
             return self.process_quoted(value)
+        elif kind == "Note":
+            return self.process_note(value)
         elif kind == "Space" or kind == "SoftBreak":
             return d.Space()
 
@@ -114,6 +117,16 @@ class Processor(object):
                 raise ValueError("Inline images are not supported")
             return text.elements[0]
         return d.Paragraph(text)
+
+    def process_note(self, value):
+        self.note_count += 1
+        elements = self.process_elements(value)
+        assert len(elements) == 1 and isinstance(elements[0], d.Paragraph)
+        children = elements[0].text.elements
+        return d.Note(  # type: ignore
+            children=children,
+            count=self.note_count
+        )
 
     def process_quote(self, value):
         # Quote text elements are wrapped in a paragraph

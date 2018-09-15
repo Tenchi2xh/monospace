@@ -127,7 +127,9 @@ class Anchor(TextElement):
     identifier: str
 
 
-Note = object()
+@dataclass
+class Note(TextElement):
+    count: int
 
 
 @dataclass
