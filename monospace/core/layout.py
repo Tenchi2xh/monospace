@@ -32,6 +32,7 @@ def break_blocks(blocks, linear, content_length, margin_top) -> Iterator[Page]:
         return (main, sides)
 
     current_page = new_page()
+    latest_side_offset = 0
 
     # TODO: add "break_before: bool" to block for chapters
     # (only break if occupied = 0)
@@ -53,6 +54,7 @@ def break_blocks(blocks, linear, content_length, margin_top) -> Iterator[Page]:
             if content_length - occupied < needed or page_break:
                 yield current_page
                 current_page = new_page()
+                latest_side_offset = 0
                 if page_break:
                     continue
 
@@ -61,7 +63,7 @@ def break_blocks(blocks, linear, content_length, margin_top) -> Iterator[Page]:
             for _ in range(block.block_offset):
                 current_page[0].append("")
 
-        i = len(current_page[0])
+        i = max(len(current_page[0]), latest_side_offset)
         current_page[0].extend(block.main)
         if block.sides:
             for side in block.sides:
@@ -69,6 +71,7 @@ def break_blocks(blocks, linear, content_length, margin_top) -> Iterator[Page]:
                     current_page[1][i] = line
                     i += 1
                 i += 1  # Gap to separate sides from each other
+        latest_side_offset = i
 
     yield current_page
 
@@ -88,7 +91,6 @@ def render_pages(
         return ft([width * " "], settings)
 
     # Go through pages and compose lines
-    # FIXME: Current implementation may put side notes on top of each other
     for i, page in enumerate(pages):
         main = page[0]
         sides = page[1]

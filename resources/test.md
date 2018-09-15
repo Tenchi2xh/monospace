@@ -61,11 +61,11 @@ Ready? Go.
         3. I think so
     - Nihil agere delectat
 
-2. [](#point-size) is the how big the font is. In print, the most comfortable range for body text is **10–12 point**, or **15-25 pixels**^[This is a footnote. Well, more like a side note]. Not every font appears equally large at a given point size, so be prepared to adjust as needed.
+2. [](#point-size) is the how big the font is. In print, the most comfortable range for body text is **10–12 point**, or **15-25 pixels**^[This is a footnote. Well, more like a side note]. Not every font^[Another note here] appears equally large at a given point size, so be prepared^[Yet another note] to adjust as needed.
 
-3. [](#line-spacing) is the vertical distance between lines. It should be **120–145%** of the point size. In word processors, use the "Exact" line-spacing option to achieve this. The default single-line option is too tight; the 1 1/2-line option is too loose. In CSS, use the `line-height` property (preferably with a unitless value, so 130% would become 1.3).
+3. [](#line-spacing) is the vertical^[i.e. not horizontal] distance^[Foo **bar** baz!] between lines. It should be **120–145%** of the point size. In word processors, use the "Exact" line-spacing option to achieve this. The default single-line option is too tight; the 1 1/2-line option is too loose. In CSS, use the `line-height` property (preferably with a unitless value, so 130% would become 1.3).
 
-4. [](#line-length) is the horizontal width of the text block. Line length should be an average of **45–90 characters** per line (use your word-count function) or **2–3 lowercase alphabets**, like so:
+4. [](#line-length) is the horizontal width^[Last note I swear] of the text block. Line length should be an average of **45–90 characters** per line (use your word-count function) or **2–3 lowercase alphabets**, like so:
     
     abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcddefghijklm
 
