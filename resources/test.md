@@ -13,9 +13,9 @@ dimensions:
         outside: 5
 ...
 
-# Typography in ten minutes (A chapter)
+# Typography in ten^[Approximately] minutes (A chapter)
 
-> Premature optimization is the root of all evil. **Donald E. Knuth**
+> Premature optimization is the root of all evil^[And evil is bad]. **Donald E. Knuth**
 
 Use the `process_elements` method to 'process' the **elements**. See chapter [](#a-sub-section).
 
@@ -34,16 +34,16 @@ for line in words:
         current_length += len(word)
 ```
 
-## Foobar {subtitle="Baz?"}
+## Foobar^[Bar baz] {subtitle="Baz?"}
 
 *This a **bold** claim*, but I stand behind it: if you learn and follow these five typography rules, you will be a better typographer than nearly every writer—and even most graphic designers.
 
-### A sub-section
+### A sub-section^[Yes]
 
 All it takes is ten minutes: five minutes to read these rules once. Then five minutes to read them again.
 
 :::: Aside
-**Small but necessary interruption**: This online book isn't supported by banner ads. It's supported by readers like you. If you find these tips valuable, see [](#how-to-pay) for this book. There's plenty of other material too - see the [](#table-of-contents).
+**Small but necessary interruption**: This online book isn't supported by banner ads. It's supported by readers like you. If you find these tips valuable, see [](#how-to-pay) for this book^[It's a fine book]. There's plenty of other material too - see the [](#table-of-contents).
 ::::
 
 ## This is a sub-chapter {subtitle="It looks cool"}

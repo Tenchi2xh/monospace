@@ -21,6 +21,7 @@ def process(ast: dict, source_file):
 class Processor(object):
     def __init__(self, ast: dict, settings: Settings) -> None:
         self.settings = settings
+        self.note_count = -1
         self.cross_references = self.find_references(ast["blocks"])
         # FIXME: This is just for the mockup
         self.cross_references.update({
@@ -40,7 +41,6 @@ class Processor(object):
             "summary-of-key-rules": "Summary of key rules",
             "foreword": "Foreword",
         })
-        self.note_count = -1
         self.processed = self.process_elements(ast["blocks"])
 
     def find_references(self, elements: list) -> Dict[str, str]:
@@ -52,6 +52,7 @@ class Processor(object):
                 assert identifier not in references,\
                     "A header with this title already exists: %s" % title
                 references[identifier] = title
+        self.note_count = -1
         return references
 
     def process_elements(self, elements) -> List[d.Element]:
@@ -209,6 +210,8 @@ def join(elements: List[d.Element]) -> str:
         for element in elements:
             if isinstance(element, str):
                 result.append(element)
+            elif isinstance(element, d.Note):
+                continue
             elif hasattr(element, "elements"):
                 result.extend(do_join(element.elements))
             elif hasattr(element, "list_elements"):

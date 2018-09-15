@@ -148,15 +148,16 @@ class Renderer(object):
                 yield block
 
     def render_chapter(self, chapter):
-        elements = [
+        elements, notes = self.render_notes(chapter.title.elements)
+        title = [
             d.Anchor(
-                [d.Bold([d.Italic(chapter.title.elements)])],
+                [d.Bold([d.Italic(elements)])],
                 identifier=chapter.identifier
             )
         ]
 
         lines = p.align(
-            text_elements=elements,
+            text_elements=title,
             alignment=p.Alignment.left,
             width=self.settings.main_width,
             format_func=self.format
@@ -165,18 +166,15 @@ class Renderer(object):
         lines.insert(0, self.format(fence))
         lines.append(self.format([" " * self.settings.main_width]))
 
-        # TODO: Notes
-        return b.Block(main=lines)
+        return b.Block(main=lines, sides=notes)
 
     def render_subchapter(self, subchapter):
+        elements, notes = self.render_notes(subchapter.title.elements)
         line = ["━" * self.settings.side_width]
         formatted_line = self.format(line)
 
         title = [
-            d.Anchor(
-                [d.Bold(subchapter.title.elements)],
-                identifier=subchapter.identifier
-            )
+            d.Anchor([d.Bold(elements)], identifier=subchapter.identifier)
         ]
         title_lines = p.align(
             text_elements=title,
@@ -198,30 +196,34 @@ class Renderer(object):
             space = self.format([" " * self.settings.side_width])
             side += [space] + subtitle_lines
 
-        return b.Block(sides=[side])
+        return b.Block(sides=[side] + notes)
 
     def render_section(self, section):
-        elements = [
-            d.Anchor(
-                [d.Bold(section.title.elements)],
-                identifier=section.identifier
-            )
-        ]
+        elements, notes = self.render_notes(section.title.elements)
+        title = [d.Anchor([d.Bold(elements)], identifier=section.identifier)]
 
         lines = p.align(
-            text_elements=elements,
+            text_elements=title,
             alignment=p.Alignment.left,
             width=self.settings.main_width,
             format_func=self.format,
             text_filter=styles.small_caps
         )
 
-        # TODO: Notes
-        return b.Block(main=lines)
+        return b.Block(main=lines, sides=notes)
 
     def render_notes(self, elements):
         new_elements = []
         notes = []
+
+        # TODO: Put this in Theme object
+        color = light_gray
+        if self.settings.light:
+            color = mid_gray
+
+        def gray_format(elems):
+            return self.format([color, *elems, color.close_tag])
+
         for elem in elements:
             if isinstance(elem, d.Note):
                 sup = styles.number_map2(
@@ -231,7 +233,7 @@ class Renderer(object):
                     text_elements=side,
                     alignment=p.Alignment.left,
                     width=self.settings.side_width,
-                    format_func=self.format
+                    format_func=gray_format
                 ))
                 new_elements.append(sup)
             else:
@@ -274,7 +276,8 @@ class Renderer(object):
         empty_line = ft([" " * main_width])
 
         renderer = self.get_subrenderer(main_width=width)
-        blocks = renderer.render_elements(aside.elements)
+        blocks = list(renderer.render_elements(aside.elements))
+        notes = [side for block in blocks for side in block.sides]
 
         lines = []
         for block in blocks:
@@ -283,13 +286,15 @@ class Renderer(object):
             lines.append(empty_line)
         lines.pop()
 
-        # TODO: Notes
-        return b.Block(main=self.indent(
-            lines=lines,
-            left_width=tab_size, right_width=tab_size,
-            top_line=fence, bottom_line=fence,
-            inner_tags=[color]
-        ))
+        return b.Block(
+            main=self.indent(
+                lines=lines,
+                left_width=tab_size, right_width=tab_size,
+                top_line=fence, bottom_line=fence,
+                inner_tags=[color]
+            ),
+            sides=notes
+        )
 
     def render_quote(self, quote):
         tab_size = self.settings.tab_size
@@ -307,6 +312,8 @@ class Renderer(object):
                 format_func=self.format
             )
 
+        elements, notes = self.render_notes(elements)
+
         lines = p.align(
             text_elements=[d.Italic(elements)],
             alignment=p.Alignment.center,
@@ -316,10 +323,13 @@ class Renderer(object):
 
         empty_line = self.format(" " * content_width)
 
-        return b.Block(main=self.indent(
-            lines=lines + [empty_line] + author_lines,
-            left_width=tab_size, right_width=tab_size,
-        ))
+        return b.Block(
+            main=self.indent(
+                lines=lines + [empty_line] + author_lines,
+                left_width=tab_size, right_width=tab_size,
+            ),
+            sides=notes
+        )
 
     def render_code_block(self, code_block):
         ft = self.format
