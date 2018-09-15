@@ -3,21 +3,24 @@ from monospace.core.domain import document as d, Settings
 from monospace.core.rendering.paragraph import align, Alignment, flatten
 from monospace.core.formatting import HtmlFormatter, FormatTag, Format as F
 
-s = d.space
+
+def s(): return d.Space()
 
 
 def test_flatten():
     elements = [
-        "This", s, "text", s, "contains", s, "mixed", s, "styles:", s,
+        "This", s(), "text", s(), "contains",
+        s(), "mixed", s(), "styles:", s(),
         d.Bold([
-            "Hello,", s,
+            "Hello,", s(),
             d.Italic(["World!"])
         ])
     ]
     expected = [
-        "This", s, "text", s, "contains", s, "mixed", s, "styles:", s,
+        "This", s(), "text", s(), "contains",
+        s(), "mixed", s(), "styles:", s(),
         FormatTag(F.Bold, open=True),
-        "Hello,", s,
+        "Hello,", s(),
         FormatTag(F.Italic, open=True),
         "World!",
         FormatTag(F.Italic, open=False),
@@ -29,7 +32,7 @@ def test_flatten():
 
 def test_plain_paragraph_rendering():
     text = "Smile spoke total few great had never their too. Amongst moments do in arrived at my replied. Fat weddings servants but man believed prospect. Companions understood is as especially pianoforte connection introduced. Nay newspaper can sportsman are admitting gentleman belonging his. Is oppose no he summer lovers twenty in. Not his difficulty boisterous surrounded bed. Seems folly if in given scale. Sex contented dependent conveying advantage can use."  # noqa
-    words = intersperse(text.split(), d.space)
+    words = intersperse(text.split(), d.Space())
     width = 40
 
     expected_left = [
@@ -84,16 +87,16 @@ def test_plain_paragraph_rendering():
 
 def test_styled_paragraph_rendering():
     text = [
-        "Yet", s, "bed", s,
+        "Yet", s(), "bed", s(),
         d.Bold([
-            "any", s, "for", s,
+            "any", s(), "for", s(),
             d.Italic([
-                "travelling", s, "assistance",
+                "travelling", s(), "assistance",
             ]),
-            s, "indulgence", s, "unpleasing", s, "foobar.",
+            s(), "indulgence", s(), "unpleasing", s(), "foobar.",
         ]),
-        s, "Not", s, "thoughts", s,
-        d.Bold(["all", s, "exercise", s, "blessing."])
+        s(), "Not", s(), "thoughts", s(),
+        d.Bold(["all", s(), "exercise", s(), "blessing."])
     ]
     width = 21
 
@@ -127,7 +130,7 @@ def test_styled_paragraph_rendering():
 
 def test_punctuation_after_tag():
     text = [
-        "Hello,", s,
+        "Hello,", s(),
         d.Bold([
             "World"
         ]),
@@ -143,7 +146,7 @@ def test_punctuation_after_tag():
 
 
 def ignore_test_punctuation_on_new_line():
-    text = ["Hello,", s, d.Bold(["World"]), "!"]
+    text = ["Hello,", s(), d.Bold(["World"]), "!"]
     expected = [
         "Hello,      ",
         "World!      "

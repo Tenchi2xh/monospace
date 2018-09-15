@@ -279,7 +279,7 @@ class Renderer(object):
 
         author_lines = []
         if isinstance(elements[-1], d.Bold):
-            author = ["—", d.space] + elements.pop().children
+            author = ["—", d.Space()] + elements.pop().children
             author_lines = p.align(
                 text_elements=author,
                 alignment=p.Alignment.right,

@@ -32,7 +32,7 @@ def align(
 ) -> List[str]:
 
     elements = flatten(text_elements)
-    words = [Word(elems) for elems in split(elements, d.space)]
+    words = [Word(elems) for elems in split(elements, d.Space())]
     lines = break_words(words, width)
     insert_spaces(lines, alignment, width)
     add_padding(lines, alignment, width)
@@ -85,9 +85,9 @@ def insert_spaces(lines, alignment, width):
             spaces_to_add = width - line_length(line, with_spaces=True)
             indices_candidates = [
                 i for i, elem in enumerate(line)
-                if isinstance(elem, str)  # We can only add spaces to words
+                if isinstance(elem, d.Space)
+                and i != len(line) - 1
             ]
-            indices_candidates.pop()  # No space after last word
 
             # If we have more spaces to add than candidates,
             # we need to double the population space.
@@ -97,13 +97,13 @@ def insert_spaces(lines, alignment, width):
 
             indices = random.sample(population, spaces_to_add)
             for index in indices:
-                assert isinstance(line[index], str)
-                line[index] = line[index] + " "
+                assert isinstance(line[index], d.Space)
+                line[index].count += 1
 
         # Replace all Space object with single spaces:
         for j, e in enumerate(line):
             if isinstance(e, d.Space):
-                line[j] = " "
+                line[j] = " " * e.count
 
 
 def add_padding(lines, alignment, width):
@@ -221,7 +221,7 @@ def line_length(line: Line, with_spaces=False) -> int:
     only_words = [e for e in line if isinstance(e, str)]
     length_words = sum(len(word) for word in only_words)
     if with_spaces:
-        return length_words + line.count(d.space)
+        return length_words + sum(1 for e in line if isinstance(e, d.Space))
     return length_words
 
 
@@ -244,13 +244,13 @@ def append_word(word, line, open_tags):
             line.append(tag)
         else:
             line.append(element)
-    line.append(d.space)
+    line.append(d.Space())
 
 
 def end_line(lines, open_tags, next_word=None):
     next_line = []
     # Remove trailing space first
-    if lines[-1][-1] == d.space:
+    if isinstance(lines[-1][-1], d.Space):
         lines[-1].pop()
     # Close all unclosed tags, and re-open them on the next line
     for kind in reversed(open_tags):

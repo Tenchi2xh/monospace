@@ -132,8 +132,7 @@ Note = object()
 
 @dataclass
 class Space:
+    count: int = 1
+
     def __repr__(self):
         return "_"
-
-
-space = Space()

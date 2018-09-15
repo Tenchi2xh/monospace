@@ -97,7 +97,7 @@ class Processor(object):
         elif kind == "Quoted":
             return self.process_quoted(value)
         elif kind == "Space" or kind == "SoftBreak":
-            return d.space
+            return d.Space()
 
         return d.Unprocessed(kind)
 
@@ -128,7 +128,7 @@ class Processor(object):
             subtitle = d.Text(
                 elements=intersperse(
                     metadata.attributes["subtitle"].split(),
-                    d.space
+                    d.Space()
                 )
             )
 
@@ -242,6 +242,6 @@ def stylize(text, style):
     result = []
     for word in words:
         result.append(style(word))
-        result.append(d.space)
+        result.append(d.Space())
     result.pop()
     return result
