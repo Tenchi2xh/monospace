@@ -2,7 +2,7 @@
     "bases": {
         "regular": "iosevka/iosevka-light.ttf",
         "bold": "iosevka/iosevka-bold.ttf",
-        "italic": "iosevka/iosevka-italic.ttf",
+        "italic": "iosevka/iosevka-lightitalic.ttf",
         "bold-italic": "iosevka/iosevka-bolditalic.ttf"
     },
     "extensions": [
