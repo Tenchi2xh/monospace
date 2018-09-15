@@ -113,7 +113,7 @@ class Processor(object):
             if len(text.elements) != 1:
                 raise ValueError("Inline images are not supported")
             return text.elements[0]
-        return d.Paragraph(self.make_text(value))
+        return d.Paragraph(text)
 
     def process_quote(self, value):
         # Quote text elements are wrapped in a paragraph
