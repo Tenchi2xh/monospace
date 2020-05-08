@@ -4,6 +4,7 @@ from dataclasses import replace
 
 
 def do_typeset(markdown_file, formatter, output, linear=False):
+    # Somehow the real Small Cap Q symbol only displays nice in PostScript
     if formatter == PostScriptFormatter:
         from ..core.symbols import characters
         characters.small_caps["Q"] = characters.small_cap_q
