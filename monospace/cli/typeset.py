@@ -6,7 +6,7 @@ import subprocess
 import webbrowser
 
 from ..core.formatting import AnsiFormatter, HtmlFormatter, PostScriptFormatter
-from .util import do_typeset
+from ..core import typeset as do_typeset
 
 
 formatters = {

@@ -2,8 +2,9 @@ from .parse import parse
 from .process import process
 from .render import render
 from .layout import layout
+from .typeset import typeset
 
-__all__ = ["parse", "process", "render", "layout"]
+__all__ = ["parse", "process", "render", "layout", "typeset"]
 
 """Rendering pipeline for books
 
