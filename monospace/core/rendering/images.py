@@ -19,6 +19,11 @@ palettes = {
 }
 
 
+def dimensions(uri) -> List[int]:
+    image = Image.open(uri)
+    return image.size
+
+
 def ansify(
     uri: str,
     format_func: Callable,

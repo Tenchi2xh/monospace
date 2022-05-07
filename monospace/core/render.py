@@ -378,7 +378,14 @@ class Renderer(object):
             sides = self.render_notes([image.caption])[1]
 
         if extension in ("png", "jpg", "jpeg"):
-            width = self.settings.main_width - 2 * self.settings.tab_size
+            image_width, _ = images.dimensions(real_uri)
+            if image_width > self.settings.main_width:
+                width = self.settings.main_width - 2 * self.settings.tab_size
+                margin = self.settings.tab_size
+            else:
+                width = image_width
+                margin = 0
+
             mode = images.Mode.Pixels
             if image.mode is not None:
                 mode = images.Mode[image.mode]
@@ -394,13 +401,12 @@ class Renderer(object):
                 palette=palette,
             )
 
-            # TODO: Caption
             return b.Block(
                 main=self.indent(
                     lines=image_lines,
-                    sides=image.caption,
-                    left_width=self.settings.tab_size,
-                    right_width=self.settings.tab_size),
+                    left_width=margin,
+                    right_width=margin
+                ),
                 sides=sides,
             )
         else:
