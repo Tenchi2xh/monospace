@@ -33,7 +33,7 @@ class Settings:
         return Settings(
             main_width=get(meta, "dimensions.body-width", 70),
             page_height=get(meta, "dimensions.page-height", 60),
-            side_width=get(meta, "dimensions.notes-width", 20),
+            side_width=get(meta, "dimensions.notes-width", 30),
             side_spacing=get(meta, "dimensions.separation", 4),
             tab_size=get(meta, "dimensions.indentations", 4),
             margin_top=get(meta, "dimensions.margins.top", 5),

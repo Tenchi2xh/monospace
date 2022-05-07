@@ -80,6 +80,7 @@ class CodeBlock(StructureElement):
 @dataclass
 class Image(StructureElement):
     uri: str
+    caption: str
     palette: Optional[str] = None
     mode: Optional[str] = None
 

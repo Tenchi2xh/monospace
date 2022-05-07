@@ -226,16 +226,19 @@ class Renderer(object):
 
         for elem in elements:
             if isinstance(elem, d.Note):
-                sup = styles.number_map2(
-                    str(elem.count), characters.superscript)
-                side = [d.Italic([sup + ":", d.Space(), *elem.children])]
+                counter = []
+                if elem.count is not None:
+                    sup = styles.number_map2(
+                        str(elem.count), characters.superscript)
+                    new_elements.append(sup)
+                    counter = [sup + ":", d.Space()]
+                side = [d.Italic(counter + [*elem.children])]
                 notes.append(p.align(
                     text_elements=side,
                     alignment=p.Alignment.left,
                     width=self.settings.side_width,
                     format_func=gray_format
                 ))
-                new_elements.append(sup)
             else:
                 new_elements.append(elem)
         return new_elements, notes
@@ -370,6 +373,10 @@ class Renderer(object):
         cwd = os.path.dirname(self.settings.source_file)
         real_uri = os.path.join(cwd, image.uri)
 
+        sides = []
+        if image.caption:
+            sides = self.render_notes([image.caption])[1]
+
         if extension in ("png", "jpg", "jpeg"):
             width = self.settings.main_width - 2 * self.settings.tab_size
             mode = images.Mode.Pixels
@@ -388,10 +395,14 @@ class Renderer(object):
             )
 
             # TODO: Caption
-            return b.Block(main=self.indent(
-                lines=image_lines,
-                left_width=self.settings.tab_size,
-                right_width=self.settings.tab_size))
+            return b.Block(
+                main=self.indent(
+                    lines=image_lines,
+                    sides=image.caption,
+                    left_width=self.settings.tab_size,
+                    right_width=self.settings.tab_size),
+                sides=sides,
+            )
         else:
             with open(real_uri, "r") as f:
                 lines = f.read().splitlines()
@@ -408,11 +419,14 @@ class Renderer(object):
             left_indent = (self.settings.main_width - max_length) // 2
             right_indent = self.settings.main_width - max_length - left_indent
 
-            return b.Block(main=self.indent(
-                lines=formatted_lines,
-                left_width=left_indent,
-                right_width=right_indent,
-            ))
+            return b.Block(
+                main=self.indent(
+                    lines=formatted_lines,
+                    left_width=left_indent,
+                    right_width=right_indent,
+                ),
+                sides=sides,
+            )
 
     def get_subrenderer(self, main_width=None):
         return Renderer(

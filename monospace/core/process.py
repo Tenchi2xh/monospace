@@ -40,6 +40,17 @@ class Processor(object):
             "arial": "Arial",
             "summary-of-key-rules": "Summary of key rules",
             "foreword": "Foreword",
+            "pixel-art": "Pixel art",
+            "dithering": "Dithering",
+            "tui": "TUI",
+            "bbs": "BBS",
+            "teletext": "Teletext",
+            "ascii": "ASCII",
+            "unicode": "Unicode",
+            "monospaced-fonts": "Monospaced fonts",
+            "how-to-make-this-book": "How to make this book",
+            "how-to-use-this-book": "How to use this book",
+            "ansi-escape-codes": "ANSI escape codes",
         })
         self.processed = self.process_elements(ast["blocks"])
 
@@ -82,7 +93,11 @@ class Processor(object):
             language = "" if not value[0][1] else value[0][1][0]
             return d.CodeBlock(language=language, code=value[1])
         elif kind == "Image":
-            return d.Image(uri=value[2][0], **dict(value[0][2]))
+            return d.Image(
+                uri=value[2][0],
+                caption=d.Note(children=self.process_elements(value[1]), count=None),
+                **dict(value[0][2])
+            )
         elif kind == "HorizontalRule":
             return d.PageBreak()
         # --- Textual ---------------------------------------------------------
