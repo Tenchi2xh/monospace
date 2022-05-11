@@ -8,12 +8,19 @@
                 "__pycache__",
                 ".mypy_cache",
                 "*.egg-info",
+                "book",
                 ".idea",
                 ".pytest_cache",
                 ".venv",
                 "dist"
             ]
-        }
+        },
+        {
+            "path": "monospace"
+        },
+        {
+            "path": "book"
+        },
     ],
     "settings": {
         "python_virtualenv": "$project_path/.venv/",

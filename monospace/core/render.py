@@ -370,8 +370,7 @@ class Renderer(object):
 
     def render_image(self, image):
         extension = image.uri.rsplit(".", 1)[-1]
-        cwd = os.path.dirname(self.settings.source_file)
-        real_uri = os.path.join(cwd, image.uri)
+        real_uri = os.path.join(self.settings.working_dir, image.uri)
 
         sides = []
         if image.caption:

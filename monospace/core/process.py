@@ -7,9 +7,9 @@ from .domain import document as d
 from .symbols.characters import double_quotes, single_quotes
 
 
-def process(ast: dict, source_file):
+def process(ast: dict, working_dir):
     meta = process_meta(ast["meta"])
-    settings = Settings.from_meta(meta, source_file)
+    settings = Settings.from_meta(meta, working_dir)
     processor = Processor(ast, settings)
 
     cross_references = processor.cross_references

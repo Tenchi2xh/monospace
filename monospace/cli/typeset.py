@@ -4,9 +4,11 @@ import click
 import pathlib
 import subprocess
 import webbrowser
+from pathlib import Path
 
 from ..core.formatting import AnsiFormatter, HtmlFormatter, PostScriptFormatter
 from ..core import typeset as do_typeset
+from ..util import concatenate_markdown_directory
 
 
 formatters = {
@@ -44,22 +46,40 @@ def typeset(markdown_file, to, preview, do_open, linear):
     """Typeset a markdown file into a book.
 
     Saves the formatted book in the same directory as the input file.
+
+    If the MARKDOWN_FILE argument is a path, all contained markdown files will
+    be concatenated before typesetting (in alphabetical order.)
     """
-    filename = markdown_file.rsplit(".md", 1)[0]
+    if os.path.isdir(markdown_file):
+        output = os.path.join(markdown_file, os.path.split(markdown_file)[-1])
+        working_dir = Path(markdown_file)
+        content = concatenate_markdown_directory(markdown_file)
+    else:
+        output = markdown_file.rsplit(".md", 1)[0]
+        working_dir = Path(markdown_file).parent
+        with open(markdown_file, "r") as f:
+            content = f.read()
+
     formatter = formatters[to]
 
     if preview:
         if to == "pdf":
             raise click.UsageError(
                 "Option --preview is not available with format 'pdf'")
-        filename = sys.stdout
+        output = sys.stdout
 
-    do_typeset(markdown_file, formatter, filename, linear=linear)
+    do_typeset(
+        markdown_content=content,
+        output=output,
+        working_dir=working_dir,
+        formatter=formatter,
+        linear=linear
+    )
 
     if to == "pdf":
-        subprocess.check_call(["ps2pdf", filename + ".ps", filename + ".pdf"])
+        subprocess.check_call(["ps2pdf", output + ".ps", output + ".pdf"])
 
     if do_open and not preview:
-        path = os.path.abspath("%s.%s" % (filename, to))
+        path = os.path.abspath("%s.%s" % (output, to))
         uri = pathlib.Path(path).as_uri()
         webbrowser.open(uri)

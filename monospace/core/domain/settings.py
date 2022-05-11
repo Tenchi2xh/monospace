@@ -14,7 +14,7 @@ class Settings:
     margin_outside: int
     margin_bottom: int
 
-    source_file: str
+    working_dir: str
     light: bool
     github_anchors: bool
 
@@ -29,7 +29,7 @@ class Settings:
         )
 
     @staticmethod
-    def from_meta(meta, source_file):
+    def from_meta(meta, working_dir):
         return Settings(
             main_width=get(meta, "dimensions.body-width", 70),
             page_height=get(meta, "dimensions.page-height", 60),
@@ -40,7 +40,7 @@ class Settings:
             margin_inside=get(meta, "dimensions.margins.inside", 10),
             margin_outside=get(meta, "dimensions.margins.outside", 5),
             margin_bottom=get(meta, "dimensions.margins.bottom", 5),
-            source_file=source_file,
+            working_dir=working_dir,
             light=get(meta, "light-theme", False),
             github_anchors=get(meta, "github-anchors", False)
         )

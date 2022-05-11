@@ -8,9 +8,9 @@ except OSError:
     pypandoc._ensure_pandoc_path()
 
 
-def parse(source_filename) -> dict:
-    raw_ast: str = pypandoc.convert_file(
-        source_file=source_filename,
+def parse(markdown_content) -> dict:
+    raw_ast: str = pypandoc.convert_text(
+        markdown_content,
         format="markdown",
         to="json"
     )
