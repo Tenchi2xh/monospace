@@ -39,18 +39,6 @@ class Processor(object):
             "times-new-roman": "Times New Roman",
             "arial": "Arial",
             "summary-of-key-rules": "Summary of key rules",
-            "foreword": "Foreword",
-            "pixel-art": "Pixel art",
-            "dithering": "Dithering",
-            "tui": "TUI",
-            "bbs": "BBS",
-            "teletext": "Teletext",
-            "ascii": "ASCII",
-            "unicode": "Unicode",
-            "monospaced-fonts": "Monospaced fonts",
-            "how-to-make-this-book": "How to make this book",
-            "how-to-use-this-book": "How to use this book",
-            "ansi-escape-codes": "ANSI escape codes",
         })
         self.processed = self.process_elements(ast["blocks"])
 

@@ -26,7 +26,7 @@ def concatenate_markdown_directory(directory):
                 markdown
             )
             content += markdown
-            content += "\n"
+            content += "\n\n"
     content = re.sub(r"\n\n\n+", "\n\n", content)
 
     return content
