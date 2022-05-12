@@ -1,3 +1,4 @@
+from typing import List
 from dataclasses import dataclass
 
 
@@ -13,6 +14,8 @@ class Settings:
     margin_inside: int
     margin_outside: int
     margin_bottom: int
+
+    break_before: List[str]
 
     working_dir: str
     light: bool
@@ -36,6 +39,7 @@ class Settings:
             side_width=get(meta, "dimensions.notes-width", 30),
             side_spacing=get(meta, "dimensions.separation", 4),
             tab_size=get(meta, "dimensions.indentations", 4),
+            break_before=get(meta, "break-before", ["Chapter", "SubChapter"]),
             margin_top=get(meta, "dimensions.margins.top", 5),
             margin_inside=get(meta, "dimensions.margins.inside", 10),
             margin_outside=get(meta, "dimensions.margins.outside", 5),

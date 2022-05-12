@@ -70,26 +70,33 @@ class Renderer(object):
 
     def render_elements(self, elements) -> Iterator[b.Block]:
         for element in elements:
+            name = element.__class__.__name__
+
+            def pb(block):
+                if name in self.settings.break_before:
+                    (block[0] if isinstance(block, list) else block).break_before = True
+                return block
+
             if isinstance(element, d.Chapter):
-                yield self.render_chapter(element)
+                yield pb(self.render_chapter(element))
             elif isinstance(element, d.SubChapter):
-                yield self.render_subchapter(element)
+                yield pb(self.render_subchapter(element))
             elif isinstance(element, d.Section):
-                yield self.render_section(element)
+                yield pb(self.render_section(element))
             elif isinstance(element, d.Paragraph):
-                yield self.render_paragraph(element)
+                yield pb(self.render_paragraph(element))
             elif isinstance(element, d.OrderedList):
-                yield from self.render_list(element, ordered=True)
+                yield from pb(self.render_list(element, ordered=True))
             elif isinstance(element, d.UnorderedList):
-                yield from self.render_list(element, ordered=False)
+                yield from pb(self.render_list(element, ordered=False))
             elif isinstance(element, d.Aside):
-                yield self.render_aside(element)
+                yield pb(self.render_aside(element))
             elif isinstance(element, d.CodeBlock):
-                yield self.render_code_block(element)
+                yield pb(self.render_code_block(element))
             elif isinstance(element, d.Image):
-                yield self.render_image(element)
+                yield pb(self.render_image(element))
             elif isinstance(element, d.Quote):
-                yield self.render_quote(element)
+                yield pb(self.render_quote(element))
             elif isinstance(element, d.PageBreak):
                 yield b.Block()
 

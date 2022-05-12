@@ -26,20 +26,28 @@ def layout(
 
 
 def break_blocks(blocks, linear, content_length, margin_top) -> Iterator[Page]:
+    latest_side_offset = 0
+    current_page = ()
+    first_page = True
+
     def new_page() -> Page:
+        nonlocal latest_side_offset, current_page
         main = [""] * margin_top
         sides: Dict[int, str] = {}
-        return (main, sides)
+        latest_side_offset = 0
+        current_page = (main, sides)
 
-    current_page = new_page()
-    latest_side_offset = 0
-
-    # TODO: add "break_before: bool" to block for chapters
-    # (only break if occupied = 0)
+    new_page()
 
     # Prepare pages by breaking when there's not enough space
     # for either a block or its sides
     for block in blocks:
+        if block.break_before and not first_page:
+            yield current_page
+            new_page()
+
+        first_page = False
+
         block_size = len(block.main)
         sides_size = sum(len(s) for s in block.sides) + len(block.sides) - 1
 
@@ -48,14 +56,13 @@ def break_blocks(blocks, linear, content_length, margin_top) -> Iterator[Page]:
         needed = max(needed_main, needed_sides)
 
         occupied = len(current_page[0])
-        page_break = not block.main and not block.sides
+        manual_page_break = not block.main and not block.sides
         # Don't break into pages when in linear mode
         if not linear:
-            if content_length - occupied < needed or page_break:
+            if content_length - occupied < needed or manual_page_break:
                 yield current_page
-                current_page = new_page()
-                latest_side_offset = 0
-                if page_break:
+                new_page()
+                if manual_page_break:
                     continue
 
         # If we're at the beginning of the page, we don't need to offset block

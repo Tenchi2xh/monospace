@@ -1,5 +1,6 @@
 ---
 light-theme: false
+break-before: [Chapter, SubChapter]
 dimensions:
     page-height: 60
     body-width: 70
