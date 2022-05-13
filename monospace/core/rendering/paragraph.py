@@ -1,15 +1,14 @@
-import pyphen   # type: ignore
 import random
-
 from copy import copy
+from dataclasses import dataclass
 from enum import Enum
 from itertools import groupby
-from dataclasses import dataclass
-from typing import List, Union, Optional, Callable, Tuple
+from typing import Callable, List, Optional, Tuple, Union
+
+import pyphen  # type: ignore
 
 from ..domain import document as d
-from ..formatting import FormatTag, Format
-
+from ..formatting import Format, FormatTag
 
 random.seed(1337)
 

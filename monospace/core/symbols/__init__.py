@@ -1,3 +1,3 @@
-from .lines import lines, Styles
+from .lines import Styles, lines
 
 __all__ = ["lines", "Styles"]

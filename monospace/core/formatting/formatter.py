@@ -1,8 +1,8 @@
 import io
-from enum import Enum
-from dataclasses import dataclass, field
-from typing import List, Union, Any, Dict
 from abc import ABCMeta, abstractmethod, abstractproperty
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Dict, List, Union
 
 from ..domain import Settings
 

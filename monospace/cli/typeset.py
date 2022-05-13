@@ -1,15 +1,15 @@
 import os
-import sys
-import click
 import pathlib
 import subprocess
+import sys
 import webbrowser
 from pathlib import Path
 
-from ..core.formatting import AnsiFormatter, HtmlFormatter, PostScriptFormatter
-from ..core import typeset as do_typeset
-from ..util import concatenate_markdown_directory
+import click
 
+from ..core import typeset as do_typeset
+from ..core.formatting import AnsiFormatter, HtmlFormatter, PostScriptFormatter
+from ..util import concatenate_markdown_directory
 
 formatters = {
     "ansi": AnsiFormatter,

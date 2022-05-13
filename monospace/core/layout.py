@@ -1,6 +1,7 @@
-from typing import Type, List, Tuple, Dict, Iterator
+from typing import Dict, Iterator, List, Tuple, Type
 
-from .domain import Settings, blocks as b
+from .domain import Settings
+from .domain import blocks as b
 from .formatting import Formatter
 
 # Left side: list of main lines

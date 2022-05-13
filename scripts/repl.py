@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
-import sys
 import importlib
-from ptpython.repl import embed
+import sys
+
 from better_exceptions import ExceptionFormatter
 from ptpython.entry_points.run_ptpython import run
+from ptpython.repl import embed
 
 
 def rgb(h):

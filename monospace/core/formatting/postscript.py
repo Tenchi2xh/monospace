@@ -1,8 +1,11 @@
+from typing import List, Set, Union
+
 import pkg_resources
 from jinja2 import Template
-from typing import List, Union, Set
-from .formatter import Formatter, FormatTag, Format as F
+
 from ..domain import Settings
+from .formatter import Format as F
+from .formatter import FormatTag, Formatter
 
 
 def get_file(name):

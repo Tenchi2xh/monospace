@@ -1,7 +1,7 @@
 import io
 import re
-from pathlib import Path
 from copy import copy
+from pathlib import Path
 
 
 # https://stackoverflow.com/a/6300649

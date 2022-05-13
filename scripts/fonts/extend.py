@@ -1,8 +1,9 @@
 from __future__ import print_function
 
-import fontforge
 import json
 import sys
+
+import fontforge
 
 with open(sys.argv[1], "r") as f:
     config = json.load(f)

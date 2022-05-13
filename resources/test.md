@@ -67,7 +67,7 @@ Ready? Go.
 3. [](#line-spacing) is the vertical^[i.e. not horizontal] distance^[Foo **bar** baz!] between lines. It should be **120–145%** of the point size. In word processors, use the "Exact" line-spacing option to achieve this. The default single-line option is too tight; the 1 1/2-line option is too loose. In CSS, use the `line-height` property (preferably with a unitless value, so 130% would become 1.3).
 
 4. [](#line-length) is the horizontal width^[Last note I swear] of the text block. Line length should be an average of **45–90 characters** per line (use your word-count function) or **2–3 lowercase alphabets**, like so:
-    
+
     abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcddefghijklm
 
     In a printed document, this usually means [](#page-margins) larger than one inch (a [](#typewriter-habit)). On a web page, it usually means preventing the text from flowing to the edges of the browser window.
@@ -109,4 +109,3 @@ conplexa: pretium cruori; vides finiat.
 3. Me ramos
 4. Sacra seduxit Amathunta Olympi tonitrus adhuc atria
 5. Quem campus
-

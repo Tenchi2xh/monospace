@@ -1,7 +1,9 @@
 import cgi
 from typing import List, Union
-from .formatter import Formatter, FormatTag, Format as F
+
 from ..domain import Settings
+from .formatter import Format as F
+from .formatter import FormatTag, Formatter
 
 tags = {
     F.Bold: "b",

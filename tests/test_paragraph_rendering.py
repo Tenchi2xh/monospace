@@ -1,7 +1,9 @@
+from monospace.core.domain import Settings
+from monospace.core.domain import document as d
+from monospace.core.formatting import Format as F
+from monospace.core.formatting import FormatTag, HtmlFormatter
+from monospace.core.rendering.paragraph import Alignment, align, flatten
 from monospace.util import intersperse
-from monospace.core.domain import document as d, Settings
-from monospace.core.rendering.paragraph import align, Alignment, flatten
-from monospace.core.formatting import HtmlFormatter, FormatTag, Format as F
 
 
 def s(): return d.Space()

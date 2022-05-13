@@ -1,12 +1,14 @@
 import re
-from typing import List, Union, Callable
+from typing import Callable, List, Union
+
 from pygments.lexers import get_lexer_by_name  # type: ignore
 from pygments.styles import get_style_by_name  # type: ignore
 from pygments.token import Token  # type: ignore
 from pygments.util import ClassNotFound  # type: ignore
 
 from ..domain import document as d
-from ..formatting import FormatTag, Format as F
+from ..formatting import Format as F
+from ..formatting import FormatTag
 
 
 def highlight_code_block(

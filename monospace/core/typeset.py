@@ -1,6 +1,7 @@
-from . import parse, process, render, layout
-from .formatting import PostScriptFormatter
 from dataclasses import replace
+
+from . import layout, parse, process, render
+from .formatting import PostScriptFormatter
 
 
 def typeset(markdown_content, output, working_dir, formatter, linear=False):

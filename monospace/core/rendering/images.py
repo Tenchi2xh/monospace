@@ -1,12 +1,13 @@
 from enum import Enum
-from math import sqrt
-from typing import List, Sequence
 from heapq import nsmallest
-from PIL import Image  # type: ignore
-from typing import Callable, Optional
-from cursebox.palette import generate_xterm_256, distance  # type: ignore
+from math import sqrt
+from typing import Callable, List, Optional, Sequence
 
-from ..formatting import Format as F, FormatTag
+from cursebox.palette import distance, generate_xterm_256  # type: ignore
+from PIL import Image  # type: ignore
+
+from ..formatting import Format as F
+from ..formatting import FormatTag
 
 Mode = Enum("Mode", ["Blocks", "Dithered", "Pixels", "Super"])
 Palette = Enum("Palette", ["Monochrome", "ANSI", "Xterm", "RGB"])

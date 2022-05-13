@@ -1,9 +1,9 @@
-from typing import Optional, Any, Dict, List
+from typing import Any, Dict, List, Optional
 
-from .domain import Settings
 from ..util import intersperse
-from .formatting import styles
+from .domain import Settings
 from .domain import document as d
+from .formatting import styles
 from .symbols.characters import double_quotes, single_quotes
 
 

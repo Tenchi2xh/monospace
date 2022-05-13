@@ -39,17 +39,19 @@ it is delegated to the main renderer, because the side blocks
 need to be aligned left or right depending on which page they are on.
 """
 
-from typing import Dict, List, Optional, Type, Iterator
-from dataclasses import replace
 import os
+from dataclasses import replace
+from typing import Dict, Iterator, List, Optional, Type
 
-from .domain import document as d
-from .domain import blocks as b
 from .domain import Settings
+from .domain import blocks as b
+from .domain import document as d
+from .formatting import AnsiFormatter
+from .formatting import Format as F
+from .formatting import FormatTag, Formatter, PostScriptFormatter, styles
+from .rendering import code, images
+from .rendering import paragraph as p
 from .symbols import characters
-from .rendering import paragraph as p, code, images
-from .formatting import Formatter, styles, AnsiFormatter,\
-                        PostScriptFormatter, FormatTag, Format as F
 
 
 def render(

@@ -1,6 +1,8 @@
 from typing import List, Union
+
 from ..domain import Settings
-from .formatter import Formatter, FormatTag, Format as F
+from .formatter import Format as F
+from .formatter import FormatTag, Formatter
 
 
 def csi(params, end):
