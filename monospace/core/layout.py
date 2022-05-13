@@ -28,10 +28,10 @@ def layout(
 
 def break_blocks(blocks, linear, content_length, margin_top) -> Iterator[Page]:
     latest_side_offset = 0
-    current_page = ()
     first_page = True
+    current_page: Page = ([], {})
 
-    def new_page() -> Page:
+    def new_page():
         nonlocal latest_side_offset, current_page
         main = [""] * margin_top
         sides: Dict[int, str] = {}

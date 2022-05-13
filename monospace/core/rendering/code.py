@@ -95,5 +95,5 @@ def highlight_code_block(
             current_length += len(word)
 
     rjust_last()
-    formatted_lines = [format_func(l) for l in wrapped]
-    return ["".join(l) for l in formatted_lines]
+    formatted_lines = [format_func(line) for line in wrapped]
+    return ["".join(line) for line in formatted_lines]

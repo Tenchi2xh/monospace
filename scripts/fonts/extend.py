@@ -30,5 +30,6 @@ def extend_font(style, path_base, extensions):
     base.fontname = "-".join(elements)
     base.generate("iosevka-plus-%s.t42" % style, flags=("apple"))
 
+
 for style, path_base in config["bases"].iteritems():
     extend_font(style, path_base, config["extensions"])

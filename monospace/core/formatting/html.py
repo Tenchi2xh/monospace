@@ -1,4 +1,4 @@
-import cgi
+import html
 from typing import List, Union
 
 from ..domain import Settings
@@ -56,7 +56,7 @@ class HtmlFormatter(Formatter):
         result = ""
         for elem in line:
             if isinstance(elem, str):
-                result += cgi.escape(elem)
+                result += html.escape(elem)
             else:
                 if elem.kind not in black_list:
                     result += tag(elem)

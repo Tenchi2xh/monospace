@@ -158,7 +158,7 @@ class Word:
             i for i, elem in list(enumerate(self.elems))[::-1]
             if isinstance(elem, str)
         )
-        self.elems[last_str_index] += s
+        self.elems[last_str_index] += s  # type: ignore
         return self
 
     def word(self) -> str:

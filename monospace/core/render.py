@@ -461,12 +461,12 @@ class Renderer(object):
         lines: List[str],
         left_width: int,
         right_width: int,
-        top_line: Optional[str]=None,
-        bottom_line: Optional[str]=None,
-        before: Optional[str]=None,
-        after: Optional[str]=None,
-        outer_tags: Optional[List[FormatTag]]=None,
-        inner_tags: Optional[List[FormatTag]]=None,
+        top_line: Optional[str] = None,
+        bottom_line: Optional[str] = None,
+        before: Optional[str] = None,
+        after: Optional[str] = None,
+        outer_tags: Optional[List[FormatTag]] = None,
+        inner_tags: Optional[List[FormatTag]] = None,
     ):
         """
         Indents a list of lines with the following format:

@@ -80,7 +80,7 @@ class CodeBlock(StructureElement):
 @dataclass
 class Image(StructureElement):
     uri: str
-    caption: str
+    caption: Element
     palette: Optional[str] = None
     mode: Optional[str] = None
 
@@ -130,7 +130,7 @@ class Anchor(TextElement):
 
 @dataclass
 class Note(TextElement):
-    count: int
+    count: Optional[int]
 
 
 @dataclass

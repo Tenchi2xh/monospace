@@ -1,4 +1,3 @@
-import io
 import re
 from copy import copy
 from pathlib import Path
