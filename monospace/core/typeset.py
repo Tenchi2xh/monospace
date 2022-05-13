@@ -16,6 +16,7 @@ def typeset(markdown_content, output, working_dir, formatter, linear=False):
     pages = layout(blocks, settings, formatter, linear=linear)
 
     if linear:
+        pages = list(pages)
         settings = replace(
             settings,
             page_height=len(pages[0]) + settings.margin_bottom
