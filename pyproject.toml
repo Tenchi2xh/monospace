@@ -11,14 +11,14 @@ repository = "https://github.com/Tenchi2xh/monospace"
 monospace = 'monospace.cli:monospace'
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.9"
 click = "^6.7"
 pypandoc = "^1.4"
 pyphen = "^0.9.5"
 ptpython = "=0.41.0"
 Jinja2 = "^2.10"
 cursebox-lib = "^1.0"
-Pillow = "^5.2"
+Pillow = "^9"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"
