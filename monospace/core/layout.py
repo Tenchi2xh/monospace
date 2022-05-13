@@ -3,6 +3,7 @@ from typing import Dict, Iterator, List, Tuple, Type
 from .domain import Settings
 from .domain import blocks as b
 from .formatting import Formatter
+from .rendering import paragraph as p
 
 # Left side: list of main lines
 # Right side, dict for the side notes: desired offset, line
@@ -99,6 +100,8 @@ def render_pages(
     s = settings
     ft = formatter.format_tags
 
+    page_nums = page_numbers(s)
+
     def spaces(width):
         return ft([width * " "], settings)
 
@@ -148,4 +151,27 @@ def render_pages(
 
         rendered_page.extend([spaces(settings.page_width)] * lines_left)
 
+        # Insert page numbers post-rendering
+        rendered_page[-3] = ft(next(page_nums), settings)
+
         yield rendered_page
+
+
+def page_numbers(settings: Settings) -> Iterator[List[str]]:
+    """
+    Infinitely generate page numbers
+    """
+    i = 0
+    while True:
+        aligned = p.align(
+            text_elements=[str(i)],
+            alignment=p.Alignment.left if i % 2 == 0 else p.Alignment.right,
+            width=settings.main_width + settings.side_spacing + settings.side_width,
+        )[0]
+        outside = " " * settings.margin_outside
+        inside = " " * settings.margin_inside
+        if i % 2 == 0:
+            yield [outside, aligned, inside]
+        else:
+            yield [inside, aligned, outside]
+        i += 1
