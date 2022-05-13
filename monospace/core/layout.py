@@ -21,7 +21,7 @@ def layout(
     content_length = s.page_height - s.margin_top - s.margin_bottom
 
     pages = break_blocks(blocks, linear, content_length, s.margin_top)
-    rendered_pages = render_pages(pages, linear, content_length, s, formatter)
+    rendered_pages = render_pages(pages, linear, s, formatter)
 
     return rendered_pages
 
@@ -29,13 +29,15 @@ def layout(
 def break_blocks(blocks, linear, content_length, margin_top) -> Iterator[Page]:
     latest_side_offset = 0
     first_page = True
+    first_block = True
     current_page: Page = ([], {})
 
     def new_page():
-        nonlocal latest_side_offset, current_page
+        nonlocal latest_side_offset, current_page, first_block
         main = [""] * margin_top
         sides: Dict[int, str] = {}
         latest_side_offset = 0
+        first_block = True
         current_page = (main, sides)
 
     new_page()
@@ -43,12 +45,6 @@ def break_blocks(blocks, linear, content_length, margin_top) -> Iterator[Page]:
     # Prepare pages by breaking when there's not enough space
     # for either a block or its sides
     for block in blocks:
-        if block.break_before and not first_page:
-            yield current_page
-            new_page()
-
-        first_page = False
-
         block_size = len(block.main)
         sides_size = sum(len(s) for s in block.sides) + len(block.sides) - 1
 
@@ -58,16 +54,23 @@ def break_blocks(blocks, linear, content_length, margin_top) -> Iterator[Page]:
 
         occupied = len(current_page[0])
         manual_page_break = not block.main and not block.sides
+
         # Don't break into pages when in linear mode
         if not linear:
-            if content_length - occupied < needed or manual_page_break:
+            if (
+                content_length - occupied < needed
+                or manual_page_break
+                or block.break_before and not first_page
+            ):
                 yield current_page
                 new_page()
                 if manual_page_break:
                     continue
 
+        first_page = False
+
         # If we're at the beginning of the page, we don't need to offset block
-        if len(current_page[0]) != 0:
+        if not first_block:
             for _ in range(block.block_offset):
                 current_page[0].append("")
 
@@ -81,13 +84,14 @@ def break_blocks(blocks, linear, content_length, margin_top) -> Iterator[Page]:
                 i += 1  # Gap to separate sides from each other
         latest_side_offset = i
 
+        first_block = False
+
     yield current_page
 
 
 def render_pages(
     pages,
     linear,
-    content_length,
     settings,
     formatter
 ) -> Iterator[RenderedPage]:
@@ -136,10 +140,12 @@ def render_pages(
                     + spacing + side_line + margin_outside
                 )
 
-        lines_left = s.margin_bottom + (content_length - j)
-        # In linear mode, the only one page is longer than content_length
+        lines_left = s.page_height - (j + 1)
+
         if linear:
+            # In linear mode, the only one page is longer than content_length
             lines_left = s.margin_bottom
+
         rendered_page.extend([spaces(settings.page_width)] * lines_left)
 
         yield rendered_page
