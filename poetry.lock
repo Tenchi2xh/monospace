@@ -395,6 +395,14 @@ doc = ["sphinx", "sphinx-rtd-theme"]
 test = ["pytest", "pytest-cov", "pytest-flake8", "pytest-isort", "coverage"]
 
 [[package]]
+name = "pyspellchecker"
+version = "0.6.3"
+description = "Pure python spell checker based on work by Peter Norvig"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "pytest"
 version = "7.1.2"
 description = "pytest: simple powerful testing with Python"
@@ -512,7 +520,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "cb288ce903a4937db3094abb33f8403b2e37b2dae567ae1755a7492529793b13"
+content-hash = "24c0f481bc74319657478eebf3184bc8772a70fa32cf4a2089fca06ffb2688db"
 
 [metadata.files]
 2xh-leet = [
@@ -771,6 +779,10 @@ pyparsing = [
 pyphen = [
     {file = "pyphen-0.12.0-py3-none-any.whl", hash = "sha256:459020cd320eb200c0c5ba46b98b2278fd34c5546f520fdcd2ce5f8d733eb994"},
     {file = "pyphen-0.12.0.tar.gz", hash = "sha256:b7d3dfc24b6f2178cdb2b1757ace0bd5d222de3e62c28d22ac578c5f22a13e9b"},
+]
+pyspellchecker = [
+    {file = "pyspellchecker-0.6.3-py3-none-any.whl", hash = "sha256:9e19a683bd8d77b2668b1ffce2fd0e0a0e63b6ea3f6819aabc08f115ca1d1d88"},
+    {file = "pyspellchecker-0.6.3.tar.gz", hash = "sha256:764dfe1bcbd4d860b74205402167d55a02910870c07b83678e7d6b5a4d471909"},
 ]
 pytest = [
     {file = "pytest-7.1.2-py3-none-any.whl", hash = "sha256:13d0e3ccfc2b6e26be000cb6568c832ba67ba32e719443bfe725814d3c42433c"},

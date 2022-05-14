@@ -47,9 +47,14 @@ formatters = {
 @click.option(
     "-v", "--verbose",
     count=True,
-    help="Enable logging (-v: info, -vv: debug)"
+    help="Enable logging. (-v: info, -vv: debug)"
 )
-def typeset(markdown_file, to, preview, do_open, linear, verbose):
+@click.option(
+    "-s", "--skip-spellcheck",
+    is_flag=True, default=False,
+    help="Skip checking the spelling of the input file(s).",
+)
+def typeset(markdown_file, to, preview, do_open, linear, verbose, skip_spellcheck):
     """Typeset a markdown file into a book.
 
     Saves the formatted book in the same directory as the input file.
@@ -88,7 +93,8 @@ def typeset(markdown_file, to, preview, do_open, linear, verbose):
         output=output,
         working_dir=working_dir,
         formatter=formatter,
-        linear=linear
+        linear=linear,
+        check_spelling_path=markdown_file if not skip_spellcheck else None,
     )
 
     if to == "pdf":

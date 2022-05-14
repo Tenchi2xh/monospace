@@ -1,6 +1,7 @@
 ---
 light-theme: false
 break-before: [Chapter, SubChapter]
+dictionary: [knuth, foobar]
 dimensions:
     page-height: 60
     body-width: 70
@@ -55,12 +56,16 @@ Ready? Go.
 
     In turn, the appearance of the body text is determined primarily by these four typographic choices:
 
+    [//]: # (ignore-spelling)
+
     - Lorem ipsum dolor sit *amet*
     - Latine dictum sit altum videtur:
         1. Latin's really cool
         2. Don't you think?
         3. I think so
     - Nihil agere delectat
+
+    [//]: # (/ignore-spelling)
 
 2. [](#point-size) is the how big the font is. In print, the most comfortable range for body text is **10–12 point**, or **15-25 pixels**^[This is a footnote. Well, more like a side note]. Not every font^[Another note here] appears equally large at a given point size, so be prepared^[Yet another note] to adjust as needed.
 
@@ -86,6 +91,8 @@ If you're ready for a little more, try the [](#summary-of-key-rules).
 
 If you're ready for a lot more, start at the [](#foreword) and keep reading.
 
+[//]: # (ignore-spelling)
+
 ## Vetito lino oculis {subtitle="(It's Latin nonsense)"}
 
 Exarsit in vires novis, taurorum, communem utriusque ululatibus quercus leto
@@ -109,3 +116,5 @@ conplexa: pretium cruori; vides finiat.
 3. Me ramos
 4. Sacra seduxit Amathunta Olympi tonitrus adhuc atria
 5. Quem campus
+
+[//]: # (/ignore-spelling)

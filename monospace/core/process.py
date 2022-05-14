@@ -236,6 +236,23 @@ def join(elements: List[d.Element]) -> str:
 
 
 def process_meta(meta: dict) -> dict:
+    def meta_inline(content):
+        value = ""
+        for elem in content:
+            if elem["t"] == "Str":
+                value += elem["c"]
+            elif elem["t"] == "Space":
+                value += " "
+            else:
+                raise TypeError("Unknown meta value type: %s" % elem["t"])
+        try:
+            return int(value)
+        except ValueError:
+            try:
+                return float(value)
+            except ValueError:
+                return value
+
     result: dict = {}
     for k, v in meta.items():
         kind = v["t"]
@@ -243,22 +260,10 @@ def process_meta(meta: dict) -> dict:
 
         if kind == "MetaMap":
             result[k] = process_meta(content)
+        elif kind == "MetaList":
+            result[k] = [meta_inline(e["c"]) for e in content]
         elif kind == "MetaInlines":
-            value = ""
-            for elem in content:
-                if elem["t"] == "Str":
-                    value += elem["c"]
-                elif elem["t"] == "Space":
-                    value += " "
-                else:
-                    raise TypeError("Unknown meta value type: %s" % elem["t"])
-            try:
-                result[k] = int(value)
-            except ValueError:
-                try:
-                    result[k] = float(value)
-                except ValueError:
-                    result[k] = value
+            result[k] = meta_inline(content)
         elif kind == "MetaBool":
             result[k] = content
     return result

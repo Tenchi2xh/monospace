@@ -19,6 +19,7 @@ Jinja2 = "^3"
 cursebox-lib = "^1.0"
 Pillow = "^9"
 2xh-leet = "^1"
+pyspellchecker = "^0.6.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7"

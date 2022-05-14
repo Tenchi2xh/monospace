@@ -14,7 +14,8 @@ def parse(markdown_content) -> dict:
     raw_ast: str = pypandoc.convert_text(
         markdown_content,
         format="markdown",
-        to="json"
+        to="json",
+        extra_args=["--quiet"],
     )
     log.debug("Parsing markdown AST using Pandoc (%d chars)..." % len(markdown_content))
     return json.loads(raw_ast)

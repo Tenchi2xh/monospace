@@ -9,7 +9,7 @@ __all__ = ["parse", "process", "render", "layout", "typeset"]
 """Rendering pipeline for books
 
     .─────────────.
-   ( markdown file )
+   ( markdown file )  ───▶ Optional: spell check
     `─────────────'
            │
         parse()

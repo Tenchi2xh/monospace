@@ -16,6 +16,7 @@ class Settings:
     margin_bottom: int
 
     break_before: List[str]
+    dictionary: List[str]
 
     working_dir: str
     light: bool
@@ -44,9 +45,10 @@ class Settings:
             margin_inside=get(meta, "dimensions.margins.inside", 10),
             margin_outside=get(meta, "dimensions.margins.outside", 5),
             margin_bottom=get(meta, "dimensions.margins.bottom", 5),
+            dictionary=[w.lower() for w in get(meta, "dictionary", [])],
             working_dir=working_dir,
             light=get(meta, "light-theme", False),
-            github_anchors=get(meta, "github-anchors", False)
+            github_anchors=get(meta, "github-anchors", False),
         )
 
 
