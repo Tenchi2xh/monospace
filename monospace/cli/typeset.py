@@ -58,7 +58,7 @@ def typeset(markdown_file, to, preview, do_open, linear, verbose):
     be concatenated before typesetting (in alphabetical order.)
     """
 
-    log_level = logging.ERROR
+    log_level = logging.WARNING
     if verbose == 1:
         log_level = logging.INFO
     elif verbose >= 2:
