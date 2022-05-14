@@ -47,7 +47,7 @@ formatters = {
 @click.option(
     "-v", "--verbose",
     count=True,
-    help="Enable logging (-v: info, -vv: debug, -vvv: trace)"
+    help="Enable logging (-v: info, -vv: debug)"
 )
 def typeset(markdown_file, to, preview, do_open, linear, verbose):
     """Typeset a markdown file into a book.
@@ -58,13 +58,11 @@ def typeset(markdown_file, to, preview, do_open, linear, verbose):
     be concatenated before typesetting (in alphabetical order.)
     """
 
-    log_level = logging.WARNING
+    log_level = logging.ERROR
     if verbose == 1:
         log_level = logging.INFO
-    elif verbose == 2:
+    elif verbose >= 2:
         log_level = logging.DEBUG
-    elif verbose >= 3:
-        log_level = logging.TRACE
     log.setLevel(log_level)
 
     if os.path.isdir(markdown_file):

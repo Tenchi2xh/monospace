@@ -43,7 +43,7 @@ import os
 from dataclasses import replace
 from typing import Dict, Iterator, List, Optional, Type
 
-from leet.logging import ProgressBar, log
+from leet.logging import log, log_progress
 
 from .domain import Settings
 from .domain import blocks as b
@@ -75,7 +75,7 @@ class Renderer(object):
 
     def render_elements(self, elements, progress=False) -> Iterator[b.Block]:
         if progress:
-            elements = ProgressBar(elements)
+            elements = log_progress.debug(elements)
 
         for element in elements:
             name = element.__class__.__name__

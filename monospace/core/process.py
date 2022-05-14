@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Optional
 
-from leet.logging import ProgressBar, log
+from leet.logging import log, log_progress
 
 from ..util import intersperse
 from .domain import Settings
@@ -49,7 +49,7 @@ class Processor(object):
     def find_references(self, elements: list) -> Dict[str, str]:
         references: Dict[str, str] = {}
         log.info("Finding cross-references...")
-        for element in ProgressBar(elements):
+        for element in log_progress.debug(elements):
             if element["t"] == "Header":
                 identifier = Metadata(element["c"][1]).identifier
                 title = join(self.process_elements(element["c"][2]))
@@ -61,7 +61,7 @@ class Processor(object):
 
     def process_elements(self, elements, progress=False) -> List[d.Element]:
         if progress:
-            elements = ProgressBar(elements)
+            elements = log_progress.debug(elements)
 
         processed = [
             self.process_element(e["t"], e["c"] if "c" in e else None)

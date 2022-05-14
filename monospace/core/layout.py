@@ -1,6 +1,6 @@
 from typing import Dict, Iterator, List, Tuple, Type
 
-from leet.logging import ProgressBar, log
+from leet.logging import log, log_progress
 
 from .domain import Settings
 from .domain import blocks as b
@@ -114,7 +114,7 @@ def render_pages(
         return ft([width * " "], settings)
 
     # Go through pages and compose lines
-    for i, page in ProgressBar(list(enumerate(pages))):
+    for i, page in log_progress.debug(list(enumerate(pages))):
         main = page[0]
         sides = page[1]
 
