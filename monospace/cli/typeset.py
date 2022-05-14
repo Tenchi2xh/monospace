@@ -1,3 +1,4 @@
+import logging
 import os
 import pathlib
 import subprocess
@@ -6,6 +7,7 @@ import webbrowser
 from pathlib import Path
 
 import click
+from leet.logging import log
 
 from ..core import typeset as do_typeset
 from ..core.formatting import AnsiFormatter, HtmlFormatter, PostScriptFormatter
@@ -42,7 +44,12 @@ formatters = {
     is_flag=True, default=False,
     help="Produce only one long page."
 )
-def typeset(markdown_file, to, preview, do_open, linear):
+@click.option(
+    "-v", "--verbose",
+    count=True,
+    help="Enable logging (-v: info, -vv: debug, -vvv: trace)"
+)
+def typeset(markdown_file, to, preview, do_open, linear, verbose):
     """Typeset a markdown file into a book.
 
     Saves the formatted book in the same directory as the input file.
@@ -50,6 +57,16 @@ def typeset(markdown_file, to, preview, do_open, linear):
     If the MARKDOWN_FILE argument is a path, all contained markdown files will
     be concatenated before typesetting (in alphabetical order.)
     """
+
+    log_level = logging.WARNING
+    if verbose == 1:
+        log_level = logging.INFO
+    elif verbose == 2:
+        log_level = logging.DEBUG
+    elif verbose >= 3:
+        log_level = logging.TRACE
+    log.setLevel(log_level)
+
     if os.path.isdir(markdown_file):
         output = os.path.join(markdown_file, os.path.split(markdown_file)[-1])
         working_dir = Path(markdown_file)

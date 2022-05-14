@@ -63,7 +63,7 @@ def render(
     formatter: Optional[Type[Formatter]] = None
 ) -> Iterator[b.Block]:
     renderer = Renderer(settings, cross_references, formatter)
-    log.debug("Rendering domain elements into string blocks...")
+    log.info("Rendering domain elements into string blocks...")
     return renderer.render_elements(elements, progress=True)
 
 

@@ -30,7 +30,7 @@ def layout(
 
 
 def break_blocks(blocks, linear, content_length, margin_top) -> Iterator[Page]:
-    log.debug("Breaking blocks into pages...")
+    log.info("Breaking blocks into pages...")
 
     page_count = 0
     latest_side_offset = 0
@@ -103,7 +103,7 @@ def render_pages(
     settings,
     formatter
 ) -> Iterator[RenderedPage]:
-    log.debug(f"Rendering pages using formatter '{formatter.__name__}'...")
+    log.info(f"Rendering pages using formatter '{formatter.__name__}'...")
 
     s = settings
     ft = formatter.format_tags

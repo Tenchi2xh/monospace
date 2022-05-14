@@ -43,12 +43,12 @@ class Processor(object):
             "summary-of-key-rules": "Summary of key rules",
             "foreword": "Foreword",
         })
-        log.debug("Processing AST tree into domain elements...")
+        log.info("Processing AST tree into domain elements...")
         self.processed = self.process_elements(ast["blocks"], progress=True)
 
     def find_references(self, elements: list) -> Dict[str, str]:
         references: Dict[str, str] = {}
-        log.debug("Finding cross-references...")
+        log.info("Finding cross-references...")
         for element in ProgressBar(elements):
             if element["t"] == "Header":
                 identifier = Metadata(element["c"][1]).identifier
