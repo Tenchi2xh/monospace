@@ -1,5 +1,7 @@
 from typing import Any, Dict, List, Optional
 
+from leet.logging import ProgressBar, log
+
 from ..util import intersperse
 from .domain import Settings
 from .domain import document as d
@@ -39,12 +41,15 @@ class Processor(object):
             "times-new-roman": "Times New Roman",
             "arial": "Arial",
             "summary-of-key-rules": "Summary of key rules",
+            "foreword": "Foreword",
         })
-        self.processed = self.process_elements(ast["blocks"])
+        log.debug("Processing AST tree into domain elements...")
+        self.processed = self.process_elements(ast["blocks"], progress=True)
 
     def find_references(self, elements: list) -> Dict[str, str]:
         references: Dict[str, str] = {}
-        for element in elements:
+        log.debug("Finding cross-references...")
+        for element in ProgressBar(elements):
             if element["t"] == "Header":
                 identifier = Metadata(element["c"][1]).identifier
                 title = join(self.process_elements(element["c"][2]))
@@ -54,7 +59,10 @@ class Processor(object):
         self.note_count = -1
         return references
 
-    def process_elements(self, elements) -> List[d.Element]:
+    def process_elements(self, elements, progress=False) -> List[d.Element]:
+        if progress:
+            elements = ProgressBar(elements)
+
         processed = [
             self.process_element(e["t"], e["c"] if "c" in e else None)
             for e in elements

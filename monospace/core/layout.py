@@ -1,5 +1,7 @@
 from typing import Dict, Iterator, List, Tuple, Type
 
+from leet.logging import ProgressBar, log
+
 from .domain import Settings
 from .domain import blocks as b
 from .formatting import Formatter
@@ -21,20 +23,24 @@ def layout(
     s = settings
     content_length = s.page_height - s.margin_top - s.margin_bottom
 
-    pages = break_blocks(blocks, linear, content_length, s.margin_top)
+    pages = list(break_blocks(blocks, linear, content_length, s.margin_top))
     rendered_pages = render_pages(pages, linear, s, formatter)
 
     return rendered_pages
 
 
 def break_blocks(blocks, linear, content_length, margin_top) -> Iterator[Page]:
+    log.debug("Breaking blocks into pages...")
+
+    page_count = 0
     latest_side_offset = 0
     first_page = True
     first_block = True
     current_page: Page = ([], {})
 
     def new_page():
-        nonlocal latest_side_offset, current_page, first_block
+        nonlocal latest_side_offset, current_page, first_block, page_count
+        page_count += 1
         main = [""] * margin_top
         sides: Dict[int, str] = {}
         latest_side_offset = 0
@@ -87,6 +93,7 @@ def break_blocks(blocks, linear, content_length, margin_top) -> Iterator[Page]:
 
         first_block = False
 
+    log.debug(f"Broken into {page_count} pages.")
     yield current_page
 
 
@@ -96,6 +103,7 @@ def render_pages(
     settings,
     formatter
 ) -> Iterator[RenderedPage]:
+    log.debug(f"Rendering pages using formatter '{formatter.__name__}'...")
 
     s = settings
     ft = formatter.format_tags
@@ -106,7 +114,7 @@ def render_pages(
         return ft([width * " "], settings)
 
     # Go through pages and compose lines
-    for i, page in enumerate(pages):
+    for i, page in ProgressBar(list(enumerate(pages))):
         main = page[0]
         sides = page[1]
 

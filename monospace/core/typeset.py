@@ -22,4 +22,4 @@ def typeset(markdown_content, output, working_dir, formatter, linear=False):
             page_height=len(pages[0]) + settings.margin_bottom
         )
 
-    formatter.write_file(output, pages, settings)
+    formatter.write_file(output, list(pages), settings)

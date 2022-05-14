@@ -43,6 +43,8 @@ import os
 from dataclasses import replace
 from typing import Dict, Iterator, List, Optional, Type
 
+from leet.logging import ProgressBar, log
+
 from .domain import Settings
 from .domain import blocks as b
 from .domain import document as d
@@ -61,7 +63,8 @@ def render(
     formatter: Optional[Type[Formatter]] = None
 ) -> Iterator[b.Block]:
     renderer = Renderer(settings, cross_references, formatter)
-    return renderer.render_elements(elements)
+    log.debug("Rendering domain elements into string blocks...")
+    return renderer.render_elements(elements, progress=True)
 
 
 class Renderer(object):
@@ -70,7 +73,10 @@ class Renderer(object):
         self.cross_references: Dict[str, str] = cross_references
         self.formatter = formatter
 
-    def render_elements(self, elements) -> Iterator[b.Block]:
+    def render_elements(self, elements, progress=False) -> Iterator[b.Block]:
+        if progress:
+            elements = ProgressBar(elements)
+
         for element in elements:
             name = element.__class__.__name__
 
