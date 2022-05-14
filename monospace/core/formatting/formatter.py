@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod, abstractproperty
 from dataclasses import dataclass, field
 from enum import Enum
-from io import FileIO
+from io import TextIOWrapper as IOStream
 from typing import Any, Dict, List, Union
 
 from leet.logging import log
@@ -31,8 +31,8 @@ class Formatter(metaclass=ABCMeta):
     """A suite of static methods for formatting a file in a given format."""
 
     @classmethod
-    def write_file(cls, output: Union[str, FileIO], pages: List[List[str]], settings: Settings):
-        output_name = str(output.name) if isinstance(output, FileIO) else output
+    def write_file(cls, output: Union[str, IOStream], pages: List[List[str]], settings: Settings):
+        output_name = str(output.name) if isinstance(output, IOStream) else output
         log.debug(f"Writing final book to '{output_name}' using renderer '{cls.__name__}'...")
 
         def do_write(f):
@@ -48,7 +48,7 @@ class Formatter(metaclass=ABCMeta):
                 w(cls.end_page(settings))
             w(cls.end_file(settings))
 
-        if isinstance(output, FileIO):
+        if isinstance(output, IOStream):
             do_write(output)
         else:
             with open("%s.%s" % (output, cls.file_extension), "w") as f:
