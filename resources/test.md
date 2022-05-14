@@ -1,6 +1,7 @@
 ---
 light-theme: false
 break-before: [Chapter, SubChapter]
+draw-borders: false
 dictionary: [knuth, foobar]
 dimensions:
     page-height: 60

@@ -81,6 +81,11 @@ schema = {
             help="Enable GitHub style anchor references in internal links",
             default=False,
         ),
+        "draw_borders": Setting[bool](
+            key="draw-borders",
+            help="Draw border around the pages (mostly for debugging)",
+            default=False,
+        ),
         "dictionary": Setting[List[str]](
             key="dictionary",
             help="List of words to ignore during spell-check",
@@ -110,6 +115,7 @@ class Settings:
     light: bool
     break_before: List[str]
     github_anchors: bool
+    draw_borders: bool
     dictionary: List[str]
     # Internal use
     working_dir: str

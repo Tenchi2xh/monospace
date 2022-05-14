@@ -106,12 +106,12 @@ def render_pages(
     log.info(f"Rendering pages using formatter '{formatter.__name__}'...")
 
     s = settings
-    ft = formatter.format_tags
+    ft = lambda l: formatter.format_tags(l, s)
 
     page_nums = page_numbers(s)
 
     def spaces(width):
-        return ft([width * " "], settings)
+        return ft([width * " "])
 
     # Go through pages and compose lines
     for i, page in log_progress.debug(list(enumerate(pages))):
@@ -122,6 +122,15 @@ def render_pages(
 
         margin_outside = spaces(s.margin_outside)
         margin_inside = spaces(s.margin_inside)
+
+        if s.draw_borders:
+            if i % 2 == 0:
+                margin_outside = ft("│" + " " * (s.margin_outside - 1))
+                margin_inside = ft(" " * (s.margin_inside - 1) + "│")
+            else:
+                margin_outside = ft(" " * (s.margin_outside - 1) + "│")
+                margin_inside = ft("│" + " " * (s.margin_inside - 1))
+
         spacing = spaces(s.side_spacing)
         empty_side_line = spaces(s.side_width)
         empty_line = spaces(s.main_width)
@@ -157,10 +166,18 @@ def render_pages(
             # In linear mode, the only one page is longer than content_length
             lines_left = s.margin_bottom
 
-        rendered_page.extend([spaces(settings.page_width)] * lines_left)
+        empty_line = spaces(s.page_width)
+        if s.draw_borders:
+            empty_line = ft("│" + " " * (s.page_width - 2) + "│")
+
+        rendered_page.extend([empty_line] * lines_left)
 
         # Insert page numbers post-rendering
-        rendered_page[-3] = ft(next(page_nums), settings)
+        rendered_page[-3] = ft(next(page_nums))
+
+        if s.draw_borders:
+            rendered_page[0] = ft("┌" + "─" * (s.page_width - 2) + "┐")
+            rendered_page[-1] = ft("└" + "─" * (s.page_width - 2) + "┘")
 
         yield rendered_page
 
@@ -176,10 +193,16 @@ def page_numbers(settings: Settings) -> Iterator[List[str]]:
             alignment=p.Alignment.left if i % 2 == 0 else p.Alignment.right,
             width=settings.main_width + settings.side_spacing + settings.side_width,
         )[0]
-        outside = " " * settings.margin_outside
-        inside = " " * settings.margin_inside
+        outside = " " * (settings.margin_outside)
+        inside = " " * (settings.margin_inside)
         if i % 2 == 0:
+            if settings.draw_borders:
+                outside = "│" + " " * (settings.margin_outside - 1)
+                inside = " " * (settings.margin_inside - 1) + "│"
             yield [outside, aligned, inside]
         else:
+            if settings.draw_borders:
+                outside = " " * (settings.margin_outside - 1) + "│"
+                inside = "│" + " " * (settings.margin_inside - 1)
             yield [inside, aligned, outside]
         i += 1
