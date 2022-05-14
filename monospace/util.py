@@ -14,6 +14,10 @@ def flatten(list):
     return [item for sublist in list for item in sublist]
 
 
+def flatten_dict(dict):
+    return {k: v for subdict in dict.values() for k, v in subdict.items()}
+
+
 def concatenate_markdown_directory(directory):
     all_markdown = sorted(Path(directory).rglob("*.md"))
 

@@ -1,26 +1,118 @@
 from dataclasses import dataclass
-from typing import List
+from typing import Dict, Generic, List, TypeVar
+
+from ...util import flatten_dict
+
+T = TypeVar("T")
+
+
+@dataclass
+class Setting(Generic[T]):
+    key: str
+    help: str
+    default: T
+
+
+schema = {
+    "Page dimensions": {
+        "main_width": Setting[int](
+            key="dimensions.body-width",
+            help="Width of the main content (text body)",
+            default=70
+        ),
+        "page_height": Setting[int](
+            key="dimensions.page-height",
+            help="Height of the page from top to bottom including margins",
+            default=60,
+        ),
+        "side_width": Setting[int](
+            key="dimensions.notes-width",
+            help="Width of the side content (footnotes, subtitles, captions)",
+            default=30,
+        ),
+    },
+    "Margins": {
+        "margin_top": Setting[int](
+            key="dimensions.margins.top",
+            help="Margin at the top of the page, before the text body",
+            default=5,
+        ),
+        "margin_inside": Setting[int](
+            key="dimensions.margins.inside",
+            help="Margin on the inside of the page (right on a left page, left on a right page)",
+            default=10,
+        ),
+        "margin_outside": Setting[int](
+            key="dimensions.margins.outside",
+            help="Margin on the outside of the page (left on a left page, right on a right page)",
+            default=5,
+        ),
+        "margin_bottom": Setting[int](
+            key="dimensions.margins.bottom",
+            help="Margin at the bottom of the page, after the text body",
+            default=5,
+        ),
+    },
+    "Spacings": {
+        "side_spacing": Setting[int](
+            key="dimensions.separation",
+            help="Gap between the side content and the main content",
+            default=4,
+        ),
+        "tab_size": Setting[int](
+            key="dimensions.indentations",
+            help="Width of indentations (for lists, etc.)",
+            default=4,
+        ),
+    },
+    "Document settings": {
+        "light": Setting[bool](
+            key="light-theme",
+            help="Output using a black-on-white color scheme",
+            default=False,
+        ),
+        "break_before": Setting[List[str]](
+            key="break-before",
+            help="Element types before which a page break should happen",
+            default=["Chapter", "SubChapter"],
+        ),
+        "github_anchors": Setting[bool](
+            key="github-anchors",
+            help="Enable GitHub style anchor references in internal links",
+            default=False,
+        ),
+        "dictionary": Setting[List[str]](
+            key="dictionary",
+            help="List of words to ignore during spell-check",
+            default=[],
+        ),
+    },
+}
+
+flat_schema: Dict[str, Setting] = flatten_dict(schema)
 
 
 @dataclass
 class Settings:
+    # Page dimensions
     main_width: int
     page_height: int
     side_width: int
-    side_spacing: int
-    tab_size: int
-
+    # Margins
     margin_top: int
     margin_inside: int
     margin_outside: int
     margin_bottom: int
-
-    break_before: List[str]
-    dictionary: List[str]
-
-    working_dir: str
+    # Spacings
+    side_spacing: int
+    tab_size: int
+    # Document settings
     light: bool
+    break_before: List[str]
     github_anchors: bool
+    dictionary: List[str]
+    # Internal use
+    working_dir: str
 
     @property
     def page_width(self):
@@ -34,22 +126,13 @@ class Settings:
 
     @staticmethod
     def from_meta(meta, working_dir):
-        return Settings(
-            main_width=get(meta, "dimensions.body-width", 70),
-            page_height=get(meta, "dimensions.page-height", 60),
-            side_width=get(meta, "dimensions.notes-width", 30),
-            side_spacing=get(meta, "dimensions.separation", 4),
-            tab_size=get(meta, "dimensions.indentations", 4),
-            break_before=get(meta, "break-before", ["Chapter", "SubChapter"]),
-            margin_top=get(meta, "dimensions.margins.top", 5),
-            margin_inside=get(meta, "dimensions.margins.inside", 10),
-            margin_outside=get(meta, "dimensions.margins.outside", 5),
-            margin_bottom=get(meta, "dimensions.margins.bottom", 5),
-            dictionary=[w.lower() for w in get(meta, "dictionary", [])],
+        kwargs = {n: get(meta, s.key, s.default) for n, s in flat_schema.items()}
+        settings = Settings(
             working_dir=working_dir,
-            light=get(meta, "light-theme", False),
-            github_anchors=get(meta, "github-anchors", False),
+            **kwargs,
         )
+        settings.dictionary = [w.lower() for w in settings.dictionary]
+        return settings
 
 
 def get(dictionary, key, default):
